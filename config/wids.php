@@ -222,10 +222,17 @@ return [
                 'secret_key' => env('WIDS_BILLING_STRIPE_SECRET_KEY'),
                 'checkout_base_url' => env('WIDS_BILLING_STRIPE_CHECKOUT_BASE_URL'),
                 'webhook_secret' => env('WIDS_BILLING_STRIPE_WEBHOOK_SECRET'),
+                'currency' => env('WIDS_BILLING_STRIPE_CURRENCY', 'usd'),
                 'price_ids' => [
                     'lite' => env('WIDS_BILLING_STRIPE_PRICE_LITE'),
                     'pro' => env('WIDS_BILLING_STRIPE_PRICE_PRO'),
                     'enterprise' => env('WIDS_BILLING_STRIPE_PRICE_ENTERPRISE'),
+                ],
+                'unit_amounts' => [
+                    'lite' => (int) env('WIDS_BILLING_STRIPE_UNIT_AMOUNT_LITE', 3900),
+                    'pro' => (int) env('WIDS_BILLING_STRIPE_UNIT_AMOUNT_PRO', 14900),
+                    // Enterprise is custom in pricing copy; default is for local testing.
+                    'enterprise' => (int) env('WIDS_BILLING_STRIPE_UNIT_AMOUNT_ENTERPRISE', 39900),
                 ],
             ],
             'paddle' => [

@@ -171,7 +171,7 @@ class WidsProfileCheckCommand extends Command
 
         $provider = strtolower(trim((string) config('wids.billing.payment.provider', 'manual')));
         $providerSecret = trim((string) config('wids.billing.providers.'.$provider.'.webhook_secret', ''));
-        $providerSecretOk = $provider === 'manual' || $providerSecret !== '';
+        $providerSecretOk = $provider === 'manual' || $providerSecret !== '' || app()->environment(['local', 'testing']);
 
         $checks[] = $this->check(
             key: 'billing_provider_secret_present',

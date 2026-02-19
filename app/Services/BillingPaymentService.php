@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\BillingCheckoutSession;
 use App\Models\Tenant;
+use App\Services\Payments\StripeCatalogService;
 use App\Services\Payments\StripeCheckoutService;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -108,14 +109,41 @@ class BillingPaymentService
         }
 
         $webhookSecret = trim((string) config('wids.billing.providers.stripe.webhook_secret', ''));
-        if ($webhookSecret === '') {
+        if ($webhookSecret === '' && ! app()->environment(['local', 'testing'])) {
             throw new RuntimeException('Stripe billing webhook secret is missing (WIDS_BILLING_STRIPE_WEBHOOK_SECRET).');
         }
 
         $targetPlanTier = strtolower(trim((string) $session->target_plan_tier));
         $priceId = trim((string) config('wids.billing.providers.stripe.price_ids.'.$targetPlanTier, ''));
+        $currency = strtolower(trim((string) config('wids.billing.providers.stripe.currency', 'usd')));
+        if ($currency === '') {
+            $currency = 'usd';
+        }
+
         if ($priceId === '') {
-            throw new RuntimeException('Stripe price id is missing for plan tier: '.$targetPlanTier.'.');
+            if (! app()->environment(['local', 'testing'])) {
+                throw new RuntimeException('Stripe price id is missing for plan tier: '.$targetPlanTier.'.');
+            }
+
+            $unitAmount = (int) config('wids.billing.providers.stripe.unit_amounts.'.$targetPlanTier, 0);
+            if ($unitAmount <= 0) {
+                throw new RuntimeException('Stripe unit amount is missing for plan tier: '.$targetPlanTier.'.');
+            }
+
+            $productName = match ($targetPlanTier) {
+                'lite' => 'TruMonit Lite',
+                'pro' => 'TruMonit Pro',
+                default => 'TruMonit Enterprise',
+            };
+
+            $lookupKey = 'trumonit_'.$targetPlanTier.'_monthly';
+
+            $priceId = app(StripeCatalogService::class)->ensureMonthlyPrice(
+                lookupKey: $lookupKey,
+                productName: $productName,
+                unitAmountCents: $unitAmount,
+                currency: $currency,
+            );
         }
 
         $successUrl = rtrim((string) config('app.url', ''), '/').'/billing?checkout=stripe_success&session_id={CHECKOUT_SESSION_ID}';
