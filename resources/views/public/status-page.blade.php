@@ -6,6 +6,7 @@
 
         <title>{{ $statusPage['title'] ?? __('Status') }}</title>
         @include('partials.theme-head')
+        @include('partials.favicons')
 
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
             @vite(['resources/css/app.css', 'resources/js/app.js'])
