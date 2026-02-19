@@ -141,10 +141,26 @@ class BillingPlanService
             return;
         }
 
+        $metadata = is_array($session->metadata) ? $session->metadata : [];
+        $provider = $this->normalizeProvider((string) $session->provider);
+
+        $customerRef = null;
+        $subscriptionRef = null;
+
+        if ($provider === 'stripe') {
+            $customerRef = is_scalar($metadata['stripe_customer_ref'] ?? null) ? trim((string) $metadata['stripe_customer_ref']) : null;
+            $subscriptionRef = is_scalar($metadata['stripe_subscription_ref'] ?? null) ? trim((string) $metadata['stripe_subscription_ref']) : null;
+
+            $customerRef = $customerRef !== '' ? mb_substr($customerRef, 0, 191) : null;
+            $subscriptionRef = $subscriptionRef !== '' ? mb_substr($subscriptionRef, 0, 191) : null;
+        }
+
         $tenant->forceFill([
             'plan_tier' => $targetPlanTier,
-            'billing_provider' => $this->normalizeProvider((string) $session->provider),
-            'billing_subscription_status' => $session->provider === 'manual' ? 'manual_active' : 'active',
+            'billing_provider' => $provider,
+            'billing_customer_ref' => $customerRef ?? $tenant->billing_customer_ref,
+            'billing_subscription_ref' => $subscriptionRef ?? $tenant->billing_subscription_ref,
+            'billing_subscription_status' => $provider === 'manual' ? 'manual_active' : 'active',
             'billing_plan_changed_at' => now(),
         ])->save();
 

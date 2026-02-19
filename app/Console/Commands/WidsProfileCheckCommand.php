@@ -190,6 +190,47 @@ class WidsProfileCheckCommand extends Command
             recommendation: 'Set WIDS_BILLING_'.strtoupper($provider).'_WEBHOOK_SECRET or use manual provider.'
         );
 
+        if ($provider === 'stripe') {
+            $stripeSecretKey = trim((string) config('wids.billing.providers.stripe.secret_key', ''));
+            $checks[] = $this->check(
+                key: 'billing_stripe_secret_key_present',
+                condition: $stripeSecretKey !== '',
+                severity: 'error',
+                passMessage: 'Stripe secret key is configured.',
+                failMessage: 'Stripe secret key is empty.',
+                current: [
+                    'secret_key_present' => $stripeSecretKey !== '',
+                ],
+                expected: [
+                    'secret_key_present' => true,
+                ],
+                recommendation: 'Set WIDS_BILLING_STRIPE_SECRET_KEY.'
+            );
+
+            $priceLite = trim((string) config('wids.billing.providers.stripe.price_ids.lite', ''));
+            $pricePro = trim((string) config('wids.billing.providers.stripe.price_ids.pro', ''));
+            $priceEnterprise = trim((string) config('wids.billing.providers.stripe.price_ids.enterprise', ''));
+
+            $checks[] = $this->check(
+                key: 'billing_stripe_price_ids_present',
+                condition: $priceLite !== '' && $pricePro !== '' && $priceEnterprise !== '',
+                severity: 'error',
+                passMessage: 'Stripe price ids are configured for all plan tiers.',
+                failMessage: 'One or more Stripe price ids are missing.',
+                current: [
+                    'lite' => $priceLite !== '',
+                    'pro' => $pricePro !== '',
+                    'enterprise' => $priceEnterprise !== '',
+                ],
+                expected: [
+                    'lite' => true,
+                    'pro' => true,
+                    'enterprise' => true,
+                ],
+                recommendation: 'Set WIDS_BILLING_STRIPE_PRICE_LITE / PRO / ENTERPRISE.'
+            );
+        }
+
         $summary = $this->buildSummary($checks);
 
         return [

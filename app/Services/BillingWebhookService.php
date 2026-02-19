@@ -21,6 +21,10 @@ class BillingWebhookService
             return false;
         }
 
+        if ($provider === 'stripe') {
+            return $this->verifyStripeSignature($rawPayload, $signature, $secret);
+        }
+
         $expected = hash_hmac('sha256', $rawPayload, $secret);
 
         return hash_equals($expected, $signature);
@@ -68,6 +72,71 @@ class BillingWebhookService
         $provider = strtolower(trim($provider));
 
         return $provider !== '' ? $provider : 'unknown';
+    }
+
+    private function verifyStripeSignature(string $payload, string $signatureHeader, string $webhookSecret): bool
+    {
+        $header = $this->parseStripeSignatureHeader($signatureHeader);
+        $timestamp = (int) ($header['timestamp'] ?? 0);
+        $signatures = $header['signatures'] ?? [];
+
+        if ($timestamp <= 0 || ! is_array($signatures) || count($signatures) === 0) {
+            return false;
+        }
+
+        $toleranceSeconds = 300;
+        if (abs(time() - $timestamp) > $toleranceSeconds) {
+            return false;
+        }
+
+        $signedPayload = $timestamp.'.'.$payload;
+        $expectedSignature = hash_hmac('sha256', $signedPayload, $webhookSecret);
+
+        foreach ($signatures as $candidateSignature) {
+            if (! is_string($candidateSignature)) {
+                continue;
+            }
+
+            if (hash_equals($expectedSignature, $candidateSignature)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array{timestamp: int, signatures: list<string>}
+     */
+    private function parseStripeSignatureHeader(string $header): array
+    {
+        $timestamp = 0;
+        $signatures = [];
+
+        foreach (explode(',', $header) as $chunk) {
+            $pair = explode('=', trim($chunk), 2);
+            if (count($pair) !== 2) {
+                continue;
+            }
+
+            [$name, $value] = $pair;
+            $name = trim($name);
+            $value = trim($value);
+
+            if ($name === 't') {
+                $timestamp = (int) $value;
+                continue;
+            }
+
+            if ($name === 'v1' && $value !== '') {
+                $signatures[] = $value;
+            }
+        }
+
+        return [
+            'timestamp' => $timestamp,
+            'signatures' => $signatures,
+        ];
     }
 
     /**

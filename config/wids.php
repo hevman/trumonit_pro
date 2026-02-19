@@ -219,8 +219,14 @@ return [
         ],
         'providers' => [
             'stripe' => [
+                'secret_key' => env('WIDS_BILLING_STRIPE_SECRET_KEY'),
                 'checkout_base_url' => env('WIDS_BILLING_STRIPE_CHECKOUT_BASE_URL'),
                 'webhook_secret' => env('WIDS_BILLING_STRIPE_WEBHOOK_SECRET'),
+                'price_ids' => [
+                    'lite' => env('WIDS_BILLING_STRIPE_PRICE_LITE'),
+                    'pro' => env('WIDS_BILLING_STRIPE_PRICE_PRO'),
+                    'enterprise' => env('WIDS_BILLING_STRIPE_PRICE_ENTERPRISE'),
+                ],
             ],
             'paddle' => [
                 'checkout_base_url' => env('WIDS_BILLING_PADDLE_CHECKOUT_BASE_URL'),

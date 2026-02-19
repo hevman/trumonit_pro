@@ -27,7 +27,8 @@ class BillingWebhookController extends Controller
             ], 422);
         }
 
-        $signature = $request->header('X-Billing-Signature');
+        $signatureHeaderName = $provider === 'stripe' ? 'Stripe-Signature' : 'X-Billing-Signature';
+        $signature = $request->header($signatureHeaderName);
 
         if (! app(BillingWebhookService::class)->verifySignature($provider, $rawPayload, is_string($signature) ? $signature : null)) {
             return response()->json([
@@ -74,8 +75,15 @@ class BillingWebhookController extends Controller
 
             $data = is_array($payload['data'] ?? null) ? $payload['data'] : [];
 
+            $stripeObject = is_array($data['object'] ?? null) ? $data['object'] : [];
+            $stripeCheckoutSessionId = $this->extractString($stripeObject['id'] ?? null, 191);
+
             $externalSessionId = $this->extractString(
-                $data['external_session_id'] ?? $data['checkout_session_id'] ?? $payload['external_session_id'] ?? null,
+                $data['external_session_id']
+                    ?? $data['checkout_session_id']
+                    ?? $payload['external_session_id']
+                    ?? $stripeCheckoutSessionId
+                    ?? null,
                 191,
             );
 
@@ -115,6 +123,28 @@ class BillingWebhookController extends Controller
                 $metadata = is_array($checkoutSession->metadata) ? $checkoutSession->metadata : [];
                 $metadata['completed_via_webhook'] = true;
                 $metadata['billing_webhook_event_id'] = $event->id;
+
+                if ($provider === 'stripe' && $stripeObject !== []) {
+                    $paymentStatus = $this->extractString($stripeObject['payment_status'] ?? null, 32);
+                    $sessionStatus = $this->extractString($stripeObject['status'] ?? null, 32);
+
+                    $metadata['stripe_checkout_session_id'] = $stripeCheckoutSessionId;
+                    $metadata['stripe_payment_status'] = $paymentStatus;
+                    $metadata['stripe_session_status'] = $sessionStatus;
+                    $metadata['stripe_customer_ref'] = $this->extractString($stripeObject['customer'] ?? null, 191);
+                    $metadata['stripe_subscription_ref'] = $this->extractString($stripeObject['subscription'] ?? null, 191);
+
+                    // Do not apply plan changes for sessions that did not complete payment.
+                    if ($paymentStatus === null || strtolower($paymentStatus) !== 'paid') {
+                        $event->forceFill([
+                            'status' => 'ignored',
+                            'processed_at' => now(),
+                            'error_message' => 'Stripe checkout session payment_status is not paid.',
+                        ])->save();
+
+                        return;
+                    }
+                }
 
                 $checkoutSession->forceFill([
                     'status' => 'completed',
