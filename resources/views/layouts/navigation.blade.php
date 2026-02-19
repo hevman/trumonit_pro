@@ -7,7 +7,6 @@
         request()->routeIs('notification-channels.*') => __('messages.nav.notifications'),
         request()->routeIs('sso.*') => __('messages.nav.sso'),
         request()->routeIs('billing.*') => __('messages.nav.billing'),
-        request()->routeIs('ops-center.*') => __('messages.nav.ops'),
         request()->routeIs('profile.*') => __('Profile'),
         default => __('messages.nav.dashboard'),
     };

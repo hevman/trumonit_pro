@@ -69,12 +69,6 @@
                 <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
                 {{ __('messages.nav.billing') }}
             </a>
-
-            <a href="{{ route('ops-center.index') }}"
-               class="flex items-center gap-2 rounded-lg px-3 py-2 transition-colors {{ request()->routeIs('ops-center.*') ? 'bg-gray-900 font-medium text-white dark:bg-indigo-500 dark:text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
-                <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 014-4h8m-8 8V9m0 8H5a2 2 0 01-2-2V7a2 2 0 012-2h8" /></svg>
-                {{ __('messages.nav.ops') }}
-            </a>
         @endif
 
         <div class="mt-3 border-t border-gray-200 pt-3 dark:border-gray-800">
