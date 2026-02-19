@@ -35,18 +35,32 @@ services:
   app:
     <<: *app-common
     command: >
-      sh -lc "mkdir -p /var/www/html/storage/framework/cache /var/www/html/storage/framework/sessions /var/www/html/storage/framework/views /var/www/html/storage/framework/testing /var/www/html/bootstrap/cache
+      sh -lc "if [ ! -f /var/www/html/vendor/autoload.php ] && [ -f /var/www/html/composer.json ]; then
+        echo '[startup] vendor/autoload.php missing; running composer install...';
+        composer install --no-interaction --no-dev --prefer-dist --optimize-autoloader;
+      fi
+      && mkdir -p /var/www/html/storage/framework/cache /var/www/html/storage/framework/sessions /var/www/html/storage/framework/views /var/www/html/storage/framework/testing /var/www/html/bootstrap/cache
       && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
       && chmod -R ug+rwX /var/www/html/storage /var/www/html/bootstrap/cache
       && exec php-fpm"
 
   queue:
     <<: *app-common
-    command: php artisan queue:work --queue=${WIDS_WORKER_QUEUES:-wids-high,wids,wids-low,default} --sleep=1 --tries=1 --timeout=0
+    command: >
+      sh -lc "if [ ! -f /var/www/html/vendor/autoload.php ] && [ -f /var/www/html/composer.json ]; then
+        echo '[queue] vendor/autoload.php missing; running composer install...';
+        composer install --no-interaction --no-dev --prefer-dist --optimize-autoloader;
+      fi
+      && exec php artisan queue:work --queue=${WIDS_WORKER_QUEUES:-wids-high,wids,wids-low,default} --sleep=1 --tries=1 --timeout=0"
 
   scheduler:
     <<: *app-common
-    command: php artisan schedule:work
+    command: >
+      sh -lc "if [ ! -f /var/www/html/vendor/autoload.php ] && [ -f /var/www/html/composer.json ]; then
+        echo '[scheduler] vendor/autoload.php missing; running composer install...';
+        composer install --no-interaction --no-dev --prefer-dist --optimize-autoloader;
+      fi
+      && exec php artisan schedule:work"
 
   playwright:
     build:
@@ -102,4 +116,3 @@ networks:
     driver: bridge
   reverse_proxy_network:
     external: true
-
