@@ -1,0 +1,112 @@
+groups:
+  - name: TruMonit_core
+    rules:
+      - alert: SaasMonitQueueBacklogHigh
+        expr: sum(TruMonit_redis_queue_jobs_total{queue="wids",state="ready"}) > 200
+        for: 10m
+        labels:
+          severity: warning
+          service: TruMonit
+        annotations:
+          summary: "wIDS queue backlog is high"
+          description: "Queue ready jobs for wids exceed 200 for 10m."
+
+      - alert: SaasMonitHighPriorityQueueBacklogHigh
+        expr: sum(TruMonit_redis_queue_jobs_total{queue="wids-high",state="ready"}) > 100
+        for: 5m
+        labels:
+          severity: critical
+          service: TruMonit
+        annotations:
+          summary: "wIDS high-priority queue backlog is high"
+          description: "High-priority queue ready jobs exceed 100 for 5m."
+
+      - alert: SaasMonitErrorRateSpike
+        expr: TruMonit_error_rate_last_5m > 0.2
+        for: 5m
+        labels:
+          severity: critical
+          service: TruMonit
+        annotations:
+          summary: "Scan error ratio spike"
+          description: "Snapshot error ratio in last 5 minutes is above 20%."
+
+      - alert: SaasMonitSchedulerLagHigh
+        expr: TruMonit_scan_lag_seconds_p95 > 300
+        for: 10m
+        labels:
+          severity: warning
+          service: TruMonit
+        annotations:
+          summary: "Scheduler lag p95 is high"
+          description: "P95 scan lag is above 5 minutes."
+
+      - alert: SaasMonitQueueAutoscalingNearMax
+        expr: TruMonit_queue_workers_max_configured > 0 and TruMonit_queue_workers_recommended / TruMonit_queue_workers_max_configured >= 0.9
+        for: 15m
+        labels:
+          severity: warning
+          service: TruMonit
+        annotations:
+          summary: "Queue autoscaling recommendation near max"
+          description: "Recommended queue workers stayed high for 15m; review queue throughput and tenant hotspots."
+
+      - alert: SaasMonitMultiRegionSuppressionSpike
+        expr: TruMonit_multi_region_verifications_last_1h_total >= 20 and TruMonit_multi_region_suppressed_last_1h_total / TruMonit_multi_region_verifications_last_1h_total > 0.7
+        for: 15m
+        labels:
+          severity: warning
+          service: TruMonit
+        annotations:
+          summary: "High multi-region suppression ratio"
+          description: "Most primary DOWN detections are suppressed by regional quorum; review timeout/quorum and network conditions."
+
+      - alert: SaasMonitMultiRegionRegionFailureRatioHigh
+        expr: TruMonit_multi_region_region_attempts_last_1h >= 10 and TruMonit_multi_region_region_failure_ratio_last_1h > 0.8
+        for: 20m
+        labels:
+          severity: warning
+          service: TruMonit
+        annotations:
+          summary: "Multi-region failure ratio high for region {{ $labels.region }}"
+          description: "Regional verification failure ratio stayed above 80% with at least 10 attempts; review probe path, DNS/TLS edge, and health policy thresholds."
+
+      - alert: SaasMonitPrivateProbesStale
+        expr: TruMonit_private_probes_active_total > 0 and TruMonit_private_probes_stale_total / TruMonit_private_probes_active_total > 0.4
+        for: 15m
+        labels:
+          severity: warning
+          service: TruMonit
+        annotations:
+          summary: "Private probes stale ratio is high"
+          description: "More than 40% of active private probes are stale; check probe connectivity and heartbeat flow."
+
+      - alert: SaasMonitPrivateProbeLeasesExpired
+        expr: TruMonit_private_probe_leases_expired_total > 0
+        for: 10m
+        labels:
+          severity: warning
+          service: TruMonit
+        annotations:
+          summary: "Private probe task leases expired"
+          description: "There are leased private probe tasks past expiry; verify probe availability and task claim/result flow."
+
+      - alert: SaasMonitPrivateProbeMonitorsWithoutOnlineProbe
+        expr: TruMonit_private_probe_monitors_due_without_online_probe_total > 0
+        for: 10m
+        labels:
+          severity: critical
+          service: TruMonit
+        annotations:
+          summary: "Due private-probe monitors have no online probe"
+          description: "At least one due monitor tagged for private probes cannot be dispatched because tenant has no online probe."
+
+      - alert: SaasMonitPrivateProbeResidencyViolations
+        expr: TruMonit_private_probes_residency_violations_total > 0
+        for: 10m
+        labels:
+          severity: warning
+          service: TruMonit
+        annotations:
+          summary: "Private probes violating residency policy"
+          description: "At least one active private probe has region outside tenant policy; run fleet enforcement and review tier policy config."
