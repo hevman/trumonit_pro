@@ -18,7 +18,7 @@
     @endif
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
-    <div class="relative overflow-hidden min-h-screen">
+    <div class="relative min-h-screen overflow-hidden flex flex-col">
         <div class="pointer-events-none absolute -top-32 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-indigo-300/30 blur-3xl dark:bg-indigo-500/20"></div>
         <div class="pointer-events-none absolute top-72 -right-16 h-72 w-72 rounded-full bg-cyan-300/20 blur-3xl dark:bg-cyan-500/20"></div>
 
@@ -45,7 +45,7 @@
             </div>
         </header>
 
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+        <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
             <section class="grid gap-10 lg:grid-cols-2 lg:items-center">
                 <div>
                     <div class="inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 dark:border-indigo-500/40 dark:bg-indigo-500/10 dark:text-indigo-200">
@@ -203,6 +203,31 @@
                 </div>
             </section>
         </main>
+
+        <footer class="border-t border-slate-200/70 bg-white/70 backdrop-blur dark:border-slate-800 dark:bg-slate-950/70">
+            <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+                <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex items-center gap-2">
+                        <x-application-logo class="h-6 w-6 fill-current text-slate-900 dark:text-slate-100" />
+                        <span class="font-semibold text-slate-900 dark:text-slate-100">{{ config('app.name', 'TruMonit') }}</span>
+                    </div>
+
+                    <div class="max-w-xl text-sm text-slate-500 dark:text-slate-400">
+                        {{ app()->getLocale() === 'pl' ? 'Monitoring 24/7: uptime, SSL i kluczowe endpointy.' : '24/7 monitoring: uptime, SSL, and key endpoints.' }}
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
+                        <a class="hover:underline" href="#features">{{ __('messages.welcome.nav_features') }}</a>
+                        <span class="opacity-40">&middot;</span>
+                        <a class="hover:underline" href="#pricing">{{ __('messages.welcome.nav_pricing') }}</a>
+                        <span class="opacity-40">&middot;</span>
+                        <a class="hover:underline" href="#security">{{ __('messages.welcome.nav_security') }}</a>
+                    </div>
+
+                    <div class="text-sm text-slate-500 dark:text-slate-400">&copy; {{ date('Y') }} {{ config('app.name', 'TruMonit') }}</div>
+                </div>
+            </div>
+        </footer>
     </div>
 </body>
 </html>
