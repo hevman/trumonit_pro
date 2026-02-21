@@ -17,11 +17,32 @@ use App\Http\Controllers\Web\SavedViewController;
 use App\Http\Controllers\Web\SnapshotController;
 use App\Http\Controllers\Ops\BusinessSummaryController;
 use App\Http\Controllers\Ops\MetricsController;
+use App\Http\Controllers\Public\FaqController;
 use App\Http\Controllers\Public\StatusPagePublicController;
+use App\Models\StatusPage;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function (Request $request) {
+$resolveMarketingLocale = static function (Request $request): string {
+    $supported = ['en', 'pl'];
+    $queryLang = (string) $request->query('lang', '');
+
+    if ($queryLang !== '' && in_array($queryLang, $supported, true)) {
+        return $queryLang;
+    }
+
+    $preferred = (string) $request->getPreferredLanguage($supported);
+    if ($preferred !== '' && in_array($preferred, $supported, true)) {
+        return $preferred;
+    }
+
+    $fallback = (string) config('app.locale', 'en');
+
+    return in_array($fallback, $supported, true) ? $fallback : 'en';
+};
+
+Route::get('/', function (Request $request) use ($resolveMarketingLocale) {
     $statusPageResponse = app(StatusPagePublicController::class)->showForRequestHost($request);
 
     if ($statusPageResponse !== null) {
@@ -32,16 +53,163 @@ Route::get('/', function (Request $request) {
         return redirect()->route('dashboard');
     }
 
-    return view('welcome');
+    return redirect()->route('localized.public.home', ['locale' => $resolveMarketingLocale($request)], 301);
 });
 
-Route::get('/lang/{locale}', function (string $locale, Request $request) {
+Route::get('/lang/{locale}', function (string $locale, Request $request): RedirectResponse {
     abort_unless(in_array($locale, ['en', 'pl'], true), 404);
 
-    $request->session()->put('locale', $locale);
+    $target = (string) $request->query('redirect', '/');
+    $fallbackHost = (string) parse_url(url('/'), PHP_URL_HOST);
+    $targetHost = (string) parse_url($target, PHP_URL_HOST);
+    $targetPath = (string) parse_url($target, PHP_URL_PATH);
 
-    return redirect()->back();
+    $isRelative = $targetHost === '';
+    $isSameHost = $targetHost !== '' && strcasecmp($targetHost, $fallbackHost) === 0;
+    if (! $isRelative && ! $isSameHost) {
+        $targetPath = '/';
+    }
+
+    $normalizedPath = trim($targetPath, '/');
+
+    if (preg_match('/^faq\/(.+)$/', $normalizedPath, $matches) === 1) {
+        return redirect()->route('localized.public.faq.show', [
+            'locale' => $locale,
+            'slug' => $matches[1],
+        ], 301);
+    }
+
+    if ($normalizedPath === 'faq') {
+        return redirect()->route('localized.public.faq.index', ['locale' => $locale], 301);
+    }
+
+    if ($normalizedPath === 'privacy') {
+        return redirect()->route('localized.legal.privacy', ['locale' => $locale], 301);
+    }
+
+    if ($normalizedPath === 'terms') {
+        return redirect()->route('localized.legal.terms', ['locale' => $locale], 301);
+    }
+
+    return redirect()->route('localized.public.home', ['locale' => $locale], 301);
 })->name('lang.switch');
+
+Route::get('/privacy', function (Request $request) use ($resolveMarketingLocale) {
+    return redirect()->route('localized.legal.privacy', ['locale' => $resolveMarketingLocale($request)], 301);
+})->name('legal.privacy');
+
+Route::get('/terms', function (Request $request) use ($resolveMarketingLocale) {
+    return redirect()->route('localized.legal.terms', ['locale' => $resolveMarketingLocale($request)], 301);
+})->name('legal.terms');
+
+Route::get('/faq', function (Request $request) use ($resolveMarketingLocale) {
+    return redirect()->route('localized.public.faq.index', ['locale' => $resolveMarketingLocale($request)], 301);
+})->name('public.faq.index');
+
+Route::get('/faq/{slug}', function (string $slug, Request $request) use ($resolveMarketingLocale) {
+    return redirect()->route('localized.public.faq.show', [
+        'locale' => $resolveMarketingLocale($request),
+        'slug' => $slug,
+    ], 301);
+})->name('public.faq.show');
+
+Route::prefix('{locale}')
+    ->where(['locale' => 'en|pl'])
+    ->as('localized.')
+    ->group(function () {
+        Route::get('/', function () {
+            return view('welcome');
+        })->name('public.home');
+
+        Route::get('/privacy', function () {
+            return response()->view('legal.privacy', [], 200, [
+                'Content-Type' => 'text/html; charset=UTF-8',
+            ]);
+        })->name('legal.privacy');
+
+        Route::get('/terms', function () {
+            return response()->view('legal.terms', [], 200, [
+                'Content-Type' => 'text/html; charset=UTF-8',
+            ]);
+        })->name('legal.terms');
+
+        Route::get('/faq', [FaqController::class, 'index'])->name('public.faq.index');
+        Route::get('/faq/{slug}', [FaqController::class, 'show'])->name('public.faq.show');
+    });
+
+Route::get('/sitemap.xml', function () {
+    $urls = [];
+    $locales = ['en', 'pl'];
+
+    foreach ($locales as $locale) {
+        $urls[] = [
+            'loc' => route('localized.public.home', ['locale' => $locale]),
+            'lastmod' => now()->toAtomString(),
+            'changefreq' => 'daily',
+            'priority' => '1.0',
+        ];
+        $urls[] = [
+            'loc' => route('localized.legal.privacy', ['locale' => $locale]),
+            'lastmod' => now()->toAtomString(),
+            'changefreq' => 'monthly',
+            'priority' => '0.4',
+        ];
+        $urls[] = [
+            'loc' => route('localized.legal.terms', ['locale' => $locale]),
+            'lastmod' => now()->toAtomString(),
+            'changefreq' => 'monthly',
+            'priority' => '0.4',
+        ];
+        $urls[] = [
+            'loc' => route('localized.public.faq.index', ['locale' => $locale]),
+            'lastmod' => now()->toAtomString(),
+            'changefreq' => 'weekly',
+            'priority' => '0.7',
+        ];
+
+        foreach (config('faq.articles', []) as $article) {
+            $slug = $article['slug'] ?? null;
+            if (! is_string($slug) || $slug === '') {
+                continue;
+            }
+
+            $urls[] = [
+                'loc' => route('localized.public.faq.show', ['locale' => $locale, 'slug' => $slug]),
+                'lastmod' => now()->toAtomString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.6',
+            ];
+        }
+    }
+
+    try {
+        $publicStatusPages = StatusPage::query()
+            ->where('is_public', true)
+            ->select(['slug', 'updated_at'])
+            ->latest('updated_at')
+            ->limit(1000)
+            ->get();
+
+        foreach ($publicStatusPages as $statusPage) {
+            if (! is_string($statusPage->slug) || $statusPage->slug === '') {
+                continue;
+            }
+
+            $urls[] = [
+                'loc' => route('status-pages.public.show', ['slug' => $statusPage->slug]),
+                'lastmod' => optional($statusPage->updated_at)?->toAtomString() ?? now()->toAtomString(),
+                'changefreq' => 'hourly',
+                'priority' => '0.8',
+            ];
+        }
+    } catch (\Throwable) {
+        // Keep sitemap available even during transient DB issues.
+    }
+
+    return response()
+        ->view('public.sitemap', ['urls' => $urls], 200)
+        ->header('Content-Type', 'application/xml; charset=UTF-8');
+})->name('public.sitemap');
 
 Route::get('/ops/metrics', MetricsController::class)->name('ops.metrics');
 Route::get('/ops/business-summary', BusinessSummaryController::class)->name('ops.business-summary');

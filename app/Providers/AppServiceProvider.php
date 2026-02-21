@@ -86,6 +86,29 @@ class AppServiceProvider extends ServiceProvider
             return $limits;
         });
 
+        RateLimiter::for('plugin-api', function (Request $request) {
+            $rpm = max(1, (int) config('wids.api.plugin.rate_limit_per_minute', 120));
+            $ip = (string) ($request->ip() ?? 'no-ip');
+
+            $token = trim((string) $request->header('X-Api-Key', ''));
+            if ($token === '') {
+                $auth = (string) $request->header('Authorization', '');
+                if (preg_match('/^Bearer\s+(.+)$/i', $auth, $match) === 1) {
+                    $token = trim((string) ($match[1] ?? ''));
+                }
+            }
+
+            $limits = [
+                Limit::perMinute($rpm)->by('plugin-api:ip:' . $ip),
+            ];
+
+            if ($token !== '') {
+                $limits[] = Limit::perMinute($rpm)->by('plugin-api:token:' . hash('sha256', $token) . ':' . $ip);
+            }
+
+            return $limits;
+        });
+
         RateLimiter::for('oidc-auth', function (Request $request) {
             $tenantSlug = strtolower(trim((string) ($request->route('tenantSlug') ?? $request->query('tenant', ''))));
             $tenantSlug = $tenantSlug !== '' ? $tenantSlug : 'unknown';

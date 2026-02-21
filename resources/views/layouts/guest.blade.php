@@ -21,6 +21,10 @@
         @endif
     </head>
     <body class="bg-gray-50 text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100">
+        @php
+            $langSwitchEn = request()->fullUrlWithQuery(['lang' => 'en']);
+            $langSwitchPl = request()->fullUrlWithQuery(['lang' => 'pl']);
+        @endphp
         <div class="min-h-screen px-4 py-6 sm:py-10">
             <div class="max-w-6xl mx-auto">
                 <div class="flex items-center justify-between gap-3 mb-8">
@@ -29,8 +33,8 @@
                         <span class="font-semibold text-base text-gray-900 dark:text-gray-100">{{ config('app.name', 'TruMonit') }}</span>
                     </a>
                     <div class="flex items-center gap-2">
-                        <a href="{{ route('lang.switch', ['locale' => 'en']) }}" class="rounded-md px-2 py-1 text-sm {{ app()->getLocale() === 'en' ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900' : 'text-gray-600 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-800' }}">EN</a>
-                        <a href="{{ route('lang.switch', ['locale' => 'pl']) }}" class="rounded-md px-2 py-1 text-sm {{ app()->getLocale() === 'pl' ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900' : 'text-gray-600 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-800' }}">PL</a>
+                        <a href="{{ $langSwitchEn }}" class="rounded-md px-2 py-1 text-sm {{ app()->getLocale() === 'en' ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900' : 'text-gray-600 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-800' }}">EN</a>
+                        <a href="{{ $langSwitchPl }}" class="rounded-md px-2 py-1 text-sm {{ app()->getLocale() === 'pl' ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900' : 'text-gray-600 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-800' }}">PL</a>
                         <x-theme-toggle />
                     </div>
                 </div>

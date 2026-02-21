@@ -1,10 +1,45 @@
+@php
+    $statusTitle = $statusPage['title'] ?? __('Status');
+    $statusDescription = is_string($statusPage['description'] ?? null) && $statusPage['description'] !== ''
+        ? $statusPage['description']
+        : __('Public status page with current component health and incident history.');
+    $canonicalUrl = url()->current();
+    $ogImage = asset('android-chrome-512x512.png');
+    $statusSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'WebPage',
+        'name' => $statusTitle,
+        'description' => $statusDescription,
+        'url' => $canonicalUrl,
+        'inLanguage' => app()->getLocale() === 'pl' ? 'pl-PL' : 'en-US',
+        'publisher' => [
+            '@type' => 'Organization',
+            'name' => config('app.name', 'TruMonit'),
+            'url' => url('/'),
+        ],
+    ];
+@endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="{{ $statusDescription }}">
+        <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+        <link rel="canonical" href="{{ $canonicalUrl }}">
 
-        <title>{{ $statusPage['title'] ?? __('Status') }}</title>
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="{{ $statusTitle }}">
+        <meta property="og:description" content="{{ $statusDescription }}">
+        <meta property="og:url" content="{{ $canonicalUrl }}">
+        <meta property="og:image" content="{{ $ogImage }}">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{ $statusTitle }}">
+        <meta name="twitter:description" content="{{ $statusDescription }}">
+        <meta name="twitter:image" content="{{ $ogImage }}">
+
+        <title>{{ $statusTitle }}</title>
+        <script type="application/ld+json">{!! json_encode($statusSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
         @include('partials.theme-head')
         @include('partials.favicons')
 

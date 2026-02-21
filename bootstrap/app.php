@@ -76,6 +76,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'probe.auth' => \App\Http\Middleware\AuthenticatePrivateProbe::class,
             'scim.auth' => \App\Http\Middleware\AuthenticateScimProvisioning::class,
             'session.governance' => \App\Http\Middleware\EnforceSessionGovernance::class,
+            'plugin_api' => \App\Http\Middleware\PluginApiAuth::class,
             'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
             'abilities' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
         ]);

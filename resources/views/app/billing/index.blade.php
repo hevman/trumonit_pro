@@ -216,6 +216,53 @@
                     <div class="text-xs text-gray-600 dark:text-gray-400">{{ __('Payment provider') }}: {{ $paymentProvider }}</div>
                 </div>
 
+                <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+                    @foreach ($availablePlanTiers as $tier)
+                        @php
+                            $tierNormalized = strtolower((string) $tier);
+                            $isCurrentTier = $tierNormalized === strtolower((string) $currentPlanTier);
+                            $tierNameKey = match ($tierNormalized) {
+                                'free' => 'messages.welcome.price_free_name',
+                                'lite' => 'messages.welcome.price_lite_name',
+                                'pro' => 'messages.welcome.price_pro_name',
+                                'enterprise' => 'messages.welcome.price_enterprise_name',
+                                default => null,
+                            };
+                            $tierValueKey = match ($tierNormalized) {
+                                'free' => 'messages.welcome.price_free_value',
+                                'lite' => 'messages.welcome.price_lite_value',
+                                'pro' => 'messages.welcome.price_pro_value',
+                                'enterprise' => 'messages.welcome.price_enterprise_value',
+                                default => null,
+                            };
+                            $tierTextKey = match ($tierNormalized) {
+                                'free' => 'messages.welcome.price_free_text',
+                                'lite' => 'messages.welcome.price_lite_text',
+                                'pro' => 'messages.welcome.price_pro_text',
+                                'enterprise' => 'messages.welcome.price_enterprise_text',
+                                default => null,
+                            };
+                            $tierName = $tierNameKey ? __($tierNameKey) : strtoupper($tierNormalized);
+                            $tierValue = $tierValueKey ? __($tierValueKey) : '-';
+                            $tierText = $tierTextKey ? __($tierTextKey) : '';
+                        @endphp
+                        <article class="rounded-xl border p-4 {{ $isCurrentTier ? 'border-indigo-500 bg-indigo-50/40 dark:border-indigo-400 dark:bg-indigo-500/10' : 'border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900' }}">
+                            <div class="flex items-center justify-between gap-2">
+                                <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $tierName }}</h4>
+                                @if ($isCurrentTier)
+                                    <span class="app-chip-success">{{ __('Current tier') }}</span>
+                                @elseif ($tierNormalized === 'pro')
+                                    <span class="app-chip">{{ __('messages.welcome.price_recommended') }}</span>
+                                @endif
+                            </div>
+                            <p class="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">{{ $tierValue }}</p>
+                            @if ($tierText !== '')
+                                <p class="mt-2 text-xs text-gray-600 dark:text-gray-300">{{ $tierText }}</p>
+                            @endif
+                        </article>
+                    @endforeach
+                </div>
+
                 <form method="POST" action="{{ route('billing.plan.change') }}" class="grid gap-3 md:grid-cols-3 md:items-end">
                     @csrf
                     <div>

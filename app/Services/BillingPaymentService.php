@@ -103,6 +103,24 @@ class BillingPaymentService
      */
     private function startStripeCheckout(BillingCheckoutSession $session, Tenant $tenant): array
     {
+        $targetPlanTier = strtolower(trim((string) $session->target_plan_tier));
+
+        // Free tier should not create external checkout sessions.
+        if ($targetPlanTier === 'free') {
+            return [
+                'provider' => 'stripe',
+                'status' => 'completed',
+                'external_session_id' => null,
+                'checkout_url' => null,
+                'expires_at' => null,
+                'completed_at' => now(),
+                'metadata' => [
+                    'mode' => 'stripe_free_downgrade',
+                    'requires_webhook_completion' => false,
+                ],
+            ];
+        }
+
         $secretKey = trim((string) config('wids.billing.providers.stripe.secret_key', ''));
         if ($secretKey === '') {
             throw new RuntimeException('Stripe billing secret key is missing (WIDS_BILLING_STRIPE_SECRET_KEY).');
@@ -113,7 +131,6 @@ class BillingPaymentService
             throw new RuntimeException('Stripe billing webhook secret is missing (WIDS_BILLING_STRIPE_WEBHOOK_SECRET).');
         }
 
-        $targetPlanTier = strtolower(trim((string) $session->target_plan_tier));
         $priceId = trim((string) config('wids.billing.providers.stripe.price_ids.'.$targetPlanTier, ''));
         $currency = strtolower(trim((string) config('wids.billing.providers.stripe.currency', 'usd')));
         if ($currency === '') {

@@ -10,6 +10,8 @@
         request()->routeIs('profile.*') => __('Profile'),
         default => __('messages.nav.dashboard'),
     };
+    $langSwitchEn = request()->fullUrlWithQuery(['lang' => 'en']);
+    $langSwitchPl = request()->fullUrlWithQuery(['lang' => 'pl']);
 
 @endphp
 
@@ -38,9 +40,9 @@
             <x-theme-toggle />
 
             <div class="text-sm text-gray-600 dark:text-gray-300">
-                <a href="{{ route('lang.switch', ['locale' => 'en']) }}" class="{{ app()->getLocale() === 'en' ? 'font-semibold text-gray-900 dark:text-white' : '' }}">EN</a>
+                <a href="{{ $langSwitchEn }}" class="{{ app()->getLocale() === 'en' ? 'font-semibold text-gray-900 dark:text-white' : '' }}">EN</a>
                 <span class="mx-1 text-gray-300 dark:text-gray-600">/</span>
-                <a href="{{ route('lang.switch', ['locale' => 'pl']) }}" class="{{ app()->getLocale() === 'pl' ? 'font-semibold text-gray-900 dark:text-white' : '' }}">PL</a>
+                <a href="{{ $langSwitchPl }}" class="{{ app()->getLocale() === 'pl' ? 'font-semibold text-gray-900 dark:text-white' : '' }}">PL</a>
             </div>
 
             <x-dropdown align="right" width="48">

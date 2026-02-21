@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\PrivateProbeAgentTaskController;
 use App\Http\Controllers\Api\PrivateProbeAgentController;
 use App\Http\Controllers\Api\PrivateProbeController;
 use App\Http\Controllers\Api\PrivateProbeTaskController;
+use App\Http\Controllers\Api\PluginApiController;
 use App\Http\Controllers\Api\SiemController;
 use App\Http\Controllers\Scim\ScimController;
 use Illuminate\Support\Facades\Route;
@@ -51,7 +52,28 @@ Route::name('api.')->group(function () {
             Route::post('/Bulk', [ScimController::class, 'bulk'])->name('bulk');
         });
 
-    $registerApiRoutes = static function (): void {
+    $registerPluginApiRoutes = static function (): void {
+        if (! (bool) config('wids.api.plugin.enabled', true)) {
+            return;
+        }
+
+        Route::prefix('plugin')->middleware('throttle:plugin-api')->group(function (): void {
+            Route::post('/auth/login', [PluginApiController::class, 'login'])->middleware('throttle:api-v1-public');
+
+            Route::middleware(['plugin_api:plugin.read', 'meter.api.usage'])->group(function (): void {
+                Route::get('/me', [PluginApiController::class, 'me']);
+                Route::post('/auth/logout', [PluginApiController::class, 'logout']);
+                Route::get('/monitored-urls', [PluginApiController::class, 'monitors']);
+                Route::get('/incidents', [PluginApiController::class, 'incidents']);
+            });
+
+            Route::middleware(['plugin_api:plugin.write', 'meter.api.usage'])->group(function (): void {
+                Route::post('/monitored-urls/{id}/scan', [PluginApiController::class, 'runScan']);
+            });
+        });
+    };
+
+    $registerCoreApiRoutes = static function (): void {
         Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:api-v1-public');
         Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:api-v1-public');
         if ((bool) config('wids.billing.payment.webhook_route_enabled', true)) {
@@ -102,13 +124,18 @@ Route::name('api.')->group(function () {
     };
 
     if ((bool) config('wids.api.legacy_enabled', true)) {
-        $registerApiRoutes();
+        $registerCoreApiRoutes();
     }
+    // Keep unversioned plugin API stable for WordPress clients, independent of current API version.
+    $registerPluginApiRoutes();
 
     $apiVersion = trim((string) config('wids.api.current_version', 'v1'), '/');
     $apiVersion = $apiVersion !== '' ? $apiVersion : 'v1';
 
     Route::prefix($apiVersion)
         ->name($apiVersion.'.')
-        ->group($registerApiRoutes);
+        ->group(function () use ($registerCoreApiRoutes, $registerPluginApiRoutes): void {
+            $registerCoreApiRoutes();
+            $registerPluginApiRoutes();
+        });
 });

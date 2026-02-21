@@ -26,11 +26,18 @@ class MonitoredUrlController extends Controller
             return response()->json(['message' => 'User has no tenant.'], 400);
         }
 
+        $pagination = $request->validate([
+            'page' => ['nullable', 'integer', 'min:1'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
+        $perPage = (int) ($pagination['per_page'] ?? 50);
+
         return MonitoredUrl::query()
             ->where('tenant_id', $tenantId)
             ->with('tags')
             ->orderByDesc('id')
-            ->paginate(50);
+            ->paginate($perPage)
+            ->withQueryString();
     }
 
     public function store(Request $request)

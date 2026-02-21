@@ -28,6 +28,15 @@ return [
             'ttl_minutes' => (int) env('WIDS_API_TOKEN_TTL_MINUTES', 43_200),
             'abilities' => array_values(array_filter(array_map('trim', explode(',', (string) env('WIDS_API_TOKEN_ABILITIES', 'wids.read,wids.write'))))),
         ],
+        'plugin' => [
+            'enabled' => env('WIDS_PLUGIN_API_ENABLED', true),
+            'rate_limit_per_minute' => (int) env('WIDS_PLUGIN_API_RPM', 120),
+            'token_ttl_minutes' => (int) env('WIDS_PLUGIN_API_TOKEN_TTL_MINUTES', 43_200),
+            'token_abilities' => array_values(array_filter(array_map('trim', explode(',', (string) env('WIDS_PLUGIN_API_TOKEN_ABILITIES', 'plugin.read,plugin.write'))))),
+            'accept_legacy_wids_scopes' => env('WIDS_PLUGIN_API_ACCEPT_LEGACY_SCOPES', false),
+            'allow_empty_scopes' => env('WIDS_PLUGIN_API_ALLOW_EMPTY_SCOPES', false),
+            'scan_requires_owner' => env('WIDS_PLUGIN_API_SCAN_REQUIRES_OWNER', true),
+        ],
     ],
 
     'limits' => [
@@ -43,6 +52,12 @@ return [
     'default_plan_tier' => env('WIDS_DEFAULT_PLAN_TIER', 'lite'),
 
     'plan_tiers' => [
+        'free' => [
+            'max_monitored_urls' => (int) env('WIDS_PLAN_FREE_MAX_URLS', 3),
+            'tenant_rpm' => (int) env('WIDS_PLAN_FREE_TENANT_RPM', 60),
+            'storage_quota_mb' => (int) env('WIDS_PLAN_FREE_STORAGE_QUOTA_MB', 256),
+            'retention_days' => (int) env('WIDS_PLAN_FREE_RETENTION_DAYS', 7),
+        ],
         'lite' => [
             'max_monitored_urls' => (int) env('WIDS_PLAN_LITE_MAX_URLS', 50),
             'tenant_rpm' => (int) env('WIDS_PLAN_LITE_TENANT_RPM', 120),
@@ -104,6 +119,7 @@ return [
         'enabled' => env('WIDS_MULTI_REGION_ENABLED', false),
         'regions' => array_values(array_filter(array_map('trim', explode(',', (string) env('WIDS_MULTI_REGION_REGIONS', 'us-east,eu-west,ap-southeast'))))),
         'max_regions_by_tier' => [
+            'free' => (int) env('WIDS_MULTI_REGION_FREE_MAX_REGIONS', 1),
             'lite' => (int) env('WIDS_MULTI_REGION_LITE_MAX_REGIONS', 2),
             'pro' => (int) env('WIDS_MULTI_REGION_PRO_MAX_REGIONS', 2),
             'enterprise' => (int) env('WIDS_MULTI_REGION_ENTERPRISE_MAX_REGIONS', 3),
@@ -161,6 +177,7 @@ return [
         'orphan_cleanup_grace_days' => (int) env('WIDS_STORAGE_ORPHAN_CLEANUP_GRACE_DAYS', 3),
         'orphan_cleanup_schedule_time' => env('WIDS_STORAGE_ORPHAN_CLEANUP_SCHEDULE_TIME', '03:10'),
         'archive_after_days_by_tier' => [
+            'free' => (int) env('WIDS_STORAGE_ARCHIVE_AFTER_DAYS_FREE', 3),
             'lite' => (int) env('WIDS_STORAGE_ARCHIVE_AFTER_DAYS_LITE', 7),
             'pro' => (int) env('WIDS_STORAGE_ARCHIVE_AFTER_DAYS_PRO', 14),
             'enterprise' => (int) env('WIDS_STORAGE_ARCHIVE_AFTER_DAYS_ENTERPRISE', 30),
@@ -180,12 +197,14 @@ return [
         'enabled' => env('WIDS_PRIVATE_PROBES_ENABLED', false),
         'allowed_tiers' => array_values(array_filter(array_map('trim', explode(',', (string) env('WIDS_PRIVATE_PROBES_ALLOWED_TIERS', 'pro,enterprise'))))),
         'allowed_regions_by_tier' => [
+            'free' => array_values(array_filter(array_map('trim', explode(',', (string) env('WIDS_PRIVATE_PROBES_ALLOWED_REGIONS_FREE', '*'))))),
             'lite' => array_values(array_filter(array_map('trim', explode(',', (string) env('WIDS_PRIVATE_PROBES_ALLOWED_REGIONS_LITE', '*'))))),
             'pro' => array_values(array_filter(array_map('trim', explode(',', (string) env('WIDS_PRIVATE_PROBES_ALLOWED_REGIONS_PRO', '*'))))),
             'enterprise' => array_values(array_filter(array_map('trim', explode(',', (string) env('WIDS_PRIVATE_PROBES_ALLOWED_REGIONS_ENTERPRISE', '*'))))),
             'default' => array_values(array_filter(array_map('trim', explode(',', (string) env('WIDS_PRIVATE_PROBES_ALLOWED_REGIONS_DEFAULT', '*'))))),
         ],
         'max_active_by_tier' => [
+            'free' => (int) env('WIDS_PRIVATE_PROBES_MAX_ACTIVE_FREE', 0),
             'lite' => (int) env('WIDS_PRIVATE_PROBES_MAX_ACTIVE_LITE', 5),
             'pro' => (int) env('WIDS_PRIVATE_PROBES_MAX_ACTIVE_PRO', 30),
             'enterprise' => (int) env('WIDS_PRIVATE_PROBES_MAX_ACTIVE_ENTERPRISE', 0),
@@ -224,11 +243,13 @@ return [
                 'webhook_secret' => env('WIDS_BILLING_STRIPE_WEBHOOK_SECRET'),
                 'currency' => env('WIDS_BILLING_STRIPE_CURRENCY', 'usd'),
                 'price_ids' => [
+                    'free' => env('WIDS_BILLING_STRIPE_PRICE_FREE'),
                     'lite' => env('WIDS_BILLING_STRIPE_PRICE_LITE'),
                     'pro' => env('WIDS_BILLING_STRIPE_PRICE_PRO'),
                     'enterprise' => env('WIDS_BILLING_STRIPE_PRICE_ENTERPRISE'),
                 ],
                 'unit_amounts' => [
+                    'free' => (int) env('WIDS_BILLING_STRIPE_UNIT_AMOUNT_FREE', 0),
                     'lite' => (int) env('WIDS_BILLING_STRIPE_UNIT_AMOUNT_LITE', 3900),
                     'pro' => (int) env('WIDS_BILLING_STRIPE_UNIT_AMOUNT_PRO', 14900),
                     // Enterprise is custom in pricing copy; default is for local testing.
@@ -242,6 +263,30 @@ return [
         ],
 
         'plan_tiers' => [
+            'free' => [
+                'included' => [
+                    'api_requests_total' => (int) env('WIDS_BILLING_FREE_INCLUDED_API_REQUESTS', 10_000),
+                    'api_requests_write_total' => (int) env('WIDS_BILLING_FREE_INCLUDED_API_WRITES', 2_000),
+                    'api_requests_4xx_total' => (int) env('WIDS_BILLING_FREE_INCLUDED_API_4XX', 1_000),
+                    'api_requests_5xx_total' => (int) env('WIDS_BILLING_FREE_INCLUDED_API_5XX', 200),
+                    'scans_total' => (int) env('WIDS_BILLING_FREE_INCLUDED_SCANS', 20_000),
+                    'scans_error_total' => (int) env('WIDS_BILLING_FREE_INCLUDED_SCAN_ERRORS', 1_000),
+                    'storage_bytes_added' => (int) env('WIDS_BILLING_FREE_INCLUDED_STORAGE_BYTES', 268_435_456),
+                    'incidents_total' => (int) env('WIDS_BILLING_FREE_INCLUDED_INCIDENTS', 5_000),
+                    'incidents_high_total' => (int) env('WIDS_BILLING_FREE_INCLUDED_HIGH_INCIDENTS', 1_000),
+                ],
+                'caps' => [
+                    'api_requests_total' => (int) env('WIDS_BILLING_FREE_CAP_API_REQUESTS', 10_000),
+                    'api_requests_write_total' => (int) env('WIDS_BILLING_FREE_CAP_API_WRITES', 2_000),
+                    'api_requests_4xx_total' => (int) env('WIDS_BILLING_FREE_CAP_API_4XX', 1_000),
+                    'api_requests_5xx_total' => (int) env('WIDS_BILLING_FREE_CAP_API_5XX', 200),
+                    'scans_total' => (int) env('WIDS_BILLING_FREE_CAP_SCANS', 20_000),
+                    'scans_error_total' => (int) env('WIDS_BILLING_FREE_CAP_SCAN_ERRORS', 1_000),
+                    'storage_bytes_added' => (int) env('WIDS_BILLING_FREE_CAP_STORAGE_BYTES', 268_435_456),
+                    'incidents_total' => (int) env('WIDS_BILLING_FREE_CAP_INCIDENTS', 5_000),
+                    'incidents_high_total' => (int) env('WIDS_BILLING_FREE_CAP_HIGH_INCIDENTS', 1_000),
+                ],
+            ],
             'lite' => [
                 'included' => [
                     'api_requests_total' => (int) env('WIDS_BILLING_LITE_INCLUDED_API_REQUESTS', 50_000),

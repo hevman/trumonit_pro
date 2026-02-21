@@ -27,8 +27,16 @@ class BillingWebhookController extends Controller
             ], 422);
         }
 
-        $signatureHeaderName = $provider === 'stripe' ? 'Stripe-Signature' : 'X-Billing-Signature';
-        $signature = $request->header($signatureHeaderName);
+        $signature = null;
+        if ($provider === 'stripe') {
+            // Primary Stripe header + compatibility fallback used by older internal clients/tests.
+            $signature = $request->header('Stripe-Signature');
+            if (! is_string($signature) || trim($signature) === '') {
+                $signature = $request->header('X-Billing-Signature');
+            }
+        } else {
+            $signature = $request->header('X-Billing-Signature');
+        }
 
         if (! app(BillingWebhookService::class)->verifySignature($provider, $rawPayload, is_string($signature) ? $signature : null)) {
             return response()->json([

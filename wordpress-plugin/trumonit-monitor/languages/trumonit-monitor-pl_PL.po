@@ -1,0 +1,340 @@
+﻿msgid ""
+msgstr ""
+"Project-Id-Version: trumonit-monitor 0.1.0\n"
+"POT-Creation-Date: 2026-02-20 00:00+0000\n"
+"PO-Revision-Date: 2026-02-20 00:00+0000\n"
+"Last-Translator: TruMonit Team <support@trumonit.pro>\n"
+"Language-Team: Polish\n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+"X-Domain: trumonit-monitor\n"
+
+msgid "ack"
+msgstr "potwierdzone"
+
+msgid "Action"
+msgstr "Akcja"
+
+msgid "Active"
+msgstr "Aktywny"
+
+msgid "All"
+msgstr "Wszystkie"
+
+msgid "All incidents"
+msgstr "Wszystkie incydenty"
+
+msgid "All incidents total"
+msgstr "Wszystkie incydenty (łącznie)"
+
+msgid "API diagnostics"
+msgstr "Diagnostyka API"
+
+msgid "API email"
+msgstr "E-mail API"
+
+msgid "API login failed: %s"
+msgstr "Logowanie API nie powiodło się: %s"
+
+msgid "API login failed: token not returned."
+msgstr "Logowanie API nie powiodło się: nie zwrócono tokenu."
+
+msgid "API password"
+msgstr "Hasło API"
+
+msgid "API token"
+msgstr "Token API"
+
+msgid "API token is missing."
+msgstr "Brakuje tokenu API."
+
+msgid "API token is required."
+msgstr "Token API jest wymagany."
+
+msgid "Apply"
+msgstr "Zastosuj"
+
+msgid "Authentication"
+msgstr "Uwierzytelnienie"
+
+msgid "Compare plans"
+msgstr "Porównaj plany"
+
+msgid "Connect"
+msgstr "Połącz"
+
+msgid "Connect API token to view health metrics."
+msgstr "Połącz token API, aby zobaczyć metryki stanu."
+
+msgid "Connect first to load incidents."
+msgstr "Najpierw połącz, aby wczytać incydenty."
+
+msgid "Connect first to load monitor list."
+msgstr "Najpierw połącz, aby wczytać listę monitorów."
+
+msgid "Connect first."
+msgstr "Najpierw połącz."
+
+msgid "Connect using API token or sign in with API credentials."
+msgstr "Połącz za pomocą tokenu API lub zaloguj się danymi API."
+
+msgid "Connected"
+msgstr "Połączono"
+
+msgid "Connected and synced."
+msgstr "Połączono i zsynchronizowano."
+
+msgid "Connection"
+msgstr "Połączenie"
+
+msgid "Connection failed."
+msgstr "Połączenie nie powiodło się."
+
+msgid "Connection failed: %s"
+msgstr "Połączenie nie powiodło się: %s"
+
+msgid "Connection is not healthy: %s%s"
+msgstr "Połączenie nie jest poprawne: %s%s"
+
+msgid "Create account"
+msgstr "Utwórz konto"
+
+msgid "Dashboard"
+msgstr "Panel"
+
+msgid "Default: https://trumonit.pro"
+msgstr "Domyślnie: https://trumonit.pro"
+
+msgid "Detected at"
+msgstr "Wykryto"
+
+msgid "Disconnect"
+msgstr "Rozłącz"
+
+msgid "Disconnect and remove token?"
+msgstr "Rozłączyć i usunąć token?"
+
+msgid "Disconnected."
+msgstr "Rozłączono."
+
+msgid "Email and password are required."
+msgstr "E-mail i hasło są wymagane."
+
+msgid "Forbidden"
+msgstr "Brak dostępu"
+
+msgid "Health Snapshot"
+msgstr "Migawka stanu"
+
+msgid "HTTP error %d"
+msgstr "Błąd HTTP %d"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Incidents"
+msgstr "Incydenty"
+
+msgid "Incidents list"
+msgstr "Lista incydentów"
+
+msgid "Invalid monitor ID."
+msgstr "Nieprawidłowe ID monitora."
+
+msgid "Invalid monitor selected."
+msgstr "Wybrano nieprawidłowy monitor."
+
+msgid "Items per page"
+msgstr "Elementów na stronę"
+
+msgid "Kind"
+msgstr "Typ"
+
+msgid "Last scan"
+msgstr "Ostatni skan"
+
+msgid "Logged in via API and connected."
+msgstr "Zalogowano przez API i połączono."
+
+msgid "Login"
+msgstr "Zaloguj"
+
+msgid "Login failed."
+msgstr "Logowanie nie powiodło się."
+
+msgid "Login validation failed."
+msgstr "Walidacja logowania nie powiodła się."
+
+msgid "Login via API"
+msgstr "Zaloguj przez API"
+
+msgid "Monitors"
+msgstr "Monitory"
+
+msgid "Monitors list"
+msgstr "Lista monitorów"
+
+msgid "Monitors total"
+msgstr "Monitory łącznie"
+
+msgid "Name"
+msgstr "Nazwa"
+
+msgid "Next"
+msgstr "Dalej"
+
+msgid "no"
+msgstr "nie"
+
+msgid "No incidents found or API response is empty."
+msgstr "Nie znaleziono incydentów lub odpowiedź API jest pusta."
+
+msgid "No monitors found or API response is empty."
+msgstr "Nie znaleziono monitorów lub odpowiedź API jest pusta."
+
+msgid "No token yet? Open dashboard and create API token in user settings."
+msgstr "Nie masz jeszcze tokenu? Otwórz panel i utwórz token API w ustawieniach użytkownika."
+
+msgid "open"
+msgstr "otwarte"
+
+msgid "Open billing"
+msgstr "Otwórz billing"
+
+msgid "Open dashboard"
+msgstr "Otwórz panel"
+
+msgid "Open dashboard to get token"
+msgstr "Otwórz panel, aby pobrać token"
+
+msgid "Open incidents"
+msgstr "Otwórz incydenty"
+
+msgid "Open incidents total"
+msgstr "Otwarte incydenty łącznie"
+
+msgid "Owner token required"
+msgstr "Wymagany token właściciela"
+
+msgid "Overview"
+msgstr "Przegląd"
+
+msgid "Page %1$d of %2$d"
+msgstr "Strona %1$d z %2$d"
+
+msgid "Plans"
+msgstr "Plany"
+
+msgid "Plans & Billing"
+msgstr "Plany i billing"
+
+msgid "Previous"
+msgstr "Wstecz"
+
+msgid "Recent Incidents"
+msgstr "Ostatnie incydenty"
+
+msgid "Recent Monitors"
+msgstr "Ostatnie monitory"
+
+msgid "Reconnect / Save"
+msgstr "Połącz ponownie / Zapisz"
+
+msgid "Refresh failed."
+msgstr "Odświeżanie nie powiodło się."
+
+msgid "Refresh summary"
+msgstr "Odśwież podsumowanie"
+
+msgid "Request failed."
+msgstr "Żądanie nie powiodło się."
+
+msgid "resolved"
+msgstr "rozwiązane"
+
+msgid "Run scan"
+msgstr "Uruchom skan"
+
+msgid "Run scan failed."
+msgstr "Uruchomienie skanu nie powiodło się."
+
+msgid "Run scan failed: %s"
+msgstr "Uruchomienie skanu nie powiodło się: %s"
+
+msgid "Run scan requires owner API token."
+msgstr "Uruchomienie skanu wymaga tokenu API właściciela."
+
+msgid "Scan queued."
+msgstr "Skan dodano do kolejki."
+
+msgid "Service URL"
+msgstr "URL usługi"
+
+msgid "Service URL is empty."
+msgstr "URL usługi jest pusty."
+
+msgid "Severity"
+msgstr "Ważność"
+
+msgid "Snapshot may be stale (%d min old). Click Refresh summary."
+msgstr "Migawka może być nieaktualna (%d min temu). Kliknij Odśwież podsumowanie."
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Stored encrypted in WordPress options. Leave empty to keep existing token."
+msgstr "Przechowywane w postaci zaszyfrowanej w opcjach WordPressa. Zostaw puste, aby zachować istniejący token."
+
+msgid "Summary"
+msgstr "Podsumowanie"
+
+msgid "Summary refreshed."
+msgstr "Podsumowanie odświeżone."
+
+msgid "Token requires reconnect"
+msgstr "Token wymaga ponownego połączenia"
+
+msgid "Token validation failed."
+msgstr "Walidacja tokenu nie powiodła się."
+
+msgid "TruMonit"
+msgstr "TruMonit"
+
+msgid "TruMonit Monitor"
+msgstr "TruMonit Monitor"
+
+msgid "TruMonit tabs"
+msgstr "Zakładki TruMonit"
+
+msgid "Unable to load incidents."
+msgstr "Nie można wczytać incydentów."
+
+msgid "Unable to load monitors."
+msgstr "Nie można wczytać monitorów."
+
+msgid "unknown"
+msgstr "nieznany"
+
+msgid "Updated at"
+msgstr "Zaktualizowano"
+
+msgid "URL"
+msgstr "URL"
+
+msgid "Use TruMonit pricing and billing pages to upgrade your workspace."
+msgstr "Użyj stron z planami i billingiem TruMonit, aby zaktualizować workspace."
+
+msgid "User"
+msgstr "Użytkownik"
+
+msgid "WordPress site URL"
+msgstr "URL strony WordPress"
+
+msgid "Workspace"
+msgstr "Workspace"
+
+msgid "yes"
+msgstr "tak"

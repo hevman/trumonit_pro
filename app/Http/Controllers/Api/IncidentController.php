@@ -33,7 +33,10 @@ class IncidentController extends Controller
             'severity_min' => ['nullable', 'integer', 'min:1', 'max:100'],
             'severity_max' => ['nullable', 'integer', 'min:1', 'max:100'],
             'q' => ['nullable', 'string', 'max:200'],
+            'page' => ['nullable', 'integer', 'min:1'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
+        $perPage = (int) ($filters['per_page'] ?? 50);
 
         $status = $filters['status'] ?? null;
         $kind = $filters['kind'] ?? null;
@@ -102,7 +105,8 @@ class IncidentController extends Controller
                 });
             })
             ->orderByDesc('detected_at')
-            ->paginate(50);
+            ->paginate($perPage)
+            ->withQueryString();
     }
 
     public function update(Request $request, int $id)

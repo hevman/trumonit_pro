@@ -12,10 +12,6 @@ class BillingWebhookService
         $secret = trim((string) config('wids.billing.providers.'.$provider.'.webhook_secret', ''));
 
         if ($secret === '') {
-            if ($provider === 'stripe' && app()->environment(['local', 'testing'])) {
-                return true;
-            }
-
             return $provider === 'manual';
         }
 

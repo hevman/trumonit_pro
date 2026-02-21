@@ -6,6 +6,7 @@ use App\Models\BillingCheckoutSession;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class BillingPlanManagementTest extends TestCase
@@ -108,17 +109,17 @@ class BillingPlanManagementTest extends TestCase
         ];
 
         $rawPayload = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        $signature = hash_hmac('sha256', (string) $rawPayload, 'test-secret');
+        $signature = $this->stripeSignatureHeader((string) $rawPayload, 'test-secret');
 
         $first = $this->withHeaders([
-            'X-Billing-Signature' => $signature,
+            'Stripe-Signature' => $signature,
         ])->postJson('/api/v1/billing/webhooks/stripe', $payload);
 
         $first->assertStatus(202);
         $first->assertJsonPath('created', true);
 
         $second = $this->withHeaders([
-            'X-Billing-Signature' => $signature,
+            'Stripe-Signature' => $signature,
         ])->postJson('/api/v1/billing/webhooks/stripe', $payload);
 
         $second->assertStatus(200);
@@ -156,7 +157,16 @@ class BillingPlanManagementTest extends TestCase
     public function test_completed_checkout_webhook_applies_plan_change(): void
     {
         config()->set('wids.billing.payment.provider', 'stripe');
+        config()->set('wids.billing.providers.stripe.secret_key', 'sk_test_123');
         config()->set('wids.billing.providers.stripe.webhook_secret', 'test-secret');
+        config()->set('wids.billing.providers.stripe.price_ids.pro', 'price_test_pro');
+
+        Http::fake([
+            'https://api.stripe.com/v1/checkout/sessions' => Http::response([
+                'id' => 'cs_test_123',
+                'url' => 'https://checkout.stripe.test/session/cs_test_123',
+            ], 200),
+        ]);
 
         $tenant = Tenant::query()->create([
             'name' => 'Acme',
@@ -191,10 +201,10 @@ class BillingPlanManagementTest extends TestCase
         ];
 
         $rawPayload = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        $signature = hash_hmac('sha256', (string) $rawPayload, 'test-secret');
+        $signature = $this->stripeSignatureHeader((string) $rawPayload, 'test-secret');
 
         $response = $this->withHeaders([
-            'X-Billing-Signature' => $signature,
+            'Stripe-Signature' => $signature,
         ])->postJson('/api/v1/billing/webhooks/stripe', $payload);
 
         $response->assertStatus(202);
@@ -212,5 +222,14 @@ class BillingPlanManagementTest extends TestCase
             'event_id' => 'evt_checkout_completed',
             'status' => 'processed',
         ]);
+    }
+
+    private function stripeSignatureHeader(string $rawPayload, string $secret): string
+    {
+        $timestamp = time();
+        $signedPayload = $timestamp.'.'.$rawPayload;
+        $signature = hash_hmac('sha256', $signedPayload, $secret);
+
+        return 't='.$timestamp.',v1='.$signature;
     }
 }

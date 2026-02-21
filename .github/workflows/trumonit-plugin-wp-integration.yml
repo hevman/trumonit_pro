@@ -1,0 +1,35 @@
+name: Trumonit Plugin WP Integration
+
+on:
+  push:
+    paths:
+      - "wordpress-plugin/trumonit-monitor/**"
+      - ".github/workflows/trumonit-plugin-wp-integration.yml"
+  pull_request:
+    paths:
+      - "wordpress-plugin/trumonit-monitor/**"
+      - ".github/workflows/trumonit-plugin-wp-integration.yml"
+
+jobs:
+  wp-integration:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: wordpress-plugin/trumonit-monitor
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install wp-env
+        run: npm install --global @wordpress/env
+
+      - name: Run WP integration smoke
+        run: |
+          chmod +x tests/wp-env-smoke.sh
+          ./tests/wp-env-smoke.sh
