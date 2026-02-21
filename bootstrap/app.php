@@ -70,6 +70,9 @@ return Application::configure(basePath: dirname(__DIR__))
             ->withoutOverlapping();
     })
     ->withMiddleware(function (Middleware $middleware): void {
+        // Respect reverse-proxy HTTPS headers so secure cookies / URLs work correctly in production.
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'role.owner' => \App\Http\Middleware\EnsureOwnerRole::class,
             'meter.api.usage' => \App\Http\Middleware\EnforceAndMeterApiUsage::class,
