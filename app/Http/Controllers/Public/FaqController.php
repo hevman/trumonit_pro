@@ -18,8 +18,10 @@ class FaqController extends Controller
         ]);
     }
 
-    public function show(string $slug): View
+    public function show(string $locale, string $slug): View
     {
+        unset($locale);
+
         $articles = $this->articles();
         $article = collect($articles)->firstWhere('slug', $slug);
 

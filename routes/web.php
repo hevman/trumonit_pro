@@ -244,9 +244,34 @@ Route::get('/sitemap.xml', function () {
         // Keep sitemap available even during transient DB issues.
     }
 
-    return response()
-        ->view('public.sitemap', ['urls' => $urls], 200)
-        ->header('Content-Type', 'application/xml; charset=UTF-8');
+    $normalizeSitemapUrl = static function (string $loc): string {
+        if (str_starts_with($loc, 'http://')) {
+            return 'https://' . substr($loc, 7);
+        }
+
+        return $loc;
+    };
+
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+    $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+
+    foreach ($urls as $url) {
+        $loc = htmlspecialchars($normalizeSitemapUrl((string) ($url['loc'] ?? '')), ENT_XML1 | ENT_COMPAT, 'UTF-8');
+        $lastmod = htmlspecialchars((string) ($url['lastmod'] ?? now()->toAtomString()), ENT_XML1 | ENT_COMPAT, 'UTF-8');
+        $changefreq = htmlspecialchars((string) ($url['changefreq'] ?? 'weekly'), ENT_XML1 | ENT_COMPAT, 'UTF-8');
+        $priority = htmlspecialchars((string) ($url['priority'] ?? '0.5'), ENT_XML1 | ENT_COMPAT, 'UTF-8');
+
+        $xml .= "    <url>\n";
+        $xml .= "        <loc>{$loc}</loc>\n";
+        $xml .= "        <lastmod>{$lastmod}</lastmod>\n";
+        $xml .= "        <changefreq>{$changefreq}</changefreq>\n";
+        $xml .= "        <priority>{$priority}</priority>\n";
+        $xml .= "    </url>\n";
+    }
+
+    $xml .= '</urlset>';
+
+    return response($xml, 200)->header('Content-Type', 'application/xml; charset=UTF-8');
 })->name('public.sitemap');
 
 Route::get('/ops/metrics', MetricsController::class)->name('ops.metrics');
