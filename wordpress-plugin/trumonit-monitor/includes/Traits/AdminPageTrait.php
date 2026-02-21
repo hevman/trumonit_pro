@@ -127,7 +127,7 @@ trait TM_AdminPageTrait
 
         $dashboardUrl = trailingslashit($serviceUrl) . 'dashboard';
         $incidentsUrl = trailingslashit($serviceUrl) . 'incidents';
-        $pricingUrl = trailingslashit($serviceUrl) . '#pricing';
+        $pricingUrl = trailingslashit($serviceUrl) . 'pricing';
         $billingUrl = trailingslashit($serviceUrl) . 'billing';
         $registerUrl = trailingslashit($serviceUrl) . 'register';
         $loginUrl = trailingslashit($serviceUrl) . 'login';

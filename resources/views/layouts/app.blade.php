@@ -8,6 +8,7 @@
         <title>{{ config('app.name', 'TruMonit') }}</title>
         @include('partials.theme-head')
         @include('partials.favicons')
+        @include('partials.trucookie-banner')
 
         <!-- Scripts -->
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))

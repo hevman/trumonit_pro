@@ -87,16 +87,32 @@ Route::get('/lang/{locale}', function (string $locale, Request $request): Redire
         return redirect()->route('localized.legal.privacy', ['locale' => $locale], 301);
     }
 
+    if ($normalizedPath === 'cookies') {
+        return redirect()->route('localized.legal.cookies', ['locale' => $locale], 301);
+    }
+
     if ($normalizedPath === 'terms') {
         return redirect()->route('localized.legal.terms', ['locale' => $locale], 301);
+    }
+
+    if ($normalizedPath === 'pricing') {
+        return redirect()->route('localized.public.pricing', ['locale' => $locale], 301);
     }
 
     return redirect()->route('localized.public.home', ['locale' => $locale], 301);
 })->name('lang.switch');
 
+Route::get('/pricing', function (Request $request) use ($resolveMarketingLocale) {
+    return redirect()->route('localized.public.pricing', ['locale' => $resolveMarketingLocale($request)], 301);
+})->name('public.pricing');
+
 Route::get('/privacy', function (Request $request) use ($resolveMarketingLocale) {
     return redirect()->route('localized.legal.privacy', ['locale' => $resolveMarketingLocale($request)], 301);
 })->name('legal.privacy');
+
+Route::get('/cookies', function (Request $request) use ($resolveMarketingLocale) {
+    return redirect()->route('localized.legal.cookies', ['locale' => $resolveMarketingLocale($request)], 301);
+})->name('legal.cookies');
 
 Route::get('/terms', function (Request $request) use ($resolveMarketingLocale) {
     return redirect()->route('localized.legal.terms', ['locale' => $resolveMarketingLocale($request)], 301);
@@ -121,11 +137,21 @@ Route::prefix('{locale}')
             return view('welcome');
         })->name('public.home');
 
+        Route::get('/pricing', function () {
+            return view('public.pricing');
+        })->name('public.pricing');
+
         Route::get('/privacy', function () {
             return response()->view('legal.privacy', [], 200, [
                 'Content-Type' => 'text/html; charset=UTF-8',
             ]);
         })->name('legal.privacy');
+
+        Route::get('/cookies', function () {
+            return response()->view('legal.cookies', [], 200, [
+                'Content-Type' => 'text/html; charset=UTF-8',
+            ]);
+        })->name('legal.cookies');
 
         Route::get('/terms', function () {
             return response()->view('legal.terms', [], 200, [
@@ -147,6 +173,18 @@ Route::get('/sitemap.xml', function () {
             'lastmod' => now()->toAtomString(),
             'changefreq' => 'daily',
             'priority' => '1.0',
+        ];
+        $urls[] = [
+            'loc' => route('localized.public.pricing', ['locale' => $locale]),
+            'lastmod' => now()->toAtomString(),
+            'changefreq' => 'weekly',
+            'priority' => '0.9',
+        ];
+        $urls[] = [
+            'loc' => route('localized.legal.cookies', ['locale' => $locale]),
+            'lastmod' => now()->toAtomString(),
+            'changefreq' => 'monthly',
+            'priority' => '0.4',
         ];
         $urls[] = [
             'loc' => route('localized.legal.privacy', ['locale' => $locale]),

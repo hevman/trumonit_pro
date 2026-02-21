@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'trucookie' => [
+        'banner_base_url' => env('TRUCOOKIE_BANNER_BASE_URL', 'https://trucookie.pro/banner.js'),
+        'site_id' => env('TRUCOOKIE_SITE_ID', '55df5334-edd6-40e4-8935-d740e00e8c4a'),
+    ],
+
 ];

@@ -42,6 +42,7 @@
         <script type="application/ld+json">{!! json_encode($statusSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
         @include('partials.theme-head')
         @include('partials.favicons')
+        @include('partials.trucookie-banner')
 
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
             @vite(['resources/css/app.css', 'resources/js/app.js'])
