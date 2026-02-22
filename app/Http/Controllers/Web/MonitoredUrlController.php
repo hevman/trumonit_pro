@@ -687,13 +687,14 @@ class MonitoredUrlController extends Controller
         }
 
         $statusMessage = $fromOnboarding
-            ? 'Monitor created. First scan dispatched.'
-            : 'Monitored URL created.';
+            ? __('messages.monitored_urls.flash_created_dispatched')
+            : __('messages.monitored_urls.flash_created');
 
         return redirect()
             ->route('monitored-urls.show', $monitoredUrl)
             ->with('status', $statusMessage)
-            ->with('onboarding_created', $fromOnboarding ? 1 : 0);
+            ->with('monitor_created', 1)
+            ->with('first_check_dispatched', $fromOnboarding ? 1 : 0);
     }
 
     public function show(Request $request, MonitoredUrl $monitoredUrl)

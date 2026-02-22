@@ -121,7 +121,7 @@ class MonitorTemplatesAndOnboardingTest extends TestCase
             ->assertRedirect(route('monitored-urls.show', $monitor))
             ->assertSessionHas(
                 'status',
-                'Monitor created. First scan dispatched.',
+                'Monitor created. First check queued.',
             );
 
         $this->assertSame(2, $monitor->frequency_minutes);

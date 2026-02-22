@@ -90,6 +90,64 @@ class DashboardController extends Controller
             $stateCounts['down']++;
         }
 
+        $openIncidentsByMonitor = Incident::query()
+            ->where('tenant_id', $tenantId)
+            ->where('status', 'open')
+            ->selectRaw('monitored_url_id, COUNT(*) as total')
+            ->groupBy('monitored_url_id')
+            ->pluck('total', 'monitored_url_id')
+            ->map(fn ($value): int => (int) $value)
+            ->all();
+
+        $operationalMonitors = $monitors
+            ->map(function (MonitoredUrl $monitor) use ($openIncidentsByMonitor): array {
+                if (! (bool) $monitor->is_active) {
+                    $state = 'paused';
+                } elseif ($monitor->muted_until?->isFuture()) {
+                    $state = 'muted';
+                } elseif (! $monitor->latestSnapshot) {
+                    $state = 'unknown';
+                } elseif ($this->monitorIsUp($monitor)) {
+                    $state = 'up';
+                } else {
+                    $state = 'down';
+                }
+
+                return [
+                    'id' => (int) $monitor->id,
+                    'display_name' => is_string($monitor->display_name) && trim($monitor->display_name) !== '' ? $monitor->display_name : null,
+                    'url' => (string) $monitor->url,
+                    'state' => $state,
+                    'open_incidents' => (int) ($openIncidentsByMonitor[$monitor->id] ?? 0),
+                    'last_fetched_at' => $monitor->latestSnapshot?->fetched_at?->toDateTimeString(),
+                    'response_time_ms' => is_numeric($monitor->latestSnapshot?->response_time_ms) ? (int) $monitor->latestSnapshot->response_time_ms : null,
+                ];
+            })
+            ->sort(function (array $a, array $b): int {
+                $order = [
+                    'down' => 0,
+                    'unknown' => 1,
+                    'muted' => 2,
+                    'paused' => 3,
+                    'up' => 4,
+                ];
+
+                $ao = $order[$a['state']] ?? 99;
+                $bo = $order[$b['state']] ?? 99;
+
+                if ($ao !== $bo) {
+                    return $ao <=> $bo;
+                }
+
+                $an = strtolower((string) ($a['display_name'] ?? $a['url']));
+                $bn = strtolower((string) ($b['display_name'] ?? $b['url']));
+
+                return $an <=> $bn;
+            })
+            ->values()
+            ->take(12)
+            ->all();
+
         $uptimeBase = max(0, $urlsCount - $stateCounts['paused'] - $stateCounts['muted']);
         $uptimePercent = $uptimeBase > 0
             ? round(($stateCounts['up'] / $uptimeBase) * 100, 1)
@@ -158,6 +216,7 @@ class DashboardController extends Controller
             'criticalOpenIncidentsCount' => $criticalOpenIncidentsCount,
             'newIncidents24hCount' => $newIncidents24hCount,
             'latestIncidents' => $latestIncidents,
+            'operationalMonitors' => $operationalMonitors,
             'showOnboarding' => $isOwner && $urlsCount === 0,
             'isOwner' => $isOwner,
             'uptimePercent' => $uptimePercent,

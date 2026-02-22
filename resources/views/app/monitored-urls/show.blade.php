@@ -1,6 +1,8 @@
 ﻿<x-app-layout>
     <x-slot name="header">
-        @php($isOwner = auth()->user()?->role !== 'member')
+        @php
+            $isOwner = auth()->user()?->role !== 'member';
+        @endphp
         <div class="flex items-start justify-between gap-4">
             <div>
                 <h2 class="font-semibold text-xl leading-tight text-gray-900 dark:text-gray-100">
@@ -33,18 +35,21 @@
 
     <div class="app-page">
         <div class="app-container">
-            @if (session('onboarding_created'))
+            @if (session('monitor_created') || session('onboarding_created'))
+                @php
+                    $createdDispatched = (bool) session('first_check_dispatched', false);
+                @endphp
                 <div class="app-card app-card-success mb-4">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ __('Monitor added') }}</div>
+                            <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ __('messages.monitored_urls.created_title') }}</div>
                             @if ($latestSnapshot?->fetched_at)
                                 <div class="text-sm text-gray-700 dark:text-gray-300">
-                                    {{ __('First check completed') }}: {{ $latestSnapshot->fetched_at->toDateTimeString() }}
+                                    {{ __('messages.dashboard.last_check') }}: {{ $latestSnapshot->fetched_at->toDateTimeString() }}
                                 </div>
                             @else
                                 <div class="text-sm text-gray-700 dark:text-gray-300">
-                                    {{ __('First check is running. Refresh in a few seconds.') }}
+                                    {{ $createdDispatched ? __('messages.monitored_urls.created_body_queued') : __('messages.monitored_urls.created_body_manual') }}
                                 </div>
                             @endif
                         </div>
@@ -68,6 +73,12 @@
                     @if ($isOwner && ! $hasNotificationChannels)
                         <div class="mt-3 text-xs text-gray-700 dark:text-gray-300">
                             {{ __('You will not receive alerts until you configure at least one notification channel (Email/Slack/Webhook).') }}
+                        </div>
+                    @endif
+
+                    @if ($isOwner && $shouldShowBaselinePanel && ! $monitoredUrl->baselineSnapshot)
+                        <div class="mt-3 text-xs text-gray-700 dark:text-gray-300">
+                            {{ __('messages.monitored_urls.baseline_missing_body') }}
                         </div>
                     @endif
                 </div>

@@ -72,6 +72,80 @@
                 </section>
             </div>
 
+            @if (($operationalMonitors ?? []) !== [])
+                <section class="app-card app-card-lg mt-4">
+                    <div class="flex items-center justify-between gap-3">
+                        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                            {{ __('messages.dashboard.operational_title') }}
+                        </h3>
+                        <a class="app-link text-sm" href="{{ route('monitored-urls.index') }}">
+                            {{ __('messages.dashboard.operational_view_all') }}
+                        </a>
+                    </div>
+
+                    <div class="mt-4 overflow-x-auto">
+                        <table class="min-w-full text-sm">
+                            <thead class="bg-gray-50 text-gray-600 dark:bg-gray-900/70 dark:text-gray-300">
+                                <tr>
+                                    <th class="text-left px-4 py-2">{{ __('messages.monitored_urls.display_name') }}</th>
+                                    <th class="text-left px-4 py-2">{{ __('messages.monitored_urls.status') }}</th>
+                                    <th class="text-left px-4 py-2">{{ __('messages.dashboard.last_check') }}</th>
+                                    <th class="text-left px-4 py-2">{{ __('messages.monitored_urls.time_ms') }}</th>
+                                    <th class="text-left px-4 py-2">{{ __('messages.monitored_urls.open_incidents') }}</th>
+                                    @if ($isOwner)
+                                        <th class="text-left px-4 py-2">{{ __('messages.monitored_urls.actions') }}</th>
+                                    @endif
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($operationalMonitors as $row)
+                                    @php
+                                        $tone = match ($row['state']) {
+                                            'up' => 'app-chip-success',
+                                            'down' => 'app-chip-danger',
+                                            'paused' => 'app-chip',
+                                            'muted' => 'app-chip-warning',
+                                            default => 'app-chip',
+                                        };
+                                        $label = match ($row['state']) {
+                                            'up' => __('messages.dashboard.state_up'),
+                                            'down' => __('messages.dashboard.state_down'),
+                                            'paused' => __('messages.dashboard.state_paused'),
+                                            'muted' => __('messages.dashboard.state_muted'),
+                                            default => __('messages.dashboard.state_unknown'),
+                                        };
+                                    @endphp
+                                    <tr class="border-t border-gray-200/70 dark:border-gray-800">
+                                        <td class="px-4 py-2">
+                                            <a class="text-gray-900 hover:underline dark:text-gray-100" href="{{ route('monitored-urls.show', $row['id']) }}">
+                                                {{ $row['display_name'] ?? $row['url'] }}
+                                            </a>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400 break-all">{{ $row['url'] }}</div>
+                                        </td>
+                                        <td class="px-4 py-2">
+                                            <span class="{{ $tone }}">{{ $label }}</span>
+                                        </td>
+                                        <td class="px-4 py-2 text-gray-700 dark:text-gray-300">{{ $row['last_fetched_at'] ?? '-' }}</td>
+                                        <td class="px-4 py-2 text-gray-700 dark:text-gray-300">{{ $row['response_time_ms'] ?? '-' }}</td>
+                                        <td class="px-4 py-2 text-gray-700 dark:text-gray-300">{{ (int) $row['open_incidents'] }}</td>
+                                        @if ($isOwner)
+                                            <td class="px-4 py-2">
+                                                <form method="POST" action="{{ route('monitored-urls.scan', $row['id']) }}">
+                                                    @csrf
+                                                    <button type="submit" class="app-button-secondary">
+                                                        {{ __('messages.actions.scan_now') }}
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        @endif
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            @endif
+
             <div class="grid grid-cols-1 gap-4 xl:grid-cols-3">
                 <section class="app-card app-card-lg xl:col-span-2">
                     <div class="flex items-center justify-between gap-3">

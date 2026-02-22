@@ -39,7 +39,7 @@ return [
         'create' => 'Utworz',
         'edit' => 'Edytuj',
         'delete' => 'Usun',
-        'scan_now' => 'Skanuj teraz',
+        'scan_now' => 'Sprawdź teraz',
         'update' => 'Aktualizuj',
         'cancel' => 'Anuluj',
         'ack' => 'Potwierdz',
@@ -108,6 +108,9 @@ return [
         'state_unknown' => 'UNKNOWN',
         'state_muted' => 'WYCISZONE',
         'state_paused' => 'PAUSED',
+        'operational_title' => 'Monitory (szybki status)',
+        'operational_view_all' => 'Zobacz wszystkie',
+        'last_check' => 'Ostatnie sprawdzenie',
     ],
 
     'onboarding' => [
@@ -270,6 +273,11 @@ return [
         'mode_journey' => 'Scenariusz (przeglądarka)',
         'details' => 'Szczegoly',
         'snapshots' => 'Zrzuty',
+        'flash_created' => 'Monitor utworzony. Uruchom sprawdzenie, aby zobaczyc pierwszy wynik.',
+        'flash_created_dispatched' => 'Monitor utworzony. Pierwsze sprawdzenie dodane do kolejki.',
+        'created_title' => 'Monitor utworzony',
+        'created_body_queued' => 'Pierwsze sprawdzenie dodane do kolejki. Mozesz tez uruchomic je recznie.',
+        'created_body_manual' => 'Nastepnie: uruchom sprawdzenie, aby zebrac pierwszy wynik.',
     ],
 
     'incidents' => [

@@ -39,7 +39,7 @@ return [
         'import_export' => 'Import/Export',
         'edit' => 'Edit',
         'delete' => 'Delete',
-        'scan_now' => 'Scan now',
+        'scan_now' => 'Run check',
         'update' => 'Update',
         'cancel' => 'Cancel',
         'ack' => 'Acknowledge',
@@ -108,6 +108,9 @@ return [
         'state_unknown' => 'UNKNOWN',
         'state_muted' => 'MUTED',
         'state_paused' => 'PAUSED',
+        'operational_title' => 'Monitors (quick status)',
+        'operational_view_all' => 'View all monitors',
+        'last_check' => 'Last check',
     ],
 
     'onboarding' => [
@@ -269,6 +272,11 @@ return [
         'mode_journey' => 'Journey',
         'details' => 'Details',
         'snapshots' => 'Snapshots',
+        'flash_created' => 'Monitor created. Run a check to get the first result.',
+        'flash_created_dispatched' => 'Monitor created. First check queued.',
+        'created_title' => 'Monitor created',
+        'created_body_queued' => 'First check queued. You can run it manually too.',
+        'created_body_manual' => 'Next: run a check to collect the first result.',
     ],
 
     'incidents' => [
