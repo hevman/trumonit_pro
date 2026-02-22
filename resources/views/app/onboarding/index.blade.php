@@ -46,6 +46,7 @@
                         <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
                             {{ __('messages.onboarding.template_pick_help') }}
                         </div>
+                        <div id="template-suggestion" class="mt-2 hidden text-xs text-gray-600 dark:text-gray-400"></div>
                         <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
                             <div class="mb-1 font-medium text-gray-700 dark:text-gray-300">{{ __('messages.onboarding.template_help_title') }}</div>
                             @foreach ($monitorTemplates as $template)
@@ -92,6 +93,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             var url = document.getElementById('url');
             var template = document.getElementById('template');
+            var suggestion = document.getElementById('template-suggestion');
 
             if (!url || !template) {
                 return;
@@ -129,12 +131,28 @@
             function maybeApplySuggestion() {
                 // Only auto-suggest if user hasn't picked a template yet.
                 if (template.value) {
+                    if (suggestion) {
+                        suggestion.classList.add('hidden');
+                        suggestion.textContent = '';
+                    }
                     return;
                 }
 
                 var key = guessTemplateKey(url.value);
                 if (!key) {
+                    if (suggestion) {
+                        suggestion.classList.add('hidden');
+                        suggestion.textContent = '';
+                    }
                     return;
+                }
+
+                var matchedLabel = null;
+                for (var j = 0; j < template.options.length; j++) {
+                    if (template.options[j].value === key) {
+                        matchedLabel = template.options[j].text;
+                        break;
+                    }
                 }
 
                 for (var i = 0; i < template.options.length; i++) {
@@ -143,10 +161,24 @@
                         break;
                     }
                 }
+
+                if (suggestion && matchedLabel) {
+                    // Plain text only (no HTML).
+                    suggestion.textContent = ({{ json_encode(app()->getLocale() === 'pl' ? 'Sugerowany szablon: ' : 'Suggested template: ') }} + matchedLabel + '.');
+                    suggestion.classList.remove('hidden');
+                }
             }
 
             url.addEventListener('change', maybeApplySuggestion);
             url.addEventListener('blur', maybeApplySuggestion);
+
+            template.addEventListener('change', function () {
+                if (!suggestion) {
+                    return;
+                }
+                suggestion.classList.add('hidden');
+                suggestion.textContent = '';
+            });
         });
     </script>
 </x-app-layout>
