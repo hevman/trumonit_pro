@@ -47,7 +47,7 @@
                         <p class="text-gray-700 dark:text-gray-300">{{ __('messages.welcome.hero_subtitle') }}</p>
                     </div>
 
-                    <div class="w-full sm:max-w-md lg:ms-auto px-6 py-6 bg-white shadow-xl shadow-gray-200/60 overflow-hidden rounded-2xl border border-gray-200 dark:bg-gray-900 dark:border-gray-800 dark:shadow-none">
+                    <div class="w-full sm:max-w-xl lg:ms-auto px-6 py-6 bg-white shadow-xl shadow-gray-200/60 overflow-hidden rounded-2xl border border-gray-200 dark:bg-gray-900 dark:border-gray-800 dark:shadow-none">
                         {{ $slot }}
                     </div>
                 </div>
