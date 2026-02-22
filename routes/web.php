@@ -192,9 +192,29 @@ Route::prefix('{locale}')
 Route::get('/sitemap.xml', function () {
     $urls = [];
     $locales = ['en', 'pl'];
-    $content = app(\App\Support\MarketingContentRepository::class);
-    $faqSlugs = $content->faqSlugs();
-    $solutionSlugs = $content->solutionSlugs();
+    $collectSlugs = static function (string $dir): array {
+        $files = glob($dir . DIRECTORY_SEPARATOR . '*.php') ?: [];
+        $slugs = [];
+
+        foreach ($files as $file) {
+            $slug = pathinfo($file, PATHINFO_FILENAME);
+            if (! is_string($slug) || trim($slug) === '') {
+                continue;
+            }
+
+            $slugs[] = $slug;
+        }
+
+        $slugs = array_values(array_unique($slugs));
+        sort($slugs);
+
+        return $slugs;
+    };
+
+    // Read slugs from filenames only. Do not require content files here, because any BOM
+    // in content sources may emit bytes before XML declaration and break sitemap parsing.
+    $faqSlugs = $collectSlugs(resource_path('content/faq/en'));
+    $solutionSlugs = $collectSlugs(resource_path('content/solutions/en'));
 
     $atom = static function (?int $mtime): string {
         if (! is_int($mtime) || $mtime <= 0) {
