@@ -127,7 +127,7 @@ return [
         'url_placeholder' => 'https://example.com',
         'tags_placeholder' => 'prod, team:ops',
         'display_name_placeholder' => 'e.g. Homepage',
-        'template_pick_help' => 'Tip: /login fits "Login journey", /health fits "API health", /cron fits "Cron heartbeat".',
+        'template_pick_help' => 'Tip: /login fits "Login journey", /health fits "API health", /cron fits "Cron heartbeat", /cdn-cgi/trace fits "Cloudflare edge", and origin.* fits "Origin bypass".',
         'baseline_guidance' => 'Baseline (optional): for visual/journey monitors you can set a baseline after the first snapshot to reduce false positives.',
         'create_monitor' => 'Create monitor',
         'templates' => [
@@ -162,6 +162,14 @@ return [
             'api_health' => [
                 'name' => 'API health endpoint',
                 'description' => 'Fast health check with strict 2xx status expectations.',
+            ],
+            'cloudflare_edge' => [
+                'name' => 'Cloudflare edge check',
+                'description' => 'Checks public endpoint behind Cloudflare (DNS/TLS/edge reachability).',
+            ],
+            'origin_bypass' => [
+                'name' => 'Origin bypass check',
+                'description' => 'Checks origin endpoint directly (without CDN proxy) to isolate backend issues.',
             ],
             'keyword_presence' => [
                 'name' => 'Keyword monitor',

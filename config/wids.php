@@ -512,6 +512,38 @@ return [
                 ],
             ],
         ],
+        'cloudflare_edge' => [
+            'name' => 'Cloudflare edge check',
+            'description' => 'Checks public endpoint behind Cloudflare (DNS/TLS/edge reachability).',
+            'defaults' => [
+                'scan_mode' => 'http',
+                'frequency_minutes' => 2,
+                'timeout_seconds' => 15,
+                'follow_redirects' => true,
+                'expected_status_min' => 200,
+                'expected_status_max' => 399,
+                'alert_after_failures' => 2,
+                'alert_cooldown_minutes' => 10,
+            ],
+        ],
+        'origin_bypass' => [
+            'name' => 'Origin bypass check',
+            'description' => 'Checks origin endpoint directly (without CDN proxy) to isolate backend issues.',
+            'defaults' => [
+                'scan_mode' => 'http',
+                'frequency_minutes' => 2,
+                'timeout_seconds' => 15,
+                'follow_redirects' => true,
+                'expected_status_min' => 200,
+                'expected_status_max' => 399,
+                'alert_after_failures' => 2,
+                'alert_cooldown_minutes' => 10,
+                'content_rules' => [
+                    'enabled' => true,
+                    'allow_keywords' => ['ok'],
+                ],
+            ],
+        ],
         'keyword_presence' => [
             'name' => 'Keyword monitor',
             'description' => 'Checks whether expected text marker exists on the page.',

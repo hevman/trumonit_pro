@@ -124,7 +124,7 @@ return [
         'template_label' => 'Typ monitora',
         'advanced_templates_label' => 'Więcej szablonów (zaawansowane)',
         'template_placeholder' => 'Wybierz szablon',
-        'template_pick_help' => 'Wskazówka: /login pasuje do „Scenariusza logowania”, /health do „API health”, a /cron do „Heartbeat cron”.',
+        'template_pick_help' => 'Wskazówka: /login pasuje do „Scenariusza logowania”, /health do „API health”, /cron do „Heartbeat cron”, /cdn-cgi/trace do „Cloudflare: edge check”, a origin.* do „Origin: bypass CDN”.',
         'template_help_title' => 'Szczegóły szablonów',
         'url_placeholder' => 'https://example.com',
         'display_name_placeholder' => 'np. Strona główna',
@@ -163,6 +163,14 @@ return [
             'api_health' => [
                 'name' => 'Endpoint health API',
                 'description' => 'Szybki health-check z restrykcyjnym oczekiwaniem statusów 2xx.',
+            ],
+            'cloudflare_edge' => [
+                'name' => 'Cloudflare: edge check',
+                'description' => 'Sprawdza publiczny endpoint za Cloudflare (DNS/TLS/dostępność edge).',
+            ],
+            'origin_bypass' => [
+                'name' => 'Origin: bypass CDN',
+                'description' => 'Sprawdza endpoint origin bez proxy CDN, aby odróżnić problemy backendu.',
             ],
             'keyword_presence' => [
                 'name' => 'Monitor słowa kluczowego',

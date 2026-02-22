@@ -115,7 +115,7 @@
 
                 <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-5">
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-700 dark:bg-slate-950">
-                        <h2 class="text-base font-semibold">{{ $isPl ? 'Jak wdrozyc' : 'How to implement' }}</h2>
+                        <h2 class="text-base font-semibold">{{ $isPl ? 'Jak wdrożyć' : 'How to implement' }}</h2>
                         <ol class="mt-2 list-decimal pl-5 text-sm text-slate-600 dark:text-slate-300 space-y-1">
                             @foreach ($page['approach'] as $item)
                                 <li>{{ $item }}</li>
@@ -140,7 +140,7 @@
 
                 @if (! empty($page['pitfalls']))
                     <div class="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-700 dark:bg-slate-950">
-                        <h2 class="text-base font-semibold">{{ $isPl ? 'Najczestsze bledy' : 'Common pitfalls' }}</h2>
+                        <h2 class="text-base font-semibold">{{ $isPl ? 'Najczęstsze błędy' : 'Common pitfalls' }}</h2>
                         <ul class="mt-2 list-disc pl-5 text-sm text-slate-600 dark:text-slate-300 space-y-1">
                             @foreach ($page['pitfalls'] as $item)
                                 <li>{{ $item }}</li>
@@ -154,7 +154,7 @@
                 <section class="mt-8 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
                     <div class="flex items-center justify-between gap-3">
                         <h2 class="text-xl font-semibold">{{ $isPl ? 'Powiązane FAQ' : 'Related FAQ' }}</h2>
-                        <a href="{{ $faqIndexUrl }}" class="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-300">{{ $isPl ? 'Cale FAQ' : 'All FAQ' }}</a>
+                        <a href="{{ $faqIndexUrl }}" class="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-300">{{ $isPl ? 'Całe FAQ' : 'All FAQ' }}</a>
                     </div>
                     <ul class="mt-4 space-y-2">
                         @foreach ($relatedFaq as $faq)

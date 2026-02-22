@@ -152,8 +152,14 @@
                 }
 
                 var value = raw.trim().toLowerCase();
+                var hostname = '';
                 if (!value) {
                     return null;
+                }
+                try {
+                    hostname = new URL(value).hostname.toLowerCase();
+                } catch (e) {
+                    hostname = '';
                 }
 
                 if (value.indexOf('/cron') !== -1 || value.indexOf('/heartbeat') !== -1) {
@@ -174,6 +180,14 @@
 
                 if (value.indexOf('/health') !== -1 || value.indexOf('/api/') !== -1) {
                     return 'api_health';
+                }
+                
+                if (value.indexOf('/cdn-cgi/trace') !== -1) {
+                    return 'cloudflare_edge';
+                }
+
+                if (hostname.indexOf('origin.') === 0 || hostname.indexOf('.origin.') !== -1) {
+                    return 'origin_bypass';
                 }
 
                 return 'website_uptime';

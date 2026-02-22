@@ -125,12 +125,20 @@
                     if (typeof raw !== 'string') return null;
                     var value = raw.trim().toLowerCase();
                     if (!value) return null;
+                    var hostname = '';
+                    try {
+                        hostname = new URL(value).hostname.toLowerCase();
+                    } catch (e) {
+                        hostname = '';
+                    }
 
                     if (value.indexOf('/cron') !== -1 || value.indexOf('/heartbeat') !== -1) return 'cron_heartbeat';
                     if (value.indexOf('/checkout') !== -1 || value.indexOf('/cart') !== -1) return 'ecommerce_checkout';
                     if (value.indexOf('/tracking') !== -1 || value.indexOf('/track') !== -1) return 'logistics_tracking';
                     if (value.indexOf('/login') !== -1 || value.indexOf('/signin') !== -1) return 'login_journey';
                     if (value.indexOf('/health') !== -1 || value.indexOf('/api/') !== -1) return 'api_health';
+                    if (value.indexOf('/cdn-cgi/trace') !== -1) return 'cloudflare_edge';
+                    if (hostname.indexOf('origin.') === 0 || hostname.indexOf('.origin.') !== -1) return 'origin_bypass';
 
                     return 'website_uptime';
                 }

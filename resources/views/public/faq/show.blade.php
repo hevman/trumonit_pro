@@ -8,7 +8,7 @@
     }
     $seoDescription = trim((string) ($article['meta_description'] ?? ''));
     if ($seoDescription === '') {
-        $seoDescription = \Illuminate\Support\Str::limit(trim(strip_tags($answerHtml)), 160, '...');
+        $seoDescription = \Illuminate\Support\Str::limit(trim(strip_tags($answerHtml)), 160, '');
     }
     $homeUrl = route('localized.public.home', ['locale' => app()->getLocale()]);
     $pricingUrl = route('localized.public.pricing', ['locale' => app()->getLocale()]);
@@ -134,7 +134,7 @@
             @if (! empty($relatedSolutions) && $solutionsShowRoute)
                 <section class="mt-8 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                        <h2 class="text-xl font-semibold">{{ $isPl ? 'Powiazane scenariusze' : 'Related use cases' }}</h2>
+                        <h2 class="text-xl font-semibold">{{ $isPl ? 'Powiązane scenariusze' : 'Related use cases' }}</h2>
                         @if ($solutionsIndexUrl)
                             <a href="{{ $solutionsIndexUrl }}" class="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-300">
                                 {{ $isPl ? 'Zobacz wszystkie' : 'See all' }}

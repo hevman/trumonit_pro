@@ -10,6 +10,214 @@ class MarketingContentRepository
     /** @var array<string, array<int, array<string, mixed>>> */
     private array $faqCache = [];
 
+    /** @var array<string, array<string, string>> */
+    private const FAQ_EXPANSION_HINTS = [
+        'en' => [
+            'how-to-monitor-webhook-endpoints' => 'api uptime monitoring and website downtime alerts for webhook pipelines',
+            'how-to-monitor-third-party-dependencies' => 'website monitoring tool strategy for third-party providers',
+            'synthetic-checks-vs-http-checks' => 'uptime checker selection between synthetic and HTTP checks',
+            'what-is-mttr-and-how-to-improve-it' => 'website downtime alerts and incident response speed',
+            'how-to-monitor-redirect-chains' => 'website monitoring tool checks for SEO and redirect health',
+            'how-to-monitor-login-flow-synthetically' => 'synthetic browser checks for business-critical login flows',
+            'how-to-monitor-domain-expiration' => 'domain and DNS monitoring to avoid unplanned downtime',
+            'what-is-uptime-monitoring' => 'uptime checker fundamentals for teams choosing monitoring software',
+            'multi-region-monitoring-why-important' => 'multi-location confirmation for reliable downtime detection',
+            'how-do-i-reduce-false-alerts' => 'signal quality and alert routing to cut noisy incidents',
+            'how-to-monitor-api-rate-limits' => 'api uptime monitoring with quota and throttling controls',
+            'what-is-an-incident-response-playbook' => 'repeatable incident workflows and status page communication',
+        ],
+        'pl' => [
+            'how-to-monitor-webhook-endpoints' => 'monitoring API i alerty przestojów dla pipeline webhooków',
+            'how-to-monitor-third-party-dependencies' => 'strategia monitoringu zależności zewnętrznych',
+            'synthetic-checks-vs-http-checks' => 'dobór między checkami synthetic i HTTP uptime',
+            'what-is-mttr-and-how-to-improve-it' => 'skrót czasu reakcji i sensowne alerty przestojów',
+            'how-to-monitor-redirect-chains' => 'kontrola przekierowań pod SEO i stabilność ścieżek',
+            'how-to-monitor-login-flow-synthetically' => 'synthetic monitoring dla krytycznego logowania',
+            'how-to-monitor-domain-expiration' => 'monitoring domeny i DNS, aby uniknąć awarii',
+            'what-is-uptime-monitoring' => 'podstawy monitoringu uptime przy wyborze narzędzia',
+            'multi-region-monitoring-why-important' => 'weryfikacja multi-region dla pewnej detekcji awarii',
+            'how-do-i-reduce-false-alerts' => 'jakość sygnału i routing alertów zamiast szumu',
+            'how-to-monitor-api-rate-limits' => 'monitoring limitów API i bezpieczne progi',
+            'what-is-an-incident-response-playbook' => 'powtarzalny proces incydentowy i komunikacja status page',
+        ],
+    ];
+
+    /** @var array<string, array<string, array<string, mixed>>> */
+    private const BOFU_SOLUTION_OVERRIDES = [
+        'en' => [
+            'uptimerobot-alternative-for-smb' => [
+                'summary' => 'UptimeRobot alternative for SMB teams that need cleaner alerting, incident workflow, and better status communication.',
+                'problem' => 'Teams outgrow simple uptime checks when they need clear ownership, incident timeline, and lower alert noise.',
+                'meta_description' => 'UptimeRobot alternative for SMB teams: compare alert quality, incident workflow, and status communication before you migrate monitoring.',
+                'body' => '<p>If you are searching for an <strong>UptimeRobot alternative</strong>, the real decision is operational: how fast you detect issues, how cleanly you escalate, and how clearly you communicate to customers.</p><p>Use a practical migration scorecard: check interval, false positive rate, alert routing, and incident timeline quality. Then run both tools in parallel for one week on the same critical URLs.</p><p>In TruMonit you can combine monitor checks, incident tracking, and status page updates in one workflow, so SMB teams avoid context switching during outages.</p>',
+            ],
+            'statuscake-alternative-with-status-pages' => [
+                'summary' => 'StatusCake alternative with stronger status page workflow for teams that need clear external communication during incidents.',
+                'problem' => 'Monitoring alone is not enough when customers expect fast and consistent public status updates.',
+                'meta_description' => 'StatusCake alternative with status page workflow: compare downtime detection, customer updates, and incident communication quality.',
+                'body' => '<p>A good <strong>StatusCake alternative</strong> should improve not only checks, but also communication. During incidents, customers need one reliable status page with frequent and consistent updates.</p><p>Evaluate three areas: detection speed, update cadence, and post-incident transparency. If your team has alerts but no clear update process, trust drops even when uptime improves.</p><p>TruMonit connects incident events with status updates so your public communication follows operations, not manual copy and paste.</p>',
+            ],
+            'website-monitoring-tool-for-agencies' => [
+                'summary' => 'Website monitoring tool for agencies that manage many client sites and need fast triage plus shareable reporting.',
+                'problem' => 'Agencies lose margin when one operator manually checks many dashboards and sends client updates by hand.',
+                'meta_description' => 'Website monitoring tool for agencies: monitor many client sites, route alerts, and deliver clear incident reporting without manual chaos.',
+                'body' => '<p>A <strong>website monitoring tool</strong> for agencies must handle scale: many domains, many priorities, and many stakeholders. The winning setup is tags, ownership, and repeatable escalation rules.</p><p>Build one agency workflow: monitor groups by client, severity-based routing, and a simple report rhythm. That reduces reaction time and protects account retention.</p><p>With TruMonit, agencies can move from ad hoc checks to a repeatable incident process with better handoff between technical and account teams.</p>',
+            ],
+            'incident-management-software-for-smb-saas' => [
+                'summary' => 'Incident management software for SMB SaaS teams that need clear escalation, accountability, and faster recovery.',
+                'problem' => 'Without a defined incident process, teams detect issues but still lose time on handoffs and unclear ownership.',
+                'meta_description' => 'Incident management software for SMB SaaS: structure escalation, improve accountability, and reduce time to recover from outages.',
+                'body' => '<p>For SMB SaaS, <strong>incident management software</strong> should make response predictable. You need one place for signal, owner, timeline, and customer communication.</p><p>Start with simple rules: severity levels, on-call owner, and update cadence. Then review each incident to remove recurring bottlenecks from your process.</p><p>TruMonit supports this model by linking monitors, incidents, and public updates so response is faster and less stressful for small teams.</p>',
+            ],
+            'status-page-software-for-b2b-saas' => [
+                'summary' => 'Status page software for B2B SaaS that turns outage updates into consistent customer communication.',
+                'problem' => 'B2B customers expect timely status updates; delays create support load and trust loss.',
+                'meta_description' => 'Status page software for B2B SaaS: publish consistent incident updates, reduce support pressure, and protect customer trust.',
+                'body' => '<p><strong>Status page software</strong> for B2B SaaS is a communication product, not only a branding widget. Enterprise buyers look for clarity, consistency, and time-stamped updates.</p><p>Define your incident communication format before the next outage: what gets published, how often, and who approves updates. This alone reduces inbound support pressure.</p><p>TruMonit helps teams keep status communication aligned with real incident progress from detection through resolution.</p>',
+            ],
+            'website-downtime-alerts-setup' => [
+                'summary' => 'Website downtime alerts setup guide for teams that need fewer false alarms and faster real incident response.',
+                'problem' => 'Many setups alert too often and too early, which creates noise and slower response to real outages.',
+                'meta_description' => 'Website downtime alerts setup: configure thresholds, routing, and cooldown to reduce noise and react faster to real outages.',
+                'body' => '<p>A good <strong>website downtime alerts</strong> setup balances speed and confidence. If you alert on every short spike, teams mute notifications and miss critical events.</p><p>Use failure confirmation, cooldown, and severity routing. Then test escalation with a controlled outage simulation, not only in production chaos.</p><p>TruMonit gives you a practical alerting baseline that can be tuned per service criticality.</p>',
+            ],
+            'uptime-checker-for-multi-site-teams' => [
+                'summary' => 'Uptime checker for multi-site teams that need one view across many domains, priorities, and response owners.',
+                'problem' => 'Managing many websites without prioritization causes alert overload and delayed response on critical properties.',
+                'meta_description' => 'Uptime checker for multi-site teams: monitor many domains with priority routing and clear ownership for faster response.',
+                'body' => '<p>An <strong>uptime checker</strong> for multi-site operations should prioritize what matters first. Not every domain has the same business impact, so alerts must follow service criticality.</p><p>Create tiers, assign owners, and route by severity. This turns a long monitor list into an operational queue your team can actually process.</p><p>TruMonit supports multi-site monitoring with grouped workflows and practical escalation rules.</p>',
+            ],
+            'api-uptime-monitoring-for-critical-endpoints' => [
+                'summary' => 'API uptime monitoring for critical endpoints with latency thresholds, status validation, and incident-ready alerting.',
+                'problem' => 'API outages often start as partial failures, high latency, or auth errors that basic uptime checks miss.',
+                'meta_description' => 'API uptime monitoring for critical endpoints: track status, latency, and error patterns to detect failures before customers complain.',
+                'body' => '<p><strong>API uptime monitoring</strong> should include status, latency, and error-class visibility. A green 200 can still hide degraded user experience when latency explodes.</p><p>Track p95 latency, auth failures, and retry spikes for the endpoints that drive revenue or core product actions.</p><p>TruMonit helps teams detect API degradation earlier and escalate with clearer technical context.</p>',
+            ],
+            'ping-monitoring-vs-http-monitoring' => [
+                'summary' => 'Ping monitoring vs HTTP monitoring explained for teams choosing the right check type for each service.',
+                'problem' => 'Teams often choose one check type for everything and miss incidents that need application-level validation.',
+                'meta_description' => 'Ping monitoring vs HTTP monitoring: choose the right check type by risk, service role, and required incident signal quality.',
+                'body' => '<p><strong>Ping monitoring</strong> answers network reachability, while HTTP checks validate application response. You need both, but not in the same way for every service.</p><p>Use ping for infrastructure heartbeat and HTTP for user-facing reliability. Then route alerts differently so infrastructure and app teams get the right signal.</p><p>TruMonit supports this split so your monitoring model reflects real incident ownership.</p>',
+            ],
+            'port-monitoring-for-infrastructure-services' => [
+                'summary' => 'Port monitoring for infrastructure services where TCP availability is a key early signal of service health.',
+                'problem' => 'Service failures can start with closed or unstable ports before full HTTP checks show visible errors.',
+                'meta_description' => 'Port monitoring for infrastructure services: detect TCP availability issues early and route incidents to the right owners.',
+                'body' => '<p><strong>Port monitoring</strong> is useful when service health depends on TCP reachability: databases, mail relays, custom services, and internal gateways.</p><p>Use port checks as an early-warning layer, then correlate with higher-level checks to avoid false conclusions.</p><p>TruMonit helps infrastructure-focused teams add this signal into one incident workflow with clear escalation.</p>',
+            ],
+            'website-downtime-alerts-for-ecommerce' => [
+                'summary' => 'Website downtime alerts for ecommerce stores where checkout and payment paths directly impact revenue.',
+                'problem' => 'Generic uptime alerts miss conversion-critical failures like checkout degradation and payment disruptions.',
+                'meta_description' => 'Website downtime alerts for ecommerce: protect checkout, payment, and key conversion paths with revenue-focused alerting.',
+                'body' => '<p>In ecommerce, <strong>website downtime alerts</strong> must focus on revenue paths: product pages, cart, checkout, and payment callback flow.</p><p>Prioritize alerts by conversion impact, not only by technical error count. This helps teams respond where each minute has direct revenue cost.</p><p>TruMonit supports ecommerce monitoring by aligning alert severity with business-critical customer journeys.</p>',
+            ],
+            'free-uptime-monitoring-vs-paid-plans' => [
+                'summary' => 'Free uptime monitoring vs paid plans: where free is enough and where paid features protect business continuity.',
+                'problem' => 'Teams stay on free plans too long and discover limits only during real incidents.',
+                'meta_description' => 'Free uptime monitoring vs paid plans: compare alerting limits, workflow depth, and reliability trade-offs before scaling.',
+                'body' => '<p><strong>Free uptime monitoring</strong> is useful for basic visibility, but paid plans usually unlock cleaner alerting, incident workflow, and reporting depth.</p><p>The right decision depends on risk: number of critical services, required response time, and customer communication expectations.</p><p>Use a simple rule: if outages require coordinated response and external updates, paid workflow features quickly pay for themselves.</p>',
+            ],
+        ],
+        'pl' => [
+            'uptimerobot-alternative-for-smb' => [
+                'title' => 'Alternatywa dla UptimeRobot dla zespołów SMB',
+                'meta_title' => 'Alternatywa dla UptimeRobot dla zespołów SMB | TruMonit',
+                'summary' => 'Alternatywa dla UptimeRobot dla małych zespołów, które potrzebują lepszych alertów, incydentów i komunikacji statusowej.',
+                'problem' => 'Prosty uptime przestaje wystarczać, gdy potrzebujesz odpowiedzialności, eskalacji i mniejszego szumu alertowego.',
+                'meta_description' => 'Alternatywa dla UptimeRobot dla SMB: porównaj jakość alertów, workflow incydentów i komunikację statusową przed migracją.',
+                'body' => '<p>Jeśli szukasz <strong>alternatywy dla UptimeRobot</strong>, kluczowa jest operacyjność: jak szybko wykrywasz problem, jak dobrze eskalujesz i jak komunikujesz awarię klientom.</p><p>Porównaj narzędzia na wspólnym zestawie URL-i: szybkość detekcji, fałszywe alarmy, routing alertów i jakość osi czasu incydentu.</p><p>W TruMonit łączysz checki, incydenty i status page w jednym procesie, bez ręcznego przepinania między narzędziami.</p>',
+            ],
+            'statuscake-alternative-with-status-pages' => [
+                'title' => 'Alternatywa dla StatusCake z lepszym status page',
+                'meta_title' => 'Alternatywa dla StatusCake z lepszym status page | TruMonit',
+                'summary' => 'Alternatywa dla StatusCake z mocniejszym procesem status page i lepszą komunikacją podczas incydentów.',
+                'problem' => 'Sama detekcja awarii nie wystarcza, gdy klienci oczekują regularnych i spójnych aktualizacji statusu.',
+                'meta_description' => 'Alternatywa dla StatusCake ze status page: porównaj detekcję awarii, aktualizacje dla klientów i jakość komunikacji incydentów.',
+                'body' => '<p>Dobra <strong>alternatywa dla StatusCake</strong> powinna poprawić nie tylko monitorowanie, ale też komunikację do klientów. W praktyce to status page buduje zaufanie w trakcie awarii.</p><p>Oceń trzy obszary: tempo wykrycia, rytm aktualizacji i transparentność po incydencie. Bez tego support rośnie, a klienci tracą pewność.</p><p>TruMonit łączy zdarzenia incydentowe z aktualizacjami statusu, dzięki czemu komunikacja idzie razem z realnym postępem naprawy.</p>',
+            ],
+            'website-monitoring-tool-for-agencies' => [
+                'title' => 'Website monitoring tool dla agencji',
+                'meta_title' => 'Website monitoring tool dla agencji | TruMonit',
+                'summary' => 'Website monitoring tool dla agencji, które obsługują wiele serwisów klientów i potrzebują szybkiego triage.',
+                'problem' => 'Agencje tracą czas i marżę, gdy operator ręcznie sprawdza wiele paneli i wysyła aktualizacje ręcznie.',
+                'meta_description' => 'Website monitoring tool dla agencji: monitoruj wiele serwisów klientów, routuj alerty i raportuj incydenty bez chaosu.',
+                'body' => '<p><strong>Website monitoring tool</strong> dla agencji musi skalować się na wiele domen i wielu interesariuszy. Klucz to tagowanie, priorytety i odpowiedzialność.</p><p>Zbuduj jeden workflow: grupy monitorów per klient, routing alertów per krytyczność i stały rytm raportów.</p><p>TruMonit pomaga przejść z ręcznych kontroli na powtarzalny proces incydentowy, który łatwo pokazać klientowi.</p>',
+            ],
+            'incident-management-software-for-smb-saas' => [
+                'title' => 'Incident management software dla SMB SaaS',
+                'meta_title' => 'Incident management software dla SMB SaaS | TruMonit',
+                'summary' => 'Incident management software dla zespołów SMB SaaS, które chcą szybszej eskalacji i krótszego czasu naprawy.',
+                'problem' => 'Bez procesu incydentowego nawet dobra detekcja nie daje szybkiej reakcji i powoduje chaos w zespole.',
+                'meta_description' => 'Incident management software dla SMB SaaS: uporządkuj eskalację, odpowiedzialność i czas naprawy po awariach.',
+                'body' => '<p>Dla SMB SaaS <strong>incident management software</strong> ma dawać przewidywalny proces: sygnał, owner, oś czasu i komunikację do klientów.</p><p>Ustal prosty model: poziomy severity, osoba on-call i rytm aktualizacji podczas incydentu. Potem poprawiaj proces po każdym zdarzeniu.</p><p>TruMonit spina monitory, incydenty i status page, żeby mały zespół działał szybciej bez zbędnej złożoności.</p>',
+            ],
+            'status-page-software-for-b2b-saas' => [
+                'title' => 'Status page software dla B2B SaaS',
+                'meta_title' => 'Status page software dla B2B SaaS | TruMonit',
+                'summary' => 'Status page software dla B2B SaaS, które chcą spójnej i wiarygodnej komunikacji awarii.',
+                'problem' => 'Klienci B2B oczekują czytelnych aktualizacji statusu; opóźnienia podnoszą koszt supportu i psują zaufanie.',
+                'meta_description' => 'Status page software dla B2B SaaS: publikuj spójne aktualizacje incydentów i zmniejsz presję na support.',
+                'body' => '<p><strong>Status page software</strong> w B2B to narzędzie zaufania, nie tylko widget na stronie. Liczy się tempo i spójność komunikacji podczas incydentu.</p><p>Przed kolejną awarią zdefiniuj schemat publikacji: co komunikujesz, jak często i kto zatwierdza wpis.</p><p>TruMonit pomaga utrzymać zgodność między realnym stanem incydentu a publicznymi aktualizacjami statusu.</p>',
+            ],
+            'website-downtime-alerts-setup' => [
+                'title' => 'Website downtime alerts - konfiguracja',
+                'meta_title' => 'Website downtime alerts - konfiguracja | TruMonit',
+                'summary' => 'Praktyczna konfiguracja website downtime alerts pod szybką reakcję i mniejszą liczbę fałszywych alarmów.',
+                'problem' => 'Źle ustawione alerty generują szum i opóźniają reakcję na realne awarie.',
+                'meta_description' => 'Website downtime alerts setup: ustaw progi, routing i cooldown, aby ograniczyć szum i szybciej reagować na awarie.',
+                'body' => '<p>Dobrze ustawione <strong>website downtime alerts</strong> to balans między szybkością a pewnością sygnału. Zbyt agresywne progi dają spam i męczą zespół.</p><p>Ustaw potwierdzenie błędu, cooldown i routing per severity, a potem przetestuj eskalację na kontrolowanym scenariuszu.</p><p>TruMonit daje solidny punkt startowy, który można stroić pod krytyczność usług.</p>',
+            ],
+            'uptime-checker-for-multi-site-teams' => [
+                'title' => 'Uptime checker dla zespołów multi-site',
+                'meta_title' => 'Uptime checker dla zespołów multi-site | TruMonit',
+                'summary' => 'Uptime checker dla zespołów obsługujących wiele domen, priorytetów i właścicieli reakcji.',
+                'problem' => 'Bez priorytetów monitoring wielu stron powoduje przeciążenie alertami i wolniejszy triage.',
+                'meta_description' => 'Uptime checker dla zespołów multi-site: monitoruj wiele domen z priorytetami i jasną odpowiedzialnością reakcji.',
+                'body' => '<p><strong>Uptime checker</strong> dla wielu serwisów musi wspierać priorytety biznesowe. Nie każda domena ma taki sam wpływ na przychód i reputację.</p><p>Podziel monitory na poziomy krytyczności, przypisz ownerów i rozdziel alerty według wpływu.</p><p>TruMonit pozwala zbudować taki model, żeby lista monitorów była kolejką działań, a nie chaosem.</p>',
+            ],
+            'api-uptime-monitoring-for-critical-endpoints' => [
+                'title' => 'API uptime monitoring dla krytycznych endpointów',
+                'meta_title' => 'API uptime monitoring dla krytycznych endpointów | TruMonit',
+                'summary' => 'API uptime monitoring dla endpointów krytycznych: status, opóźnienie i wzorce błędów pod realny triage.',
+                'problem' => 'Problemy API często zaczynają się od degradacji i opóźnień, zanim pojawi się pełna niedostępność.',
+                'meta_description' => 'API uptime monitoring dla krytycznych endpointów: kontroluj status, opóźnienie i błędy zanim ucierpią użytkownicy.',
+                'body' => '<p><strong>API uptime monitoring</strong> powinien obejmować status, latency i klasy błędów. Sam kod 200 nie mówi, czy użytkownik ma dobrą jakość działania.</p><p>Monitoruj p95, błędy autoryzacji i skoki retry dla endpointów wpływających na kluczowe akcje produktu.</p><p>TruMonit pomaga wykryć degradację API wcześniej i eskalować z lepszym kontekstem technicznym.</p>',
+            ],
+            'ping-monitoring-vs-http-monitoring' => [
+                'title' => 'Ping monitoring vs HTTP monitoring',
+                'meta_title' => 'Ping monitoring vs HTTP monitoring | TruMonit',
+                'summary' => 'Ping monitoring vs HTTP monitoring: jak dobrać typ checka do usługi i ograniczyć błędne wnioski.',
+                'problem' => 'Jeden typ checka dla wszystkich usług nie pokazuje pełnego obrazu incydentu.',
+                'meta_description' => 'Ping monitoring vs HTTP monitoring: dobierz typ checka do ryzyka usługi i oczekiwanej jakości sygnału incydentu.',
+                'body' => '<p><strong>Ping monitoring</strong> odpowiada na pytanie o dostępność sieci, a HTTP monitoring sprawdza warstwę aplikacji. Oba są potrzebne, ale do innych celów.</p><p>Ping traktuj jako heartbeat infrastruktury, HTTP jako walidację ścieżki użytkownika.</p><p>TruMonit wspiera ten podział, dzięki czemu alert trafia do właściwego zespołu i szybciej kończy się naprawą.</p>',
+            ],
+            'port-monitoring-for-infrastructure-services' => [
+                'title' => 'Port monitoring dla usług infrastrukturalnych',
+                'meta_title' => 'Port monitoring dla usług infrastrukturalnych | TruMonit',
+                'summary' => 'Port monitoring dla usług, gdzie dostępność TCP jest wczesnym sygnałem problemów operacyjnych.',
+                'problem' => 'Awaria usługi bywa widoczna na poziomie portu wcześniej niż w checkach HTTP.',
+                'meta_description' => 'Port monitoring dla usług infrastrukturalnych: wykrywaj problemy TCP wcześniej i eskaluj do właściwych ownerów.',
+                'body' => '<p><strong>Port monitoring</strong> sprawdza się przy usługach opartych o TCP: bazy danych, bramy, serwisy wewnętrzne, relaye.</p><p>Używaj go jako warstwy wczesnego ostrzegania, a potem koreluj z checkami wyższego poziomu.</p><p>W TruMonit ten sygnał wpada do tego samego procesu incydentowego, więc reakcja jest szybsza i czytelniejsza.</p>',
+            ],
+            'website-downtime-alerts-for-ecommerce' => [
+                'title' => 'Website downtime alerts dla e-commerce',
+                'meta_title' => 'Website downtime alerts dla e-commerce | TruMonit',
+                'summary' => 'Website downtime alerts dla e-commerce, gdzie checkout i płatności bezpośrednio wpływają na przychód.',
+                'problem' => 'Ogólne alerty uptime pomijają awarie na ścieżkach konwersji i powodują straty przychodowe.',
+                'meta_description' => 'Website downtime alerts dla e-commerce: chroń checkout, płatności i ścieżki konwersji alertami pod przychód.',
+                'body' => '<p>W e-commerce <strong>website downtime alerts</strong> powinny być zorientowane na przychód: karta produktu, koszyk, checkout i płatność.</p><p>Priorytetyzuj alerty według wpływu na konwersję, a nie tylko według samego błędu technicznego.</p><p>TruMonit pomaga powiązać krytyczność alertu z wartością biznesową ścieżki użytkownika.</p>',
+            ],
+            'free-uptime-monitoring-vs-paid-plans' => [
+                'title' => 'Free uptime monitoring vs plany płatne',
+                'meta_title' => 'Free uptime monitoring vs plany płatne | TruMonit',
+                'summary' => 'Free uptime monitoring vs paid: gdzie darmowy plan wystarcza, a gdzie płatne funkcje realnie obniżają ryzyko.',
+                'problem' => 'Zespoły często za późno przechodzą na plan płatny i odkrywają limity dopiero przy incydencie.',
+                'meta_description' => 'Free uptime monitoring vs paid plans: porównaj limity alertów, workflow incydentów i opłacalność skali.',
+                'body' => '<p><strong>Free uptime monitoring</strong> to dobry start, ale wraz z krytycznością usług rośnie potrzeba lepszych alertów, workflow i raportowania.</p><p>Decyzję podejmuj na podstawie ryzyka: liczby usług krytycznych, wymaganego czasu reakcji i oczekiwań klientów.</p><p>Jeśli awaria wymaga koordynacji i komunikacji z klientem, plan płatny zwykle szybko się zwraca.</p>',
+            ],
+        ],
+    ];
+
     public function normalizeLocale(string $locale): string
     {
         return $locale === 'pl' ? 'pl' : 'en';
@@ -40,6 +248,8 @@ class MarketingContentRepository
                 continue;
             }
 
+            $raw = $this->applyBofuSolutionOverrides($slug, $raw, $locale);
+
             $title = trim((string) ($raw['title'] ?? ''));
             $summary = trim((string) ($raw['summary'] ?? ''));
             if ($title === '' || $summary === '') {
@@ -50,7 +260,12 @@ class MarketingContentRepository
                 'slug' => $slug,
                 'title' => $title,
                 'meta_title' => trim((string) ($raw['meta_title'] ?? $title)),
-                'meta_description' => trim((string) ($raw['meta_description'] ?? $summary)),
+                'meta_description' => $this->normalizeSolutionMetaDescription(
+                    (string) ($raw['meta_description'] ?? ''),
+                    $title,
+                    $summary,
+                    $locale
+                ),
                 'summary' => $summary,
                 'body' => trim((string) ($raw['body'] ?? '')),
                 'problem' => trim((string) ($raw['problem'] ?? $summary)),
@@ -138,14 +353,24 @@ class MarketingContentRepository
                 continue;
             }
 
+            $related = $this->normalizeStringList($raw['related'] ?? []);
+            $relatedSolutions = $this->normalizeStringList($raw['related_solutions'] ?? []);
+            $answer = $this->expandFaqAnswerIfThin($slug, $locale, $question, $answer, $relatedSolutions);
+            $metaDescription = $this->normalizeFaqMetaDescription(
+                (string) ($raw['meta_description'] ?? ''),
+                $question,
+                strip_tags($answer),
+                $locale
+            );
+
             $articles[] = [
                 'slug' => $slug,
                 'question' => $question,
                 'answer' => $answer,
                 'meta_title' => trim((string) ($raw['meta_title'] ?? $question)),
-                'meta_description' => trim((string) ($raw['meta_description'] ?? strip_tags($answer))),
-                'related' => $this->normalizeStringList($raw['related'] ?? []),
-                'related_solutions' => $this->normalizeStringList($raw['related_solutions'] ?? []),
+                'meta_description' => $metaDescription,
+                'related' => $related,
+                'related_solutions' => $relatedSolutions,
                 'order' => (int) ($raw['order'] ?? 9999),
             ];
         }
@@ -426,6 +651,240 @@ class MarketingContentRepository
         }, $items), static function (string $value): bool {
             return $value !== '';
         }));
+    }
+
+    /**
+     * @param array<string, mixed> $raw
+     * @return array<string, mixed>
+     */
+    private function applyBofuSolutionOverrides(string $slug, array $raw, string $locale): array
+    {
+        $overrides = self::BOFU_SOLUTION_OVERRIDES[$locale][$slug] ?? null;
+        if (! is_array($overrides)) {
+            return $raw;
+        }
+
+        foreach ($overrides as $key => $value) {
+            if (! array_key_exists($key, $raw)) {
+                $raw[$key] = $value;
+                continue;
+            }
+
+            $current = $raw[$key];
+
+            if (is_string($current)) {
+                if (trim($current) === '') {
+                    $raw[$key] = $value;
+                }
+                continue;
+            }
+
+            if (is_array($current)) {
+                if ($current === []) {
+                    $raw[$key] = $value;
+                }
+                continue;
+            }
+
+            if ($current === null) {
+                $raw[$key] = $value;
+            }
+        }
+
+        return $raw;
+    }
+
+    private function normalizeSolutionMetaDescription(string $rawMeta, string $title, string $summary, string $locale): string
+    {
+        $meta = trim($rawMeta);
+        if ($meta === '') {
+            $meta = $summary !== '' ? $summary : $title;
+        }
+
+        $meta = str_replace(['...', '…'], '', $meta);
+        $meta = preg_replace('/\s+/u', ' ', $meta) ?? $meta;
+        $meta = trim($meta);
+
+        if ($meta === '') {
+            $meta = $locale === 'pl'
+                ? 'Praktyczny scenariusz wdrożenia monitoringu pod intencję zakupową i działanie zespołu.'
+                : 'Practical implementation scenario focused on buying intent and operational team outcomes.';
+        }
+
+        if (mb_strlen($meta) < 140) {
+            $suffix = $locale === 'pl'
+                ? ' Zawiera konkretne kroki wdrożenia, checklistę i częste błędy.'
+                : ' Includes concrete implementation steps, checklist, and common pitfalls.';
+            $meta = trim($meta . $suffix);
+        }
+
+        if (mb_strlen($meta) > 160) {
+            $meta = $this->truncateAtWordBoundary($meta, 160);
+        }
+
+        if (mb_strlen($meta) < 140) {
+            $fallback = $locale === 'pl'
+                ? $title . ' - praktyczne wdrożenie monitoringu, alertów i procesu incydentowego.'
+                : $title . ' - practical rollout for monitoring, alerting, and incident workflow.';
+            $meta = $this->truncateAtWordBoundary($fallback, 160);
+        }
+
+        return trim($meta);
+    }
+
+    private function normalizeFaqMetaDescription(string $rawMeta, string $question, string $answerText, string $locale): string
+    {
+        $meta = trim($rawMeta);
+        if ($meta === '') {
+            $meta = $locale === 'pl'
+                ? $question . ' - praktyczny poradnik wdrożenia, diagnostyki i checklisty monitoringu w TruMonit.'
+                : $question . ' - practical implementation guide with diagnosis and checklist for monitoring in TruMonit.';
+        }
+
+        $meta = str_replace(['...', '…'], '', $meta);
+        $meta = preg_replace('/\s+/u', ' ', $meta) ?? $meta;
+        $meta = trim($meta);
+
+        if ($meta === '') {
+            $meta = $locale === 'pl'
+                ? 'Praktyczny przewodnik monitoringu: kroki wdrożenia, checklista i najczęstsze błędy.'
+                : 'Practical monitoring guide with implementation steps, checklist, and common pitfalls.';
+        }
+
+        if (mb_strlen($meta) < 140) {
+            $suffix = $locale === 'pl'
+                ? ' Zawiera konkretne kroki, diagnostykę i działania pod produkcję.'
+                : ' Includes concrete steps, diagnostics, and production-ready actions.';
+            $meta = trim($meta . $suffix);
+        }
+
+        if (mb_strlen($meta) > 160) {
+            $meta = $this->truncateAtWordBoundary($meta, 160);
+        }
+
+        if (mb_strlen($meta) < 140) {
+            $fallback = $locale === 'pl'
+                ? $question . ' - praktyczna checklista wdrożenia i kontroli jakości monitoringu.'
+                : $question . ' - practical checklist for implementation and monitoring quality control.';
+            $meta = $this->truncateAtWordBoundary($fallback, 160);
+        }
+
+        return trim($meta);
+    }
+
+    /**
+     * @param array<int, string> $relatedSolutions
+     */
+    private function expandFaqAnswerIfThin(string $slug, string $locale, string $question, string $answer, array $relatedSolutions): string
+    {
+        $hints = self::FAQ_EXPANSION_HINTS[$locale] ?? [];
+        $hint = $hints[$slug] ?? null;
+        if ($hint === null || $this->wordCount($answer) >= 220) {
+            return $answer;
+        }
+
+        $primarySolution = $relatedSolutions[0] ?? null;
+        $secondarySolution = $relatedSolutions[1] ?? null;
+        $primaryLabel = $primarySolution ? $this->humanizeSlug($primarySolution) : null;
+        $secondaryLabel = $secondarySolution ? $this->humanizeSlug($secondarySolution) : null;
+
+        if ($locale === 'pl') {
+            $safeQuestion = htmlspecialchars($question, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $safeHint = htmlspecialchars($hint, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $appendix = '<h3>Szybka diagnoza i decyzja wdrożeniowa</h3>'
+                . '<p>W praktyce temat <strong>' . $safeQuestion . '</strong> rzadko kończy się na jednej metryce. Połącz sygnał techniczny z wpływem biznesowym i ustal, kiedy alert wymaga realnej akcji zespołu.</p>'
+                . '<p>Najlepszy efekt daje podejście krokowe: najpierw krytyczne ścieżki, potem progi per poziom ważności, a na końcu test eskalacji na żywym scenariuszu. To kluczowe zwłaszcza dla obszaru: <strong>' . $safeHint . '</strong>.</p>'
+                . '<h3>Checklist operacyjny</h3>'
+                . '<ul>'
+                . '<li>Zdefiniuj ownera i maksymalny czas reakcji na incydent.</li>'
+                . '<li>Rozdziel alerty krytyczne od informacyjnych, aby zmniejszyć szum.</li>'
+                . '<li>Po wdrożeniu zmian (deploy, motyw, integracja API) zrób re-test.</li>'
+                . '</ul>';
+            if ($primarySolution !== null) {
+                $safePrimary = htmlspecialchars((string) ($primaryLabel ?? $primarySolution), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+                $appendix .= '<p>Wdrożenie przyspieszysz w scenariuszu <a href="/' . $locale . '/solutions/' . $primarySolution . '"><strong>' . $safePrimary . '</strong></a>';
+                if ($secondarySolution !== null) {
+                    $safeSecondary = htmlspecialchars((string) ($secondaryLabel ?? $secondarySolution), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+                    $appendix .= ' oraz uzupełniająco w <a href="/' . $locale . '/solutions/' . $secondarySolution . '"><strong>' . $safeSecondary . '</strong></a>';
+                }
+                $appendix .= '.</p>';
+            }
+
+            $result = $answer . "\n\n" . $appendix;
+            if ($this->wordCount($result) < 220) {
+                $result .= '<p>Dla stabilnego efektu ustaw stały rytm przeglądu: raz w tygodniu kontrola alertów i jakości danych, raz w miesiącu test eskalacji oraz po każdym większym wdrożeniu szybki audyt monitorów krytycznych. Dobrą praktyką jest też krótki raport po incydencie: co zadziałało, co było opóźnione i które progi wymagają korekty. Taki cykl daje realną poprawę, bo ogranicza szum i skraca czas decyzji przy następnym problemie.</p>';
+            }
+            while ($this->wordCount($result) < 220) {
+                $result .= '<p>Warto też monitorować trend tygodniowy: liczba alertów, czas eskalacji i odsetek fałszywych alarmów. To ułatwia decyzje produktowe.</p>';
+            }
+
+            return $result;
+        }
+
+        $safeQuestion = htmlspecialchars($question, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $safeHint = htmlspecialchars($hint, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $appendix = '<h3>Practical diagnosis and rollout plan</h3>'
+            . '<p>For <strong>' . $safeQuestion . '</strong>, teams lose time when they track raw signals but do not map them to incident impact. The goal is not more alerts; the goal is faster and cleaner decisions.</p>'
+            . '<p>Use this sequence: define business-critical paths, map thresholds to severity, then validate escalation with a realistic drill. This is especially relevant for <strong>' . $safeHint . '</strong>.</p>'
+            . '<h3>Operational checklist</h3>'
+            . '<ul>'
+            . '<li>Assign ownership and response targets per incident level.</li>'
+            . '<li>Separate critical alerts from informational signals to reduce noise.</li>'
+            . '<li>Re-run validation after deploys, theme changes, or API updates.</li>'
+            . '</ul>';
+        if ($primarySolution !== null) {
+            $safePrimary = htmlspecialchars((string) ($primaryLabel ?? $primarySolution), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $appendix .= '<p>To implement faster, continue with <a href="/' . $locale . '/solutions/' . $primarySolution . '"><strong>' . $safePrimary . '</strong></a>';
+            if ($secondarySolution !== null) {
+                $safeSecondary = htmlspecialchars((string) ($secondaryLabel ?? $secondarySolution), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+                $appendix .= ' and pair it with <a href="/' . $locale . '/solutions/' . $secondarySolution . '"><strong>' . $safeSecondary . '</strong></a>';
+            }
+            $appendix .= '.</p>';
+        }
+
+        $result = $answer . "\n\n" . $appendix;
+        if ($this->wordCount($result) < 220) {
+            $result .= '<p>For stable results, run a fixed review cycle: weekly alert hygiene and data-quality checks, monthly escalation drills, and a quick validation after each major release. Add a short post-incident review that captures what worked, where response slowed down, and which thresholds should be adjusted. This operating rhythm consistently improves monitoring outcomes because it reduces noise and speeds up decision-making in the next incident window.</p>';
+        }
+        while ($this->wordCount($result) < 220) {
+            $result .= '<p>Track weekly trend metrics as well: alert volume, escalation lag, and false-positive ratio. This makes operational prioritization much clearer.</p>';
+        }
+
+        return $result;
+    }
+
+    private function truncateAtWordBoundary(string $text, int $maxLen): string
+    {
+        if (mb_strlen($text) <= $maxLen) {
+            return trim($text);
+        }
+
+        $cut = mb_substr($text, 0, $maxLen);
+        $cut = preg_replace('/\s+\S*$/u', '', $cut) ?? $cut;
+        $cut = rtrim($cut, " ,;:-");
+
+        if ($cut === '') {
+            return trim(mb_substr($text, 0, $maxLen));
+        }
+
+        return $cut . '.';
+    }
+
+    private function wordCount(string $html): int
+    {
+        $plain = trim(strip_tags($html));
+        if ($plain === '') {
+            return 0;
+        }
+
+        $parts = preg_split('/[^\p{L}\p{N}\-]+/u', $plain, -1, PREG_SPLIT_NO_EMPTY);
+
+        return is_array($parts) ? count($parts) : 0;
+    }
+
+    private function humanizeSlug(string $slug): string
+    {
+        return mb_convert_case(str_replace('-', ' ', trim($slug)), MB_CASE_TITLE, 'UTF-8');
     }
 
     /**
