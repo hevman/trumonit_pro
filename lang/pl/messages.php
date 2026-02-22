@@ -120,7 +120,7 @@ return [
         'step_3' => 'Zapisz, poczekaj na pierwszy skan, a potem ustaw wzorzec porównania.',
         'template_label' => 'Szablon',
         'template_placeholder' => 'Wybierz szablon',
-        'template_pick_help' => 'Nie wiesz co wybrać? Strona główna = Strona marketingowa, /login = Scenariusz logowania, /health = Health-check API.',
+        'template_pick_help' => 'Nie wiesz co wybrać? Strona główna = Strona marketingowa, /login = Scenariusz logowania, /health = Health-check API, /checkout = Checkout, /tracking = Śledzenie.',
         'template_help_title' => 'Szczegóły szablonów',
         'url_placeholder' => 'https://example.com',
         'display_name_placeholder' => 'np. Strona główna',
@@ -131,6 +131,22 @@ return [
             'status_page' => [
                 'name' => 'Strona marketingowa (screenshot + status)',
                 'description' => 'Sprawdzenie strony głównej ze screenshotem i regułami status/outage.',
+            ],
+            'ecommerce_checkout' => [
+                'name' => 'E-commerce: koszyk / checkout',
+                'description' => 'Sprawdzenie koszyka/checkoutu (HTTP + screenshot). Dobre dla sklepów i lejków płatności.',
+            ],
+            'logistics_tracking' => [
+                'name' => 'Logistyka: śledzenie przesyłki',
+                'description' => 'Sprawdzenie strony śledzenia (HTTP + screenshot). Dobre dla portali klienta i logistyki.',
+            ],
+            'media_article' => [
+                'name' => 'Media: strona artykułu',
+                'description' => 'Sprawdzenie strony artykułu/treści (HTTP + screenshot). Dobre dla serwisów contentowych.',
+            ],
+            'tls_certificate' => [
+                'name' => 'SSL/TLS: certyfikat',
+                'description' => 'Wykrywa zmianę certyfikatu i zbliżające się wygaśnięcie (raz dziennie).',
             ],
             'login_journey' => [
                 'name' => 'Scenariusz logowania (przeglądarka)',

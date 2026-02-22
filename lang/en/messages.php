@@ -124,13 +124,29 @@ return [
         'url_placeholder' => 'https://example.com',
         'tags_placeholder' => 'prod, team:ops',
         'display_name_placeholder' => 'e.g. Homepage',
-        'template_pick_help' => 'Not sure? Homepage = Status page, /login = Login journey, /health = API health.',
+        'template_pick_help' => 'Not sure? Homepage = Status page, /login = Login journey, /health = API health, /checkout = Checkout, /tracking = Tracking.',
         'baseline_guidance' => 'Baseline (reference state): after the first snapshot appears, open monitor details and click "Set baseline to latest". This marks the current state as OK for future comparisons.',
         'create_monitor' => 'Create monitor',
         'templates' => [
             'status_page' => [
                 'name' => 'Status page / marketing site',
                 'description' => 'Homepage check with screenshot and status/outage keyword rules.',
+            ],
+            'ecommerce_checkout' => [
+                'name' => 'E-commerce checkout page',
+                'description' => 'Checkout/Cart page check (HTTP + screenshot). Good for stores and paid funnels.',
+            ],
+            'logistics_tracking' => [
+                'name' => 'Tracking page',
+                'description' => 'Shipment/tracking page check (HTTP + screenshot). Great for logistics and customer portals.',
+            ],
+            'media_article' => [
+                'name' => 'Article/content page',
+                'description' => 'Article/content page check (HTTP + screenshot). Useful for media/blog publishers.',
+            ],
+            'tls_certificate' => [
+                'name' => 'SSL/TLS certificate watch',
+                'description' => 'Detect TLS certificate changes and upcoming expiration (daily).',
             ],
             'login_journey' => [
                 'name' => 'Login page journey',

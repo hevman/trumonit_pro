@@ -87,4 +87,66 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var url = document.getElementById('url');
+            var template = document.getElementById('template');
+
+            if (!url || !template) {
+                return;
+            }
+
+            function guessTemplateKey(raw) {
+                if (typeof raw !== 'string') {
+                    return null;
+                }
+
+                var value = raw.trim().toLowerCase();
+                if (!value) {
+                    return null;
+                }
+
+                if (value.indexOf('/checkout') !== -1 || value.indexOf('/cart') !== -1) {
+                    return 'ecommerce_checkout';
+                }
+
+                if (value.indexOf('/tracking') !== -1 || value.indexOf('/track') !== -1) {
+                    return 'logistics_tracking';
+                }
+
+                if (value.indexOf('/login') !== -1 || value.indexOf('/signin') !== -1) {
+                    return 'login_journey';
+                }
+
+                if (value.indexOf('/health') !== -1 || value.indexOf('/api/') !== -1) {
+                    return 'api_health';
+                }
+
+                return 'status_page';
+            }
+
+            function maybeApplySuggestion() {
+                // Only auto-suggest if user hasn't picked a template yet.
+                if (template.value) {
+                    return;
+                }
+
+                var key = guessTemplateKey(url.value);
+                if (!key) {
+                    return;
+                }
+
+                for (var i = 0; i < template.options.length; i++) {
+                    if (template.options[i].value === key) {
+                        template.value = key;
+                        break;
+                    }
+                }
+            }
+
+            url.addEventListener('change', maybeApplySuggestion);
+            url.addEventListener('blur', maybeApplySuggestion);
+        });
+    </script>
 </x-app-layout>
