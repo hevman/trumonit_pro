@@ -1,6 +1,6 @@
 @php
     $isPl = app()->getLocale() === 'pl';
-    $seoTitle = $isPl ? 'Scenariusze wdrożenia monitoringu | TruMonit' : 'Monitoring use cases and implementation paths | TruMonit';
+    $seoTitle = $isPl ? 'Przykłady wdrożeń monitoringu | TruMonit' : 'Monitoring implementation examples | TruMonit';
     $seoDescription = $isPl
         ? 'Gotowe scenariusze: monitoring uptime, API, SSL, status page i procesy incydentowe. Strony pod decyzje zakupowe.'
         : 'Buying-intent pages for uptime, API, SSL monitoring, status pages, and incident workflows.';
@@ -76,7 +76,7 @@
 
                 <nav class="hidden lg:flex items-center gap-1 text-sm">
                     <a href="{{ $homeUrl }}#features" class="rounded-md px-3 py-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100">{{ __('messages.welcome.nav_features') }}</a>
-                    <a href="{{ $solutionsIndexUrl }}" class="rounded-md px-3 py-2 text-slate-900 bg-slate-100 dark:text-slate-100 dark:bg-slate-800">{{ $isPl ? 'Scenariusze' : 'Use cases' }}</a>
+                    <a href="{{ $solutionsIndexUrl }}" class="rounded-md px-3 py-2 text-slate-900 bg-slate-100 dark:text-slate-100 dark:bg-slate-800">{{ $isPl ? 'Przykłady wdrożeń' : 'Implementation examples' }}</a>
                     <a href="{{ $faqIndexUrl }}" class="rounded-md px-3 py-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100">{{ __('faq.nav_faq') }}</a>
                     <a href="{{ $pricingUrl }}" class="rounded-md px-3 py-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100">{{ __('messages.welcome.nav_pricing') }}</a>
                     <a href="{{ $homeUrl }}#security" class="rounded-md px-3 py-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100">{{ __('messages.welcome.nav_security') }}</a>
@@ -94,7 +94,7 @@
 
         <main class="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
             <section class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 dark:border-slate-800 dark:bg-slate-900">
-                <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ $isPl ? 'Scenariusze wdrożenia' : 'Implementation paths' }}</h1>
+                <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ $isPl ? 'Przykłady wdrożeń' : 'Implementation examples' }}</h1>
                 <p class="mt-3 text-slate-600 dark:text-slate-300">{{ $seoDescription }}</p>
                 <div class="mt-6 flex flex-wrap gap-3">
                     <a href="{{ $pricingUrl }}" class="inline-flex items-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-black dark:bg-indigo-500 dark:hover:bg-indigo-400">{{ __('messages.welcome.nav_pricing') }}</a>
@@ -128,7 +128,7 @@
                     <div class="flex items-center gap-3">
                         <a class="hover:underline" href="{{ $pricingUrl }}">{{ __('messages.welcome.nav_pricing') }}</a>
                         <span class="opacity-40">&middot;</span>
-                        <a class="hover:underline" href="{{ $solutionsIndexUrl }}">{{ $isPl ? 'Scenariusze' : 'Use cases' }}</a>
+                        <a class="hover:underline" href="{{ $solutionsIndexUrl }}">{{ $isPl ? 'Przykłady wdrożeń' : 'Implementation examples' }}</a>
                         <span class="opacity-40">&middot;</span>
                         <a class="hover:underline" href="{{ $faqIndexUrl }}">{{ __('faq.nav_faq') }}</a>
                         <span class="opacity-40">&middot;</span>
