@@ -92,7 +92,7 @@
             </div>
         </header>
 
-        <main class="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+        <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
             <section class="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 dark:border-slate-800 dark:bg-slate-900">
                 <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ __('faq.page_title') }}</h1>
                 <p class="mt-3 text-slate-600 dark:text-slate-300">{{ __('faq.page_description') }}</p>

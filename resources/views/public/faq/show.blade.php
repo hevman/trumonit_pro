@@ -103,7 +103,7 @@
             </div>
         </header>
 
-        <main class="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+        <main class="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
             <a href="{{ $faqIndexUrl }}" class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
                 <span aria-hidden="true">&larr;</span>
                 <span>{{ __('faq.back_to_index') }}</span>
