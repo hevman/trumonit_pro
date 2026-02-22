@@ -13,8 +13,32 @@ return array (
     0 => 'choose-monitoring-plan',
     1 => 'uptime-monitoring-for-saas',
   ),
-  'question' => 'Ile monitorow potrzebuje na start?',
-  'answer' => '<p>Zacznij od krytycznych user journey i kluczowych API, a potem rozszerz o zależności i przypadki brzegowe.</p><p>Lepsza zasada to jeden monitor na krytyczny flow, a nie jeden monitor na każda podstrone.</p>',
+  'question' => 'Ile monitorów potrzebuję na start?',
+  'answer' => '<p>Na start nie potrzebujesz “setek monitorów”. Potrzebujesz <strong>kilku dobrych</strong>, które pokrywają krytyczne ścieżki i dają szybki sygnał, że biznes przestaje działać.</p>
+
+<h3>Minimum (dla małego SaaS / strony + API)</h3>
+<ul>
+  <li><strong>1 monitor uptime</strong> na stronę główną (czy serwis wstaje).</li>
+  <li><strong>1 monitor na API</strong> (health lub kluczowy endpoint).</li>
+  <li><strong>1 synthetic</strong> na krytyczny flow (np. logowanie, rejestracja, checkout).</li>
+  <li><strong>1 monitor SSL</strong> (żeby nie wpaść w “certyfikat wygasł”).</li>
+</ul>
+
+<h3>Jak myśleć o skali</h3>
+<ul>
+  <li>Nie “monitor per podstrona”, tylko <strong>monitor per krytyczny proces</strong>.</li>
+  <li>Dodawaj monitory tam, gdzie awarie są drogie: płatności, logowanie, webhooki.</li>
+  <li>Osobne monitory dla integracji zewnętrznych (dostawcy, API) zwykle szybko się zwracają.</li>
+</ul>
+
+<h3>Praktyczna checklista wyboru</h3>
+<ul>
+  <li>Co musi działać, żeby klient mógł zrobić “najważniejszą rzecz”?</li>
+  <li>Co psuje się najczęściej (wdrożenia, zależności, limity)?</li>
+  <li>Gdzie potrzebujesz “dowodu” w rozmowie z klientem (SLA/SLO)?</li>
+</ul>
+
+<p>Jeśli chcesz dobrać zestaw pod plan i budżet, zobacz <a href=\"/pl/solutions/choose-monitoring-plan\">jak dobrać plan monitoringu</a> oraz scenariusz <a href=\"/pl/solutions/uptime-monitoring-for-saas\">uptime monitoring dla SaaS</a>.</p>',
   'meta_title' => 'Ile monitorow potrzebuje na start? | TruMonit',
-  'meta_description' => 'Zacznij od krytycznych user journey i kluczowych API, a potem rozszerz o zależności i przypadki brzegowe.Lepsza zasada to jeden monitor na krytyczny flow, a nie...',
+  'meta_description' => 'Ile monitorów na start: minimum dla strony+API, jak skalować (monitor per proces), co dodać jako następne i jak wybierać monitory pod realne ryzyka oraz koszty awarii.',
 );
