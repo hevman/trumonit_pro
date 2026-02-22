@@ -15,8 +15,11 @@
                     <a href="{{ route('monitored-urls.bulk') }}" class="app-button-secondary">
                         {{ __('messages.actions.import_export') }}
                     </a>
-                    <a href="{{ route('monitored-urls.create') }}" class="app-button-primary">
-                        {{ __('messages.actions.create') }}
+                    <a href="{{ route('onboarding.show') }}" class="app-button-primary">
+                        {{ __('messages.dashboard.action_create_monitor') }}
+                    </a>
+                    <a href="{{ route('monitored-urls.create') }}" class="app-button-secondary">
+                        {{ __('messages.dashboard.onboarding_advanced') }}
                     </a>
                 </div>
             @endif

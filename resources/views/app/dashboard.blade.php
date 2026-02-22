@@ -148,7 +148,8 @@
                         </div>
                         <div class="grid grid-cols-1 gap-2">
                             @if ($isOwner)
-                                <a href="{{ route('monitored-urls.create') }}" class="app-button-primary">{{ __('messages.dashboard.action_create_monitor') }}</a>
+                                <a href="{{ route('onboarding.show') }}" class="app-button-primary">{{ __('messages.dashboard.action_create_monitor') }}</a>
+                                <a href="{{ route('monitored-urls.create') }}" class="app-button-secondary">{{ __('messages.dashboard.onboarding_advanced') }}</a>
                             @endif
                             <a href="{{ route('incidents.index') }}" class="app-button-secondary">{{ __('messages.dashboard.action_view_incidents') }}</a>
                             @if ($isOwner)

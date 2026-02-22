@@ -25,6 +25,17 @@
     </div>
 
     <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4 text-sm" @click="if ($event.target.closest('a')) sidebarOpen = false">
+        @if ($isOwner)
+            <div class="mb-3 space-y-2">
+                <a href="{{ route('onboarding.show') }}" class="app-button-primary w-full justify-center">
+                    {{ __('messages.dashboard.action_create_monitor') }}
+                </a>
+                <a href="{{ route('monitored-urls.create') }}" class="app-link block text-center text-xs">
+                    {{ __('messages.dashboard.onboarding_advanced') }}
+                </a>
+            </div>
+        @endif
+
         <a href="{{ route('dashboard') }}"
            class="flex items-center gap-2 rounded-lg px-3 py-2 transition-colors {{ request()->routeIs('dashboard') ? 'bg-gray-900 font-medium text-white dark:bg-indigo-500 dark:text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
             <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 14h6v6h-6z" /></svg>
