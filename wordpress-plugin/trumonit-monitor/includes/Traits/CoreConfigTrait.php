@@ -321,12 +321,11 @@ trait TM_CoreConfigTrait
         $summary = $this->get_last_summary();
         $authOk = $summary['auth_ok'] ?? null;
         $authStatus = isset($summary['auth_status']) ? (int) $summary['auth_status'] : 0;
-        $checkedAt = isset($summary['fetched_at']) ? (int) $summary['fetched_at'] : 0;
 
+        // If API reported unauthorized, do not treat token presence as "connected".
+        // Summary refresh will re-check and flip state after reconnect.
         if ($authOk === false && in_array($authStatus, [401, 403], true)) {
-            if ($checkedAt <= 0 || (time() - $checkedAt) <= 86400) {
-                return false;
-            }
+            return false;
         }
 
         return true;

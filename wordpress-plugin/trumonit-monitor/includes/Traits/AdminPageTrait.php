@@ -50,18 +50,20 @@ trait TM_AdminPageTrait
         }
 
         $initialFetchedAt = isset($summary['fetched_at']) ? (int) $summary['fetched_at'] : 0;
+        // Refresh summary not only on Overview: we want connection health to be accurate on every tab
+        // (avoid "false green" connected state when token expired or was revoked).
         $shouldAutoRefresh = $hasToken
-            && $tab === 'overview'
             && ($initialFetchedAt <= 0 || (time() - $initialFetchedAt) > $refreshWindowSeconds);
         if ($shouldAutoRefresh) {
             $this->refresh_dashboard_summary();
             $summary = $this->get_last_summary();
         }
 
-        $connected = $this->is_connected();
         $authOk = ($summary['auth_ok'] ?? null) === true;
         $authStatus = isset($summary['auth_status']) ? (int) $summary['auth_status'] : 0;
         $authError = (string) ($summary['auth_error'] ?? '');
+        // Connected = verified auth OK. Token presence alone is not enough (prevents "false green").
+        $connected = $hasToken && $authOk;
 
         $msg = isset($_GET['tm_msg']) ? sanitize_text_field((string) wp_unslash($_GET['tm_msg'])) : '';
         $isError = isset($_GET['tm_err']) && (string) wp_unslash($_GET['tm_err']) === '1';
@@ -174,8 +176,14 @@ trait TM_AdminPageTrait
                             (<?php echo esc_html__('Connected', 'trumonit-monitor'); ?>)
                         </span>
                     <?php elseif ($hasToken): ?>
-                        <span style="font-size:12px;vertical-align:middle;color:#d63638;">
-                            (<?php echo esc_html__('Token requires reconnect', 'trumonit-monitor'); ?>)
+                        <?php
+                        $isUnauthorized = in_array($authStatus, [401, 403], true);
+                        $badgeText = $isUnauthorized
+                            ? __('Token invalid - reconnect', 'trumonit-monitor')
+                            : __('Connection error', 'trumonit-monitor');
+                        ?>
+                        <span style="font-size:12px;vertical-align:middle;color:<?php echo esc_attr($isUnauthorized ? '#d63638' : '#b45309'); ?>;">
+                            (<?php echo esc_html($badgeText); ?>)
                         </span>
                     <?php endif; ?>
                 </h1>
@@ -257,7 +265,7 @@ trait TM_AdminPageTrait
                             <?php submit_button(__('Login via API', 'trumonit-monitor'), 'secondary', 'submit', false); ?>
                         </form>
 
-                        <?php if ($connected): ?>
+                        <?php if ($hasToken): ?>
                             <hr />
                             <div class="tm-actions">
                                 <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
