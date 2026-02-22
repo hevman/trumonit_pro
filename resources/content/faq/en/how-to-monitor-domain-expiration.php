@@ -13,6 +13,7 @@ return array (
     0 => 'ssl-certificate-expiry-monitoring',
     1 => 'status-page-for-saas',
     2 => 'incident-response-playbook',
+    3 => 'domain-expiration-and-dns-monitoring',
   ),
   'question' => 'How do I monitor domain expiration?',
   'answer' => '<p>Domain expiration is one of the most expensive yet easiest-to-prevent outages. Treat it like a critical payment and add multiple layers of safeguards.</p>

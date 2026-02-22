@@ -13,6 +13,7 @@ return array (
     0 => 'incident-response-playbook',
     1 => 'status-page-for-saas',
     2 => 'alert-routing-slack-teams-webhooks',
+    3 => 'incident-postmortem-template',
   ),
   'question' => 'Co powinno być w postmortem incydentu?',
   'answer' => '<p><strong>Postmortem</strong> (retrospektywa incydentu) ma jeden cel: wyciągnąć wnioski, które realnie zmniejszą ryzyko powtórki. To nie jest dokument “kto zawinił”, tylko “co w systemie i procesie zadziałało źle”.</p>

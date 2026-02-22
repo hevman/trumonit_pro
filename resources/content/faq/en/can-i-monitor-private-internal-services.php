@@ -13,6 +13,7 @@ return array (
     0 => 'synthetic-monitoring-login-flow',
     1 => 'api-endpoint-monitoring',
     2 => 'monitoring-third-party-dependencies',
+    3 => 'private-services-monitoring',
   ),
   'question' => 'Can I monitor private or internal services?',
   'answer' => '<p>Yes, but not directly from the public Internet. If your service lives behind a VPN, in a VPC, or inside a private network, you need to <strong>run checks from inside that network</strong> (a private probe/agent) or expose a safe health endpoint.</p>

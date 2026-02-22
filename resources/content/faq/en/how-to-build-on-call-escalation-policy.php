@@ -13,6 +13,7 @@ return array (
     0 => 'alert-routing-slack-teams-webhooks',
     1 => 'incident-response-playbook',
     2 => 'reduce-false-alerts',
+    3 => 'on-call-escalation-policy',
   ),
   'question' => 'How do I build an on-call escalation policy?',
   'answer' => '<p>A good on-call escalation policy reduces chaos: every alert reaches the right person fast, with clear next steps. Most teams do not need more alerts, they need better <strong>rules</strong>.</p>

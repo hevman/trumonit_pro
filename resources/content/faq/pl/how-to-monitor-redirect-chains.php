@@ -13,6 +13,7 @@ return array (
     0 => 'api-endpoint-monitoring',
     1 => 'content-integrity-monitoring-keywords',
     2 => 'synthetic-monitoring-login-flow',
+    3 => 'redirect-chain-monitoring',
   ),
   'question' => 'Jak monitorować łańcuchy przekierowan?',
   'answer' => '<p>Łańcuch przekierowań (np. 301 → 302 → 301 → 200) zwiększa latency, potrafi psuć cache i utrudnia crawl (SEO). W praktyce chcesz pilnować dwóch rzeczy: <strong>dokąd finalnie trafia użytkownik</strong> oraz <strong>czy łańcuch nie rośnie</strong>.</p>

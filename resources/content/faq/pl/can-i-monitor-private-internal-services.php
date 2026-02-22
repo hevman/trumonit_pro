@@ -13,6 +13,7 @@ return array (
     0 => 'synthetic-monitoring-login-flow',
     1 => 'api-endpoint-monitoring',
     2 => 'monitoring-third-party-dependencies',
+    3 => 'private-services-monitoring',
   ),
   'question' => 'Czy mogę monitorować usługi prywatne lub wewnętrzne?',
   'answer' => '<p>Tak, ale nie da się “magicznie” monitorować prywatnych adresów z Internetu. Dla usług za VPN, w VPC albo w sieci firmowej potrzebujesz <strong>wykonania checków wewnątrz Twojej sieci</strong> (tzw. private probe / agent) albo bezpiecznego sposobu wystawienia health checka.</p>

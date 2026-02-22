@@ -13,6 +13,7 @@ return array (
     0 => 'alert-routing-slack-teams-webhooks',
     1 => 'incident-response-playbook',
     2 => 'reduce-false-alerts',
+    3 => 'on-call-escalation-policy',
   ),
   'question' => 'Jak zbudować politykę eskalacji on-call?',
   'answer' => '<p>Dobra polityka eskalacji on-call ma ograniczyć chaos: każdy alert ma trafić do właściwej osoby, w rozsądnym czasie, z jasnym “co dalej”. Najczęściej problemem nie jest brak alertów, tylko brak <strong>reguł</strong>.</p>

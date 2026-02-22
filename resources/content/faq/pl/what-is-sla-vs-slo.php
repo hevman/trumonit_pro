@@ -13,6 +13,7 @@ return array (
     0 => 'choose-monitoring-plan',
     1 => 'uptime-monitoring-for-saas',
     2 => 'incident-response-playbook',
+    3 => 'slo-sla-error-budgets',
   ),
   'question' => 'SLA vs SLO: jaka jest różnica w monitoringu?',
   'answer' => '<p><strong>SLO</strong> (Service Level Objective) to <strong>wewnętrzny</strong> cel niezawodności, np. 99,9% dostępności dla API w 30 dni. <strong>SLA</strong> (Service Level Agreement) to <strong>zewnętrzna</strong> obietnica w umowie z klientem, często z konsekwencjami finansowymi (kredyty, rabaty).</p>

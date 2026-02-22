@@ -13,6 +13,7 @@ return array (
     0 => 'api-endpoint-monitoring',
     1 => 'reduce-false-alerts',
     2 => 'alert-routing-slack-teams-webhooks',
+    3 => 'cron-heartbeat-monitoring',
   ),
   'question' => 'Jak monitorować cron jobs i zadania cykliczne?',
   'answer' => '<p>Najprostszy i najbardziej niezawodny sposób to <strong>heartbeat</strong>: po każdym poprawnym wykonaniu zadania (cron/job) wysyłasz sygnał, a brak sygnału w oczekiwanym czasie oznacza incydent. To działa lepiej niż “sprawdzanie logów”, bo jest automatyczne i mierzalne.</p>

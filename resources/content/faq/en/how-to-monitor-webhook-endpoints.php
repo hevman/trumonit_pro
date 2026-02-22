@@ -13,6 +13,7 @@ return array (
     0 => 'api-endpoint-monitoring',
     1 => 'alert-routing-slack-teams-webhooks',
     2 => 'reduce-false-alerts',
+    3 => 'webhook-end-to-end-monitoring',
   ),
   'question' => 'How do I monitor webhook endpoints?',
   'answer' => '<p>Webhooks fail silently: the provider keeps sending, but you return 4xx, you respond too slowly (timeouts), or the async processing fails. Monitor the pipeline, not just the endpoint.</p>

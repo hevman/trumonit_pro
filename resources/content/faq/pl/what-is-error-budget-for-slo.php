@@ -13,6 +13,7 @@ return array (
     0 => 'incident-response-playbook',
     1 => 'maintenance-windows-during-deploys',
     2 => 'reduce-false-alerts',
+    3 => 'slo-sla-error-budgets',
   ),
   'question' => 'Czym jest error budget w monitoringu SLO?',
   'answer' => '<p><strong>Error budget</strong> to dopuszczalny margines błędów (niedostępności lub degradacji), który wynika z Twojego <strong>SLO</strong>. Przykład: jeśli SLO to 99,9% dostępności w miesiącu, to “budżet błędów” wynosi ok. 0,1% czasu w miesiącu. Gdy budżet się kończy, zespół powinien przełączyć priorytety z feature’ów na stabilność.</p>

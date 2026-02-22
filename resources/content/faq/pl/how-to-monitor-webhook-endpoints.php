@@ -13,6 +13,7 @@ return array (
     0 => 'api-endpoint-monitoring',
     1 => 'alert-routing-slack-teams-webhooks',
     2 => 'reduce-false-alerts',
+    3 => 'webhook-end-to-end-monitoring',
   ),
   'question' => 'Jak monitorować endpointy webhook?',
   'answer' => '<p>Webhooki psują się “po cichu”: dostawca dalej wysyła, ale Ty nie przyjmujesz (4xx), przyjmujesz wolno (timeout), albo przetwarzanie w tle się wywala. Dlatego monitoruj nie tylko HTTP, ale też cały pipeline.</p>

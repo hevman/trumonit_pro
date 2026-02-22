@@ -11,6 +11,7 @@ return array (
   'related_solutions' => 
   array (
     0 => 'api-endpoint-monitoring',
+    1 => 'rate-limit-monitoring',
   ),
   'question' => 'How do I monitor API rate limits?',
   'answer' => '<p>Rate limiting usually shows up as <strong>429</strong>. A 429 spike is not always "downtime", but it is a strong signal of overload, misconfigured limits, or retry storms.</p>

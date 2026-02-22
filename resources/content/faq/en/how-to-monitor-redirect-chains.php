@@ -13,6 +13,7 @@ return array (
     0 => 'api-endpoint-monitoring',
     1 => 'content-integrity-monitoring-keywords',
     2 => 'synthetic-monitoring-login-flow',
+    3 => 'redirect-chain-monitoring',
   ),
   'question' => 'How do I monitor redirect chains?',
   'answer' => '<p>Redirect chains (301 → 302 → 301 → 200) increase latency, can break caching, and reduce SEO crawl efficiency. In practice you want to ensure <strong>the final destination is correct</strong> and <strong>the chain does not grow</strong>.</p>

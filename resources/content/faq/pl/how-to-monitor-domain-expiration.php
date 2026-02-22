@@ -13,6 +13,7 @@ return array (
     0 => 'ssl-certificate-expiry-monitoring',
     1 => 'status-page-for-saas',
     2 => 'incident-response-playbook',
+    3 => 'domain-expiration-and-dns-monitoring',
   ),
   'question' => 'Jak monitorować wygasanie domeny?',
   'answer' => '<p>Wygasanie domeny to jedna z najbardziej kosztownych i jednocześnie najłatwiejszych do uniknięcia awarii. Traktuj to jak “płatność krytyczną” i ustaw kilka warstw zabezpieczeń.</p>

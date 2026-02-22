@@ -11,6 +11,7 @@ return array (
   'related_solutions' => 
   array (
     0 => 'api-endpoint-monitoring',
+    1 => 'rate-limit-monitoring',
   ),
   'question' => 'Jak monitorować rate limit API (429)?',
   'answer' => '<p>Rate limit zwykle objawia się kodem <strong>429</strong>. Sam 429 nie zawsze oznacza „awarię”, ale jest mocnym sygnałem przeciążenia, złego limitu lub „retry storm” po stronie klientów.</p>

@@ -13,6 +13,7 @@ return array (
     0 => 'api-endpoint-monitoring',
     1 => 'reduce-false-alerts',
     2 => 'alert-routing-slack-teams-webhooks',
+    3 => 'cron-heartbeat-monitoring',
   ),
   'question' => 'How do I monitor cron jobs and scheduled tasks?',
   'answer' => '<p>The most reliable approach is <strong>heartbeat monitoring</strong>: every successful run sends a ping, and a missing ping within an expected interval triggers an incident. This is more dependable than reading logs because it is explicit and measurable.</p>

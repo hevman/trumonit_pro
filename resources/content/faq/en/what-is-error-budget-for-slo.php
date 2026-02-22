@@ -13,6 +13,7 @@ return array (
     0 => 'incident-response-playbook',
     1 => 'maintenance-windows-during-deploys',
     2 => 'reduce-false-alerts',
+    3 => 'slo-sla-error-budgets',
   ),
   'question' => 'What is an error budget in SLO monitoring?',
   'answer' => '<p>An <strong>error budget</strong> is the allowed amount of failure implied by your <strong>SLO</strong>. Example: if your monthly availability SLO is 99.9%, your error budget is roughly 0.1% of the month. When the budget is spent, you should shift priority from shipping features to restoring reliability.</p>

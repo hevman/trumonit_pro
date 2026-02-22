@@ -13,6 +13,7 @@ return array (
     0 => 'incident-response-playbook',
     1 => 'status-page-for-saas',
     2 => 'alert-routing-slack-teams-webhooks',
+    3 => 'incident-postmortem-template',
   ),
   'question' => 'What should an incident postmortem include?',
   'answer' => '<p>An <strong>incident postmortem</strong> is a learning document. The goal is to reduce repeat incidents by turning what happened into concrete fixes. It is not about blame, it is about systems and process.</p>
