@@ -1,12 +1,24 @@
 @php
-    $question = __($article['question']);
-    $answerHtml = __($article['answer']);
+    $question = (string) ($article['question'] ?? '');
+    $answerHtml = (string) ($article['answer'] ?? '');
     $isPl = app()->getLocale() === 'pl';
-    $seoTitle = $question . ' | ' . config('app.name', 'TruMonit');
-    $seoDescription = \Illuminate\Support\Str::limit(trim(strip_tags($answerHtml)), 160, '...');
+    $seoTitle = trim((string) ($article['meta_title'] ?? ''));
+    if ($seoTitle === '') {
+        $seoTitle = $question . ' | ' . config('app.name', 'TruMonit');
+    }
+    $seoDescription = trim((string) ($article['meta_description'] ?? ''));
+    if ($seoDescription === '') {
+        $seoDescription = \Illuminate\Support\Str::limit(trim(strip_tags($answerHtml)), 160, '...');
+    }
     $homeUrl = route('localized.public.home', ['locale' => app()->getLocale()]);
     $pricingUrl = route('localized.public.pricing', ['locale' => app()->getLocale()]);
     $faqIndexUrl = route('localized.public.faq.index', ['locale' => app()->getLocale()]);
+    $solutionsIndexUrl = \Illuminate\Support\Facades\Route::has('localized.public.solutions.index')
+        ? route('localized.public.solutions.index', ['locale' => app()->getLocale()])
+        : null;
+    $solutionsShowRoute = \Illuminate\Support\Facades\Route::has('localized.public.solutions.show')
+        ? 'localized.public.solutions.show'
+        : null;
     $privacyUrl = route('localized.legal.privacy', ['locale' => app()->getLocale()]);
     $termsUrl = route('localized.legal.terms', ['locale' => app()->getLocale()]);
     $canonicalUrl = route('localized.public.faq.show', ['locale' => app()->getLocale(), 'slug' => $article['slug']]);
@@ -108,11 +120,32 @@
                         @foreach ($relatedArticles as $related)
                             <li>
                                 <a href="{{ route('localized.public.faq.show', ['locale' => app()->getLocale(), 'slug' => $related['slug']]) }}" class="text-indigo-600 hover:underline dark:text-indigo-300">
-                                    {{ __($related['question']) }}
+                                    {{ $related['question'] }}
                                 </a>
                             </li>
                         @endforeach
                     </ul>
+                </section>
+            @endif
+
+            @if (! empty($relatedSolutions) && $solutionsShowRoute)
+                <section class="mt-8 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <h2 class="text-xl font-semibold">{{ $isPl ? 'Powiazane scenariusze' : 'Related use cases' }}</h2>
+                        @if ($solutionsIndexUrl)
+                            <a href="{{ $solutionsIndexUrl }}" class="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-300">
+                                {{ $isPl ? 'Zobacz wszystkie' : 'See all' }}
+                            </a>
+                        @endif
+                    </div>
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        @foreach ($relatedSolutions as $solution)
+                            <a href="{{ route($solutionsShowRoute, ['locale' => app()->getLocale(), 'slug' => $solution['slug']]) }}" class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm hover:border-indigo-300 hover:bg-white dark:border-slate-700 dark:bg-slate-950 dark:hover:border-indigo-500/60 dark:hover:bg-slate-900">
+                                <div class="font-semibold">{{ $solution['title'] }}</div>
+                                <div class="mt-2 text-slate-600 dark:text-slate-300">{{ $solution['summary'] }}</div>
+                            </a>
+                        @endforeach
+                    </div>
                 </section>
             @endif
 

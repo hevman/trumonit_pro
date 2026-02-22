@@ -3,15 +3,20 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Support\MarketingContentRepository;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 
 class FaqController extends Controller
 {
+    public function __construct(
+        private readonly MarketingContentRepository $content
+    ) {
+    }
+
     public function index(): View
     {
-        $articles = $this->articles();
+        $articles = $this->content->faqArticles(app()->getLocale());
 
         return view('public.faq.index', [
             'articles' => $articles,
@@ -20,10 +25,8 @@ class FaqController extends Controller
 
     public function show(string $locale, string $slug): View
     {
-        unset($locale);
-
-        $articles = $this->articles();
-        $article = collect($articles)->firstWhere('slug', $slug);
+        $articles = $this->content->faqArticles($locale);
+        $article = $this->content->findFaqArticle($locale, $slug);
 
         abort_if(! is_array($article), 404);
 
@@ -32,29 +35,12 @@ class FaqController extends Controller
             ->filter(fn (array $item): bool => in_array($item['slug'], $relatedSlugs, true))
             ->values()
             ->all();
+        $relatedSolutions = $this->content->relatedSolutionsForFaq($locale, $article, 3);
 
         return view('public.faq.show', [
             'article' => $article,
             'relatedArticles' => $relatedArticles,
+            'relatedSolutions' => $relatedSolutions,
         ]);
-    }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private function articles(): array
-    {
-        $articles = config('faq.articles', []);
-
-        return collect(is_array($articles) ? $articles : [])
-            ->filter(function ($article): bool {
-                return is_array($article)
-                    && is_string($article['slug'] ?? null)
-                    && Str::of($article['slug'])->trim()->toString() !== ''
-                    && is_string($article['question'] ?? null)
-                    && is_string($article['answer'] ?? null);
-            })
-            ->values()
-            ->all();
     }
 }

@@ -20,10 +20,10 @@
         'mainEntity' => collect($articles)->map(static function (array $article): array {
             return [
                 '@type' => 'Question',
-                'name' => __($article['question']),
+                'name' => (string) ($article['question'] ?? ''),
                 'acceptedAnswer' => [
                     '@type' => 'Answer',
-                    'text' => trim(strip_tags(__($article['answer']))),
+                    'text' => trim(strip_tags((string) ($article['answer'] ?? ''))),
                 ],
             ];
         })->all(),
@@ -110,13 +110,13 @@
                     @foreach ($articles as $article)
                         <article
                             data-faq-item
-                            data-question="{{ \Illuminate\Support\Str::lower(__($article['question'])) }}"
+                            data-question="{{ \Illuminate\Support\Str::lower((string) ($article['question'] ?? '')) }}"
                             class="rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-indigo-300 hover:bg-white dark:border-slate-700 dark:bg-slate-950 dark:hover:border-indigo-500/60 dark:hover:bg-slate-900"
                         >
                             <a href="{{ route('localized.public.faq.show', ['locale' => app()->getLocale(), 'slug' => $article['slug']]) }}" class="block">
-                                <h2 class="text-base font-semibold text-slate-900 dark:text-slate-100">{{ __($article['question']) }}</h2>
+                                <h2 class="text-base font-semibold text-slate-900 dark:text-slate-100">{{ $article['question'] }}</h2>
                                 <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                                    {{ \Illuminate\Support\Str::limit(trim(strip_tags(__($article['answer']))), 180, '...') }}
+                                    {{ \Illuminate\Support\Str::limit(trim(strip_tags((string) ($article['answer'] ?? ''))), 180, '...') }}
                                 </p>
                                 <span class="mt-3 inline-flex text-sm font-medium text-indigo-600 dark:text-indigo-300">{{ __('faq.read_answer') }}</span>
                             </a>

@@ -18,6 +18,7 @@ use App\Http\Controllers\Web\SnapshotController;
 use App\Http\Controllers\Ops\BusinessSummaryController;
 use App\Http\Controllers\Ops\MetricsController;
 use App\Http\Controllers\Public\FaqController;
+use App\Http\Controllers\Public\SolutionsController;
 use App\Http\Controllers\Public\StatusPagePublicController;
 use App\Models\StatusPage;
 use Illuminate\Http\RedirectResponse;
@@ -83,6 +84,17 @@ Route::get('/lang/{locale}', function (string $locale, Request $request): Redire
         return redirect()->route('localized.public.faq.index', ['locale' => $locale], 301);
     }
 
+    if (preg_match('/^solutions\/(.+)$/', $normalizedPath, $matches) === 1) {
+        return redirect()->route('localized.public.solutions.show', [
+            'locale' => $locale,
+            'slug' => $matches[1],
+        ], 301);
+    }
+
+    if ($normalizedPath === 'solutions') {
+        return redirect()->route('localized.public.solutions.index', ['locale' => $locale], 301);
+    }
+
     if ($normalizedPath === 'privacy') {
         return redirect()->route('localized.legal.privacy', ['locale' => $locale], 301);
     }
@@ -129,6 +141,17 @@ Route::get('/faq/{slug}', function (string $slug, Request $request) use ($resolv
     ], 301);
 })->name('public.faq.show');
 
+Route::get('/solutions', function (Request $request) use ($resolveMarketingLocale) {
+    return redirect()->route('localized.public.solutions.index', ['locale' => $resolveMarketingLocale($request)], 301);
+})->name('public.solutions.index');
+
+Route::get('/solutions/{slug}', function (string $slug, Request $request) use ($resolveMarketingLocale) {
+    return redirect()->route('localized.public.solutions.show', [
+        'locale' => $resolveMarketingLocale($request),
+        'slug' => $slug,
+    ], 301);
+})->name('public.solutions.show');
+
 Route::prefix('{locale}')
     ->where(['locale' => 'en|pl'])
     ->as('localized.')
@@ -161,59 +184,127 @@ Route::prefix('{locale}')
 
         Route::get('/faq', [FaqController::class, 'index'])->name('public.faq.index');
         Route::get('/faq/{slug}', [FaqController::class, 'show'])->name('public.faq.show');
+
+        Route::get('/solutions', [SolutionsController::class, 'index'])->name('public.solutions.index');
+        Route::get('/solutions/{slug}', [SolutionsController::class, 'show'])->name('public.solutions.show');
     });
 
 Route::get('/sitemap.xml', function () {
     $urls = [];
     $locales = ['en', 'pl'];
+    $content = app(\App\Support\MarketingContentRepository::class);
+    $faqSlugs = $content->faqSlugs();
+    $solutionSlugs = $content->solutionSlugs();
+
+    $atom = static function (?int $mtime): string {
+        if (! is_int($mtime) || $mtime <= 0) {
+            return now()->toAtomString();
+        }
+
+        // Sitemap timestamps should be stable and timezone-agnostic.
+        return gmdate('c', $mtime);
+    };
+
+    $maxMtime = static function (array $paths): ?int {
+        $max = null;
+
+        foreach ($paths as $path) {
+            if (! is_string($path) || $path === '' || ! is_file($path)) {
+                continue;
+            }
+
+            $mtime = @filemtime($path);
+            if (! is_int($mtime)) {
+                continue;
+            }
+
+            $max = $max === null ? $mtime : max($max, $mtime);
+        }
+
+        return $max;
+    };
 
     foreach ($locales as $locale) {
         $urls[] = [
             'loc' => route('localized.public.home', ['locale' => $locale]),
-            'lastmod' => now()->toAtomString(),
+            'lastmod' => $atom($maxMtime([
+                resource_path('views/welcome.blade.php'),
+            ])),
             'changefreq' => 'daily',
             'priority' => '1.0',
         ];
         $urls[] = [
             'loc' => route('localized.public.pricing', ['locale' => $locale]),
-            'lastmod' => now()->toAtomString(),
+            'lastmod' => $atom($maxMtime([
+                resource_path('views/public/pricing.blade.php'),
+            ])),
             'changefreq' => 'weekly',
             'priority' => '0.9',
         ];
         $urls[] = [
             'loc' => route('localized.legal.cookies', ['locale' => $locale]),
-            'lastmod' => now()->toAtomString(),
+            'lastmod' => $atom($maxMtime([
+                resource_path('views/legal/cookies.blade.php'),
+            ])),
             'changefreq' => 'monthly',
             'priority' => '0.4',
         ];
         $urls[] = [
             'loc' => route('localized.legal.privacy', ['locale' => $locale]),
-            'lastmod' => now()->toAtomString(),
+            'lastmod' => $atom($maxMtime([
+                resource_path('views/legal/privacy.blade.php'),
+            ])),
             'changefreq' => 'monthly',
             'priority' => '0.4',
         ];
         $urls[] = [
             'loc' => route('localized.legal.terms', ['locale' => $locale]),
-            'lastmod' => now()->toAtomString(),
+            'lastmod' => $atom($maxMtime([
+                resource_path('views/legal/terms.blade.php'),
+            ])),
             'changefreq' => 'monthly',
             'priority' => '0.4',
         ];
+
+        $urls[] = [
+            'loc' => route('localized.public.solutions.index', ['locale' => $locale]),
+            'lastmod' => $atom($maxMtime(array_merge(
+                [resource_path('views/public/solutions/index.blade.php')],
+                array_map(static fn (string $slug): string => resource_path("content/solutions/{$locale}/{$slug}.php"), $solutionSlugs)
+            ))),
+            'changefreq' => 'weekly',
+            'priority' => '0.8',
+        ];
+
         $urls[] = [
             'loc' => route('localized.public.faq.index', ['locale' => $locale]),
-            'lastmod' => now()->toAtomString(),
+            'lastmod' => $atom($maxMtime(array_merge(
+                [resource_path('views/public/faq/index.blade.php')],
+                array_map(static fn (string $slug): string => resource_path("content/faq/{$locale}/{$slug}.php"), $faqSlugs)
+            ))),
             'changefreq' => 'weekly',
             'priority' => '0.7',
         ];
 
-        foreach (config('faq.articles', []) as $article) {
-            $slug = $article['slug'] ?? null;
-            if (! is_string($slug) || $slug === '') {
-                continue;
-            }
+        foreach ($solutionSlugs as $slug) {
+            $urls[] = [
+                'loc' => route('localized.public.solutions.show', ['locale' => $locale, 'slug' => $slug]),
+                'lastmod' => $atom($maxMtime([
+                    resource_path('views/public/solutions/show.blade.php'),
+                    resource_path("content/solutions/{$locale}/{$slug}.php"),
+                ])),
+                'changefreq' => 'weekly',
+                'priority' => '0.7',
+            ];
+        }
 
+        foreach ($faqSlugs as $slug) {
             $urls[] = [
                 'loc' => route('localized.public.faq.show', ['locale' => $locale, 'slug' => $slug]),
-                'lastmod' => now()->toAtomString(),
+                'lastmod' => $atom($maxMtime([
+                    resource_path('views/public/faq/show.blade.php'),
+                    resource_path("content/faq/{$locale}/{$slug}.php"),
+                ])),
                 'changefreq' => 'weekly',
                 'priority' => '0.6',
             ];
