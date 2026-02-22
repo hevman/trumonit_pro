@@ -21,7 +21,7 @@
             @include('partials.tailwind-fallback-components')
         @endif
     </head>
-    <body class="bg-gray-50 text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100">
+    <body class="bg-gray-50 text-gray-900 antialiased leading-relaxed dark:bg-gray-950 dark:text-gray-100">
         @php
             $langSwitchEn = request()->fullUrlWithQuery(['lang' => 'en']);
             $langSwitchPl = request()->fullUrlWithQuery(['lang' => 'pl']);

@@ -22,7 +22,7 @@
             <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
         @endif
 </head>
-    <body class="antialiased bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100" x-data="{ sidebarOpen: false }">
+    <body class="antialiased leading-relaxed bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100" x-data="{ sidebarOpen: false }">
         <div class="min-h-screen flex">
             <x-app-sidebar />
 

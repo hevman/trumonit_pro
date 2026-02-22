@@ -28,7 +28,7 @@
                     </ol>
                 </div>
 
-                <form method="POST" action="{{ route('monitored-urls.store') }}" class="space-y-4">
+                <form method="POST" action="{{ route('monitored-urls.store') }}" class="space-y-6">
                     @csrf
                     <input type="hidden" name="from_onboarding" value="1" />
                     <input type="hidden" name="is_active" value="1" />

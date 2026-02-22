@@ -133,7 +133,7 @@
                 </div>
 
                 @if (! empty($page['body']))
-                    <div class="prose prose-slate max-w-none mt-7 dark:prose-invert">
+                    <div class="prose prose-lg prose-slate max-w-none mt-8 dark:prose-invert">
                         {!! $page['body'] !!}
                     </div>
                 @endif

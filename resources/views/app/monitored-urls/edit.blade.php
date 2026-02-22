@@ -39,12 +39,12 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium mb-1" for="scan_mode">{{ __('Scan mode') }}</label>
+                            <label class="block text-sm font-medium mb-1" for="scan_mode">{{ __('messages.monitored_urls.scan_mode_label') }}</label>
                             <select id="scan_mode" name="scan_mode" class="app-input">
-                                <option value="http" {{ old('scan_mode', $monitoredUrl->scan_mode) === 'http' ? 'selected' : '' }}>{{ __('HTTP') }}</option>
-                                <option value="journey" {{ old('scan_mode', $monitoredUrl->scan_mode) === 'journey' ? 'selected' : '' }}>{{ __('User journey (Playwright)') }}</option>
+                                <option value="http" {{ old('scan_mode', $monitoredUrl->scan_mode) === 'http' ? 'selected' : '' }}>{{ __('messages.monitored_urls.scan_mode_http') }}</option>
+                                <option value="journey" {{ old('scan_mode', $monitoredUrl->scan_mode) === 'journey' ? 'selected' : '' }}>{{ __('messages.monitored_urls.scan_mode_journey') }}</option>
                             </select>
-                            <div class="app-help">{{ __('Switching to HTTP clears `journey_steps`.') }}</div>
+                            <div class="app-help">{{ __('messages.monitored_urls.scan_mode_switch_warning') }}</div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1" for="appearance_min_distance">{{ __('Appearance threshold (pHash distance)') }}</label>
@@ -105,9 +105,9 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium mb-1" for="journey_steps">{{ __('Journey steps (JSON)') }}</label>
+                        <label class="block text-sm font-medium mb-1" for="journey_steps">{{ __('messages.monitored_urls.journey_steps_label') }}</label>
                         <textarea id="journey_steps" name="journey_steps" rows="8" class="app-input font-mono text-xs">{{ old('journey_steps', $journeyStepsJson) }}</textarea>
-                        <div class="app-help">{{ __('Used only when Scan mode = Journey. Do not store real production secrets here.') }}</div>
+                        <div class="app-help">{{ __('messages.monitored_urls.journey_steps_help') }}</div>
                     </div>
 
                     <div class="pt-2">

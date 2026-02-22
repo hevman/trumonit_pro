@@ -111,7 +111,7 @@
 
             <article class="mt-6 rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 dark:border-slate-800 dark:bg-slate-900">
                 <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ $question }}</h1>
-                <div class="prose prose-slate max-w-none mt-5 dark:prose-invert">
+                <div class="prose prose-lg prose-slate max-w-none mt-6 dark:prose-invert">
                     {!! $answerHtml !!}
                 </div>
             </article>
