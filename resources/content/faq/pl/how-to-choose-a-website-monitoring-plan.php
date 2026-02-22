@@ -10,6 +10,7 @@ return array (
   ),
   'related_solutions' => 
   array (
+    0 => 'choose-monitoring-plan',
   ),
   'question' => 'Jak wybrac plan monitoringu strony?',
   'answer' => '<p>Dobieraj plan wedlug liczby monitorow, czestotliwosci skanow, liczby kanalow powiadomien oraz potrzeb status page i workflow zespolowego.</p><p>Zacznij od mniejszego planu i skaluj, gdy rosna wolumen monitorow, wymagania reakcji i potrzeby governance.</p>',

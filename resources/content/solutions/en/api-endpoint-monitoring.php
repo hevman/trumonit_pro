@@ -4,50 +4,67 @@ return array (
   'order' => 2,
   'title' => 'API endpoint monitoring',
   'meta_title' => 'API Endpoint Monitoring | TruMonit',
-  'meta_description' => 'Monitor API endpoints with status, latency, and content assertions. Catch timeouts, 5xx spikes, and rate-limit regressions before users do.',
-  'summary' => 'Monitor APIs with the right checks: status, latency, keywords, and rate-limits, without false alarms.',
-  'body' => '<p>API monitoring fails when checks are too shallow (only status code) or too strict (brittle content rules). The goal is to detect customer-impacting failures with high signal.</p>
+  'meta_description' => 'Monitor API endpoints with status, latency, and payload assertions. Catch timeouts, 5xx spikes, bad JSON, and rate-limit regressions (429) before users do.',
+  'summary' => 'High-signal API monitoring combines status + latency + stable payload checks, and separates 429/rate-limit from 5xx to reduce noise.',
+  'body' => '<p>API monitoring is easy to get wrong: you can see <strong>HTTP 200</strong> while the experience is broken due to slow responses, wrong JSON, auth issues, or rate limiting. The goal is to detect <em>customer-impacting</em> failures with high signal and low noise.</p>
 
-<h3>Recommended setup</h3>
+<h3>The minimum set of API monitors that works</h3>
 <ul>
-  <li>Monitor a <strong>health</strong> endpoint and a <strong>real business</strong> endpoint.</li>
-  <li>Define acceptable status ranges (2xx/3xx) and timeouts.</li>
-  <li>Add a stable marker: a JSON key or keyword (avoid dynamic text).</li>
+  <li><strong>Health</strong>: a fast technical endpoint (e.g. /health) for basic availability.</li>
+  <li><strong>Business endpoint</strong>: a real request customers rely on (e.g. /api/v1/invoices).</li>
+  <li><strong>Webhook/ingest</strong> (if applicable): a separate check for critical integrations.</li>
+</ul>
+
+<h3>Assertions: what to validate (and what to avoid)</h3>
+<ul>
+  <li>Status: acceptable ranges (usually 2xx; sometimes 3xx for redirects).</li>
+  <li>Latency: warning + critical thresholds aligned with your SLO.</li>
+  <li>Payload: stable marker (JSON key/value, keyword). Avoid dynamic text and timestamps.</li>
+  <li>Auth: use a dedicated test token/user with the smallest possible scope.</li>
+</ul>
+
+<h3>Rate limits and 429: monitoring patterns</h3>
+<ul>
+  <li>Track 429 spikes and correlate with rising latency and error rate.</li>
+  <li>Watch out for retry storms: aggressive client retries can amplify incidents.</li>
+  <li>Separate alerts: "rate limited" vs "application error" routes to different owners.</li>
 </ul>
 
 <h3>Common API incident patterns</h3>
 <ul>
-  <li>Timeouts due to DB saturation or slow upstream.</li>
-  <li>5xx errors after deploy.</li>
-  <li>429 spikes (rate limits) and retry storms.</li>
-</ul>',
-  'problem' => 'APIs can be \"up\" (200) while the business flow is broken (slow, wrong payload, rate-limited). Teams need monitoring that matches user journeys.',
+  <li>Timeouts due to DB saturation, locks, slow upstream dependencies.</li>
+  <li>5xx after deploy (serialization, migrations, config).</li>
+  <li>200 with bad JSON (contract changes, nulls, broken validation).</li>
+</ul>
+
+<p>Rule of thumb: <strong>monitor what customers pay for</strong>. If the only check is /health, you will learn about incidents from support.</p>',
+  'problem' => 'APIs can look "up" (200) while the business flow is broken (slow, wrong payload, auth issues, rate-limited). You need monitoring that measures both availability and response quality.',
   'approach' => 
   array (
     0 => 'Add monitors for health + one business-critical endpoint.',
     1 => 'Set timeout and latency thresholds based on real SLOs.',
     2 => 'Add stable keyword/JSON assertions for correctness.',
-    3 => 'Monitor rate limits and 429 patterns.',
-    4 => 'Route incidents to the owning team via escalation policy.',
+    3 => 'Monitor 429/rate limits and separate them from 5xx.',
+    4 => 'Route incidents to the owning team via escalation policy and cooldown.',
   ),
   'proof' => 
   array (
     0 => 'Early detection of timeouts, 5xx, and rate-limit regressions.',
-    1 => 'Clear separation of network vs application errors.',
-    2 => 'Incident history you can use for postmortems.',
+    1 => 'Clearer separation of network vs app vs throttling issues.',
+    2 => 'Incident history you can use for MTTR review and postmortems.',
   ),
   'checklist' => 
   array (
     0 => 'Health + business endpoint monitored.',
     1 => 'Timeouts and latency thresholds configured.',
     2 => 'Assertion uses stable marker (not dynamic copy).',
-    3 => '429 monitoring and alerting in place.',
+    3 => '429/rate-limit monitoring and alerting in place.',
   ),
   'pitfalls' => 
   array (
     0 => 'Only monitoring /health and missing business failures.',
     1 => 'Brittle assertions that alert on harmless changes.',
-    2 => 'No dedicated test endpoints for synthetic flows.',
+    2 => 'No dedicated test data/token for auth-protected endpoints.',
   ),
   'related_faq' => 
   array (
@@ -57,4 +74,3 @@ return array (
     3 => 'how-to-monitor-webhook-endpoints',
   ),
 );
-

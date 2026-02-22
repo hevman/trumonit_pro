@@ -10,6 +10,8 @@ return array (
   ),
   'related_solutions' => 
   array (
+    0 => 'choose-monitoring-plan',
+    1 => 'uptime-monitoring-for-saas',
   ),
   'question' => 'How many monitors do I need?',
   'answer' => '<p>Start from business-critical user journeys and core APIs, then add monitors for dependencies and edge cases.</p><p>A common baseline is one monitor per critical flow, not one monitor per page.</p>',

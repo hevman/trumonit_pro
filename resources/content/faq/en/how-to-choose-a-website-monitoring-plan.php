@@ -10,6 +10,7 @@ return array (
   ),
   'related_solutions' => 
   array (
+    0 => 'choose-monitoring-plan',
   ),
   'question' => 'How should I choose a website monitoring plan?',
   'answer' => '<p>Choose based on monitor count, check frequency, number of notification channels, and need for public status pages or team workflows.</p><p>Start with a lean plan, then upgrade when your monitor volume, response requirements, or governance needs increase.</p>',

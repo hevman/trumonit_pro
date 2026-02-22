@@ -2,50 +2,65 @@
 
 return array (
   'order' => 6,
-  'title' => 'Playbook reakcji na incydent',
-  'meta_title' => 'Playbook reakcji na incydent | TruMonit',
-  'meta_description' => 'Zbuduj playbook incydentowy: triage, komunikacja, mitygacja i postmortem. Popraw MTTR i powtarzalnosc reakcji.',
-  'summary' => 'Powtarzalny proces reakcji na incydenty skraca MTTR i poprawia komunikacje z klientami.',
-  'body' => '<p>Playbook to system szybkich decyzji. Zapobiega chaosowi, gdy wpada alert.</p>
+  'title' => 'Playbook incydentowy (reakcja na awarie)',
+  'meta_title' => 'Playbook incydentowy: MTTR, status page, postmortem | TruMonit',
+  'meta_description' => 'Zbuduj playbook incydentowy: triage, komunikacja, mitygacja i postmortem. Skróć MTTR, popraw powtarzalność reakcji i uspokój support w trakcie awarii.',
+  'summary' => 'Dobrze spisany playbook incydentowy skraca MTTR, porządkuje komunikację i zmniejsza chaos, kiedy wpada alert.',
+  'body' => '<p>Playbook reakcji na incydent to system szybkich decyzji. Nie zastępuje kompetencji zespołu, ale <strong>eliminuje chaos</strong> w pierwszych minutach awarii: kto dowodzi, co sprawdzamy i jak komunikujemy wpływ.</p>
 
-<h3>Minimalny playbook</h3>
+<h3>Minimalny playbook (który realnie działa)</h3>
 <ul>
-  <li>Poziomy severity i cele reakcji.</li>
-  <li>Triage: potwierdz impact, izoluj, mityguj.</li>
-  <li>Komunikacja: kanal wewnetrzny + cadence status page.</li>
-  <li>Szablon postmortem i tracking akcji.</li>
+  <li><strong>Severity</strong>: poziomy (np. Sev1/Sev2/Sev3) i cele reakcji.</li>
+  <li><strong>Incident owner</strong>: jedna osoba dowodzi (reszta wykonuje zadania).</li>
+  <li><strong>Triage</strong>: potwierdź impact, izoluj zakres, uruchom mitygację.</li>
+  <li><strong>Komunikacja</strong>: kanał wewnętrzny + status page + rytm update’ów.</li>
+  <li><strong>Postmortem</strong>: szablon, akcje follow‑up i domykanie długów.</li>
 </ul>
 
-<h3>Co mierzyc</h3>
+<h3>Przebieg incydentu: 4 etapy</h3>
+<ol>
+  <li><strong>Detect</strong>: alert → potwierdź, czy to realne (retry, multi‑region, porównanie monitorów).</li>
+  <li><strong>Stabilize</strong>: szybka mitygacja (rollback, feature flag, ograniczenie ruchu, wyłączenie funkcji).</li>
+  <li><strong>Recover</strong>: przywróć usługę i upewnij się, że metryki wracają do normy.</li>
+  <li><strong>Learn</strong>: postmortem + akcje prewencyjne (monitoring, testy, limity, runbook).</li>
+</ol>
+
+<h3>Co mierzyć (żeby poprawiać proces)</h3>
 <ul>
-  <li>MTTA i MTTR.</li>
-  <li>Najczestsze przyczyny incydentow.</li>
-  <li>Burn rate error budget (jesli masz SLO).</li>
-</ul>',
-  'problem' => 'Bez playbooka zespol improwizuje pod presja. Reakcja jest wolniejsza, niespojna i psuje komunikacje z klientami.',
+  <li><strong>MTTA</strong> (czas do potwierdzenia) i <strong>MTTR</strong> (czas do przywrócenia).</li>
+  <li>Najczęstsze przyczyny incydentów (deploy, zależność 3rd‑party, baza danych, DNS).</li>
+  <li>Jeśli masz SLO: burn rate / error budget (czy incydenty „zjadają” budżet jakości).</li>
+</ul>
+
+<h3>Praktyczna wskazówka</h3>
+<p>Największy zysk daje połączenie: dobry monitoring + status page + ownership. Bez ownera nawet najlepszy monitoring nie skraca MTTR.</p>',
+  'problem' => 'Bez playbooka zespół improwizuje pod presją. Reakcja jest wolniejsza, niespójna i psuje komunikację z klientami (a support dostaje lawinę ticketów).',
   'approach' => 
   array (
-    0 => 'Zdefiniuj severity i ownership.',
-    1 => 'Kieruj incydenty do on-call i ustaw eskalacje.',
-    2 => 'Uzywaj status page z ustalona czestotliwoscia update.',
-    3 => 'Rob postmortemy i domykaj follow-upy.',
+    0 => 'Zdefiniuj severity, ownership i rolę incident ownera.',
+    1 => 'Kieruj incydenty do on‑call i ustaw eskalacje.',
+    2 => 'Używaj status page z ustaloną częstotliwością update’ów.',
+    3 => 'Rób postmortemy i domykaj follow‑upy (akcje prewencyjne).',
   ),
   'proof' => 
   array (
-    0 => 'Nizszy MTTR dzieki powtarzalnemu triage i eskalacji.',
-    1 => 'Lepsze zaufanie przez konsekwentne update.',
+    0 => 'Niższy MTTR dzięki powtarzalnemu triage i eskalacji.',
+    1 => 'Lepsze zaufanie przez konsekwentne update’y na status page.',
+    2 => 'Mniej powrotów tych samych incydentów dzięki follow‑upom.',
   ),
   'checklist' => 
   array (
-    0 => 'Poziomy severity sa zdefiniowane.',
-    1 => 'Polityka eskalacji dziala.',
-    2 => 'Proces status page jest opisany.',
-    3 => 'Szablon postmortem i follow-upy sa trackowane.',
+    0 => 'Poziomy severity są zdefiniowane.',
+    1 => 'Incident owner jest przypisany dla Sev1/Sev2.',
+    2 => 'Polityka eskalacji działa.',
+    3 => 'Proces status page jest opisany (cadence + szablon update’u).',
+    4 => 'Szablon postmortem i follow‑upy są trackowane i domykane.',
   ),
   'pitfalls' => 
   array (
-    0 => 'Brak single incident ownera.',
-    1 => 'Brak postmortem - problemy wracaja.',
+    0 => 'Brak jednego incident ownera (wszyscy robią wszystko).',
+    1 => 'Brak postmortem: problemy wracają.',
+    2 => 'Komunikacja bez rytmu (klienci i support dopytują co 5 minut).',
   ),
   'related_faq' => 
   array (
@@ -54,4 +69,3 @@ return array (
     2 => 'what-should-incident-postmortem-include',
   ),
 );
-

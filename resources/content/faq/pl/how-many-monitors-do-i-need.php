@@ -10,6 +10,8 @@ return array (
   ),
   'related_solutions' => 
   array (
+    0 => 'choose-monitoring-plan',
+    1 => 'uptime-monitoring-for-saas',
   ),
   'question' => 'Ile monitorow potrzebuje na start?',
   'answer' => '<p>Zacznij od krytycznych user journey i kluczowych API, a potem rozszerz o zaleznosci i przypadki brzegowe.</p><p>Lepsza zasada to jeden monitor na krytyczny flow, a nie jeden monitor na kazda podstrone.</p>',

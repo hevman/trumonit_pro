@@ -10,6 +10,8 @@ return array (
   ),
   'related_solutions' => 
   array (
+    0 => 'api-endpoint-monitoring',
+    1 => 'uptime-monitoring-for-saas',
   ),
   'question' => 'Network error vs application error: how should I treat them?',
   'answer' => '<p>Separate transport failures (DNS, TLS, timeout, connect errors) from application failures (5xx, logic errors, invalid responses).</p><p>Different classes usually need different responders and different mitigation paths.</p>',

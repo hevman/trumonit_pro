@@ -10,6 +10,8 @@ return array (
   ),
   'related_solutions' => 
   array (
+    0 => 'uptime-monitoring-for-saas',
+    1 => 'reduce-false-alerts',
   ),
   'question' => 'Dlaczego monitoring z wielu regionow jest wazny?',
   'answer' => '<p>Check z jednego regionu moze dawac falszywe alarmy, gdy problem dotyczy tylko jednej trasy sieciowej. Multi-region potwierdza, czy problem jest globalny czy lokalny.</p><p>To poprawia jakosc sygnalu i przyspiesza przekazanie incydentu do wlasciwego zespolu.</p>',

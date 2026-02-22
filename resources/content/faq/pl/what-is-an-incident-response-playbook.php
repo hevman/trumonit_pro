@@ -10,9 +10,29 @@ return array (
   ),
   'related_solutions' => 
   array (
+    0 => 'incident-response-playbook',
+    1 => 'status-page-for-saas',
   ),
-  'question' => 'Czym jest playbook reakcji na incydent?',
-  'answer' => '<p>Playbook incydentowy definiuje role i kroki po alercie: triage, komunikacje, mitygacje i postmortem.</p><p>Dobrze opisany playbook skraca czas rozwiazania problemu i podnosi powtarzalnosc reakcji miedzy zmianami.</p>',
-  'meta_title' => 'Czym jest playbook reakcji na incydent? | TruMonit',
-  'meta_description' => 'Playbook incydentowy definiuje role i kroki po alercie: triage, komunikacje, mitygacje i postmortem.Dobrze opisany playbook skraca czas rozwiazania problemu i p...',
+  'question' => 'Czym jest playbook incydentowy (reakcja na incydent)?',
+  'answer' => '<p><strong>Playbook incydentowy</strong> to spis ról i kroków, które wykonujesz po alercie: triage, komunikacja, mitygacja i postmortem. Jego zadanie to skrócić MTTR i ujednolicić reakcję między zmianami/zespołami.</p>
+
+<h3>Co powinien zawierać playbook</h3>
+<ul>
+  <li>Poziomy severity (Sev1/Sev2/Sev3) i cele reakcji.</li>
+  <li>Rola <strong>incident owner</strong>: jedna osoba dowodzi.</li>
+  <li>Triage: potwierdzenie wpływu, zakres, hipotezy, pierwsza mitygacja.</li>
+  <li>Status page: szablon update’u i rytm (np. co 15–30 min).</li>
+  <li>Postmortem: szablon + lista akcji follow‑up i domykanie.</li>
+</ul>
+
+<h3>Dlaczego to działa</h3>
+<ul>
+  <li>Mniej chaosu w pierwszych minutach (najdroższe minuty incydentu).</li>
+  <li>Szybsza eskalacja do ownera i krótszy MTTR.</li>
+  <li>Lepsza komunikacja z klientami (mniej ticketów).</li>
+</ul>
+
+<p>Playbook nie musi być długi. Ważne, żeby był używany i aktualizowany po incydentach.</p>',
+  'meta_title' => 'Czym jest playbook incydentowy (reakcja na incydent)? | TruMonit',
+  'meta_description' => 'Playbook incydentowy: role, triage, komunikacja (status page), mitygacja i postmortem. Skraca MTTR i zwiększa powtarzalność reakcji zespołu.',
 );

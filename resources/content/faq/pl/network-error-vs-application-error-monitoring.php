@@ -10,6 +10,8 @@ return array (
   ),
   'related_solutions' => 
   array (
+    0 => 'api-endpoint-monitoring',
+    1 => 'uptime-monitoring-for-saas',
   ),
   'question' => 'Blad sieci vs blad aplikacji: jak to rozroznic w monitoringu?',
   'answer' => '<p>Rozdzielaj bledy transportu (DNS, TLS, timeout, connect) od bledow aplikacyjnych (5xx, bledna logika, zly payload).</p><p>Obie klasy zwykle wymagaja innych ownerow i innej sciezki mitygacji.</p>',

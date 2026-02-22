@@ -10,6 +10,8 @@ return array (
   ),
   'related_solutions' => 
   array (
+    0 => 'uptime-monitoring-for-saas',
+    1 => 'reduce-false-alerts',
   ),
   'question' => 'Why is multi-region monitoring important?',
   'answer' => '<p>Single-region checks can produce false positives when one network path is unstable. Multi-region checks validate whether an issue is global or local.</p><p>This improves signal quality and helps your team route incidents to the right owner sooner.</p>',

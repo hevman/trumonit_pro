@@ -2,52 +2,69 @@
 
 return array (
   'order' => 2,
-  'title' => 'Monitoring endpointow API',
-  'meta_title' => 'Monitoring endpointow API | TruMonit',
-  'meta_description' => 'Monitoruj API: status, latency, timeout i asercje tresci. Wykrywaj time-outy, 5xx i regresje rate limit zanim zobacza to uzytkownicy.',
-  'summary' => 'Monitoring API z dobrymi checkami: status, latency, keyword/JSON i rate limits, bez falszywych alarmow.',
-  'body' => '<p>Monitoring API zawodzi, gdy checki sa zbyt plytkie (tylko status) albo zbyt kruche (brittle asercje). Celem jest szybkie wykrycie problemow odczuwalnych przez klientow.</p>
+  'title' => 'Monitoring endpointów API (REST/JSON)',
+  'meta_title' => 'Monitoring endpointów API (REST/JSON) | TruMonit',
+  'meta_description' => 'Monitoring API: status, latency, timeout i asercje treści. Wykrywaj timeouty, 5xx, błędne payloady i regresje rate limit zanim zobaczą to użytkownicy.',
+  'summary' => 'Dobry monitoring API łączy status, czas odpowiedzi, walidację payloadu (JSON/keyword) i obserwację 429/rate limit, bez nadmiaru fałszywych alarmów.',
+  'body' => '<p>Monitoring endpointów API bywa zdradliwy: możesz mieć <strong>HTTP 200</strong>, a jednocześnie zepsuty payload, zbyt wolne odpowiedzi albo błędną logikę biznesową. Celem jest szybkie wykrycie problemów, które realnie psują produkt.</p>
 
-<h3>Rekomendowany setup</h3>
+<h3>Minimalny zestaw monitorów API (który działa)</h3>
 <ul>
-  <li>Monitoruj endpoint <strong>health</strong> i jeden endpoint <strong>biznesowy</strong>.</li>
-  <li>Ustaw akceptowalne statusy (2xx/3xx) i timeout.</li>
-  <li>Dodaj stabilny marker: klucz JSON lub keyword (unikaj dynamicznego copy).</li>
+  <li><strong>Health</strong>: szybki endpoint techniczny (np. /health) dla dostępności infrastruktury.</li>
+  <li><strong>Endpoint biznesowy</strong>: realny request, z którego korzystają klienci (np. /api/v1/invoices).</li>
+  <li><strong>Webhook/ingest</strong> (jeśli masz): osobny monitor dla krytycznych integracji.</li>
 </ul>
 
-<h3>Typowe wzorce incydentow</h3>
+<h3>Jakie warunki (assertions) stosować</h3>
 <ul>
-  <li>Timeouty przez DB saturation lub wolny upstream.</li>
-  <li>5xx po wdrozeniu.</li>
-  <li>Skoki 429 (rate limits) i retry storm.</li>
-</ul>',
-  'problem' => 'API moze zwracac 200, ale flow biznesowy jest zepsuty (wolne odpowiedzi, bledny payload, rate limit). Potrzebujesz monitoringu zgodnego z user journey.',
+  <li>Status: akceptowalne kody (zwykle 2xx; czasem 3xx dla redirectów).</li>
+  <li>Latency: próg ostrzegawczy (warning) i krytyczny (critical) zgodny z Twoim SLO.</li>
+  <li>Payload: stabilny marker (klucz JSON, stała wartość, keyword). Unikaj dynamicznego copy.</li>
+  <li>Autoryzacja: jeśli endpoint wymaga tokena, używaj konta/klucza testowego z minimalnym zakresem.</li>
+</ul>
+
+<h3>Rate limit i 429: jak to monitorować</h3>
+<ul>
+  <li>Wykrywaj skoki 429 i koreluj z latency oraz 5xx (często idą razem podczas przeciążenia).</li>
+  <li>Zwracaj uwagę na „retry storm”: zbyt agresywne retry po stronie klienta potrafi pogorszyć incydent.</li>
+  <li>Rozdziel alerty: osobno „rate limit” i osobno „błąd aplikacji”, żeby szybciej trafić do właściwego ownera.</li>
+</ul>
+
+<h3>Typowe wzorce incydentów API</h3>
+<ul>
+  <li>Timeouty przez wolny upstream, DB saturation, locki lub zbyt ciężkie zapytania.</li>
+  <li>5xx po wdrożeniu (błąd serializacji, migracje, config).</li>
+  <li>200 z błędnym payloadem (zmiana kontraktu, null w polu, zła walidacja).</li>
+</ul>
+
+<p>Praktyczna zasada: <strong>monitoruj to, co kupuje klient</strong>. Jeśli jedyny monitor to /health, dowiesz się o awarii dopiero z supportu.</p>',
+  'problem' => 'API może zwracać 200, a mimo to psuć flow biznesowy (wolne odpowiedzi, błędny payload, problemy autoryzacji, rate limit). Potrzebujesz monitoringu, który mierzy dostępność i jakość odpowiedzi.',
   'approach' => 
   array (
     0 => 'Dodaj monitory dla health + jednego endpointu biznesowego.',
     1 => 'Ustaw timeouty i progi latency pod realne SLO.',
-    2 => 'Dodaj stabilne asercje (keyword/JSON) dla poprawnosci.',
-    3 => 'Monitoruj rate limits i wzorce 429.',
-    4 => 'Kieruj incydenty do ownera przez eskalacje.',
+    2 => 'Dodaj stabilne asercje (keyword/JSON) dla poprawności payloadu.',
+    3 => 'Monitoruj 429/rate limit i odseparuj alerty od 5xx.',
+    4 => 'Zmapuj alerty do ownerów (escalation) i zdefiniuj cooldown.',
   ),
   'proof' => 
   array (
-    0 => 'Wczesne wykrycie timeoutow, 5xx i problemow rate limit.',
-    1 => 'Rozroznienie bledow sieci i aplikacji.',
-    2 => 'Historia incydentow pod postmortem.',
+    0 => 'Wczesne wykrycie timeoutów, 5xx i problemów rate limit.',
+    1 => 'Lepsze rozróżnienie błędów sieci vs aplikacja vs przeciążenie.',
+    2 => 'Historia incydentów pod analizę MTTR i postmortem.',
   ),
   'checklist' => 
   array (
-    0 => 'Health + endpoint biznesowy monitorowane.',
-    1 => 'Timeout i progi latency ustawione.',
-    2 => 'Asercje sa stabilne i nie flakuja.',
-    3 => '429/rate-limit alerting dziala.',
+    0 => 'Health + endpoint biznesowy są monitorowane.',
+    1 => 'Timeout i progi latency są ustawione.',
+    2 => 'Asercje payloadu są stabilne i nie flakują.',
+    3 => 'Alerting 429/rate limit działa i nie miesza się z 5xx.',
   ),
   'pitfalls' => 
   array (
-    0 => 'Monitoring tylko /health.',
-    1 => 'Brittle asercje na dynamicznym tekscie.',
-    2 => 'Brak testowych endpointow dla synthetic flows.',
+    0 => 'Monitoring tylko /health (brak monitorów biznesowych).',
+    1 => 'Brittle asercje na dynamicznym tekście lub przypadkowych polach JSON.',
+    2 => 'Brak testowych danych / konta testowego dla endpointów wymagających autoryzacji.',
   ),
   'related_faq' => 
   array (
@@ -57,4 +74,3 @@ return array (
     3 => 'how-to-monitor-webhook-endpoints',
   ),
 );
-

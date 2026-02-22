@@ -4,9 +4,9 @@ return array (
   'order' => 1,
   'title' => 'Uptime monitoring for SaaS',
   'meta_title' => 'Uptime Monitoring for SaaS | TruMonit',
-  'meta_description' => 'Set up uptime monitoring that catches real outages without alert noise: check frequency, retries, multi-region, and proof via incident timeline.',
-  'summary' => 'A practical uptime monitoring setup for SaaS teams: fast detection, less noise, and clear incident history.',
-  'body' => '<p>If you search for <strong>uptime monitoring</strong>, you usually want one thing: detect outages early and route the right alert to the right person. The most common failure mode is not \"no monitoring\". It is monitoring that is too noisy to trust.</p>
+  'meta_description' => 'Set up uptime monitoring that catches real outages without alert noise: check frequency, consecutive failures, retries, multi-region, escalation, and proof via incident timeline.',
+  'summary' => 'A practical uptime monitoring setup for SaaS teams: fast detection, fewer false alerts, clear escalation, and incident history.',
+  'body' => '<p>If you search for <strong>uptime monitoring</strong>, you usually want one thing: detect outages early and route the right alert to the right person. The most common failure mode is not "no monitoring". It is monitoring that is too noisy to trust.</p>
 
 <h3>TL;DR</h3>
 <ul>
@@ -27,7 +27,10 @@ return array (
   <li>Trigger a controlled failure (maintenance window or test host rule).</li>
   <li>Confirm alert routing, deduplication, and escalation are correct.</li>
   <li>Review the incident timeline and status page updates.</li>
-</ol>',
+</ol>
+
+<h3>Thresholds and SLOs (practical)</h3>
+<p>If you use SLOs, uptime monitoring is the sensor that tells you when burn rate is rising. If you do not use SLOs yet, still define what counts as Sev1 vs Sev2 and tune thresholds accordingly.</p>',
   'problem' => 'Teams miss incidents or burn out from alert noise. Without stable checks and clear escalation, uptime monitoring becomes \"background noise\" and stops being used.',
   'approach' => 
   array (
@@ -65,4 +68,3 @@ return array (
     3 => 'how-do-i-reduce-false-alerts',
   ),
 );
-

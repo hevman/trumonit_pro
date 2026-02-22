@@ -10,9 +10,26 @@ return array (
   ),
   'related_solutions' => 
   array (
+    0 => 'ssl-certificate-expiry-monitoring',
   ),
-  'question' => 'How do I monitor SSL certificate expiry?',
-  'answer' => '<p>Set SSL checks to alert your team before certificate expiration, typically 30, 14, and 7 days in advance.</p><p>Early SSL alerts prevent avoidable downtime, trust warnings, and failed API integrations.</p>',
-  'meta_title' => 'How do I monitor SSL certificate expiry? | TruMonit',
-  'meta_description' => 'Set SSL checks to alert your team before certificate expiration, typically 30, 14, and 7 days in advance.Early SSL alerts prevent avoidable downtime, trust warn...',
+  'question' => 'How do I monitor SSL/TLS certificate expiry?',
+  'answer' => '<p><strong>SSL/TLS expiry monitoring</strong> is one of the highest ROI checks you can add. Set early alerts and assign ownership so renewals do not get lost in noise.</p>
+
+<h3>Recommended alert windows</h3>
+<ul>
+  <li><strong>30 days</strong>: early warning.</li>
+  <li><strong>14 days</strong>: start escalation to the owner.</li>
+  <li><strong>7 days</strong>: critical reminders.</li>
+</ul>
+
+<h3>What to include</h3>
+<ul>
+  <li>Subdomains and SAN coverage (api, app, status, cdn).</li>
+  <li>Wildcard usage: verify it matches real hosts.</li>
+  <li>Your renewal process (e.g. Let\'s Encrypt) and who owns it.</li>
+</ul>
+
+<p>Early SSL alerts prevent avoidable downtime, browser trust warnings, and failed integrations.</p>',
+  'meta_title' => 'How do I monitor SSL/TLS certificate expiry? | TruMonit',
+  'meta_description' => 'SSL/TLS expiry monitoring: 30/14/7 day alerts, subdomain (SAN) coverage, and owner escalation to prevent avoidable downtime.',
 );

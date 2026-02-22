@@ -10,6 +10,9 @@ return array (
   ),
   'related_solutions' => 
   array (
+    0 => 'uptime-monitoring-for-saas',
+    1 => 'reduce-false-alerts',
+    2 => 'incident-response-playbook',
   ),
   'question' => 'What are the best alert channels for uptime monitoring?',
   'answer' => '<p>Use at least two channels: one immediate channel (PagerDuty, phone, push) and one collaborative channel (Slack, Teams, email).</p><p>Tier channels by severity so critical incidents wake on-call, while low-priority alerts stay async.</p>',
