@@ -117,13 +117,15 @@ return [
         'steps_title' => 'Create first monitor in 3 steps',
         'step_1' => 'Choose template.',
         'step_2' => 'Provide URL and optional name/tags.',
-        'step_3' => 'Save and wait for first scan, then set baseline.',
+        'step_3' => 'Save, wait for first scan, then confirm baseline.',
         'template_label' => 'Template',
         'template_placeholder' => 'Choose template',
         'template_help_title' => 'Template details',
         'url_placeholder' => 'https://example.com',
         'tags_placeholder' => 'prod, team:ops',
-        'baseline_guidance' => 'Baseline guidance: after the first snapshot appears, open monitor details and click "Set baseline to latest".',
+        'display_name_placeholder' => 'e.g. Homepage',
+        'template_pick_help' => 'Not sure? Homepage = Status page, /login = Login journey, /health = API health.',
+        'baseline_guidance' => 'Baseline (reference state): after the first snapshot appears, open monitor details and click "Set baseline to latest". This marks the current state as OK for future comparisons.',
         'create_monitor' => 'Create monitor',
         'templates' => [
             'status_page' => [

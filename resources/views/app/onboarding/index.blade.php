@@ -44,6 +44,9 @@
                             @endforeach
                         </select>
                         <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                            {{ __('messages.onboarding.template_pick_help') }}
+                        </div>
+                        <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
                             <div class="mb-1 font-medium text-gray-700 dark:text-gray-300">{{ __('messages.onboarding.template_help_title') }}</div>
                             @foreach ($monitorTemplates as $template)
                                 <div><span class="font-medium text-gray-800 dark:text-gray-200">{{ $template['name'] }}</span>: {{ $template['description'] }}</div>
@@ -63,7 +66,7 @@
 
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-900 dark:text-gray-100" for="display_name">{{ __('messages.monitored_urls.display_name') }}</label>
-                        <input id="display_name" name="display_name" type="text" value="{{ old('display_name') }}" class="app-input" />
+                        <input id="display_name" name="display_name" type="text" value="{{ old('display_name') }}" class="app-input" placeholder="{{ __('messages.onboarding.display_name_placeholder') }}" />
                     </div>
 
                     <div>

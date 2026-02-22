@@ -43,21 +43,22 @@
                             </button>
                         </div>
                         <div id="template-description" class="app-help">{{ __('Pick a template and apply defaults, then adjust fields if needed.') }}</div>
+                        <div class="app-help">{{ __('messages.onboarding.template_pick_help') }}</div>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium mb-1" for="url">{{ __('messages.monitored_urls.url') }}</label>
-                        <input id="url" name="url" type="url" value="{{ old('url') }}" required class="app-input" />
+                        <input id="url" name="url" type="url" value="{{ old('url') }}" required class="app-input" placeholder="{{ __('messages.onboarding.url_placeholder') }}" />
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium mb-1" for="display_name">{{ __('messages.monitored_urls.display_name') }}</label>
-                        <input id="display_name" name="display_name" type="text" value="{{ old('display_name') }}" class="app-input" />
+                        <input id="display_name" name="display_name" type="text" value="{{ old('display_name') }}" class="app-input" placeholder="{{ __('messages.onboarding.display_name_placeholder') }}" />
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium mb-1" for="tags">{{ __('messages.monitored_urls.tags') }}</label>
-                        <input id="tags" name="tags" type="text" value="{{ old('tags') }}" class="app-input" placeholder="prod, team:payments" />
+                        <input id="tags" name="tags" type="text" value="{{ old('tags') }}" class="app-input" placeholder="{{ __('messages.onboarding.tags_placeholder') }}" />
                         <div class="app-help">{{ __('Format') }}: <span class="font-mono">a-z0-9:_-</span>, {{ __('max 20') }}.</div>
                     </div>
 
