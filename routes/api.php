@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BillingWebhookController;
 use App\Http\Controllers\Api\IncidentController;
+use App\Http\Controllers\Api\HeartbeatCheckInController;
 use App\Http\Controllers\Api\MonitoredUrlController;
 use App\Http\Controllers\Api\PrivateProbeAgentTaskController;
 use App\Http\Controllers\Api\PrivateProbeAgentController;
@@ -74,6 +75,11 @@ Route::name('api.')->group(function () {
     };
 
     $registerCoreApiRoutes = static function (): void {
+        Route::match(['get', 'post'], '/heartbeat/{token}', HeartbeatCheckInController::class)
+            ->where('token', '[A-Za-z0-9]{24,128}')
+            ->middleware('throttle:api-v1-public')
+            ->name('heartbeat.check_in');
+
         Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:api-v1-public');
         Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:api-v1-public');
         if ((bool) config('wids.billing.payment.webhook_route_enabled', true)) {

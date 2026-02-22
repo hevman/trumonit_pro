@@ -186,7 +186,16 @@
                 </div>
                 <div class="app-card">
                     <div class="text-sm text-gray-600 dark:text-gray-400">{{ __('Scan mode') }}</div>
-                    <div class="font-medium font-mono">{{ $monitoredUrl->scan_mode ?? __('http') }}</div>
+                    @php
+                        $scanMode = (string) ($monitoredUrl->scan_mode ?? 'http');
+                        $scanModeLabel = match ($scanMode) {
+                            'journey' => __('messages.monitored_urls.mode_journey'),
+                            'port' => __('messages.monitored_urls.mode_port'),
+                            'heartbeat' => __('messages.monitored_urls.mode_heartbeat'),
+                            default => __('messages.monitored_urls.mode_http'),
+                        };
+                    @endphp
+                    <div class="font-medium font-mono">{{ $scanModeLabel }}</div>
                     @if ($monitoredUrl->appearance_min_distance !== null)
                         <div class="app-help">{{ __('appearance_min_distance') }}={{ $monitoredUrl->appearance_min_distance }}</div>
                     @endif
@@ -225,6 +234,15 @@
                             </form>
                         @endif
                     </div>
+                </div>
+            @endif
+
+            @if (($monitoredUrl->scan_mode ?? 'http') === 'heartbeat' && is_string($heartbeatCheckInUrl ?? null) && $heartbeatCheckInUrl !== '')
+                <div class="app-card">
+                    <div class="text-sm text-gray-600 dark:text-gray-400">{{ __('messages.monitored_urls.heartbeat_check_in_url') }}</div>
+                    <div class="mt-1 text-sm break-all text-gray-900 dark:text-gray-100">{{ $heartbeatCheckInUrl }}</div>
+                    <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">{{ __('messages.monitored_urls.heartbeat_check_in_help') }}</div>
+                    <div class="mt-2 rounded bg-gray-100 px-3 py-2 text-xs font-mono text-gray-800 dark:bg-gray-900 dark:text-gray-100 break-all">curl -fsS "{{ $heartbeatCheckInUrl }}"</div>
                 </div>
             @endif
 

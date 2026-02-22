@@ -220,7 +220,7 @@ class SavedViewController extends Controller
             }
 
             $scanMode = trim((string) ($filters['scan_mode'] ?? ''));
-            if (in_array($scanMode, ['http', 'journey'], true)) {
+            if (in_array($scanMode, ['http', 'journey', 'port', 'heartbeat'], true)) {
                 $result['scan_mode'] = $scanMode;
             }
 

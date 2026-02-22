@@ -126,6 +126,7 @@
                     var value = raw.trim().toLowerCase();
                     if (!value) return null;
 
+                    if (value.indexOf('/cron') !== -1 || value.indexOf('/heartbeat') !== -1) return 'cron_heartbeat';
                     if (value.indexOf('/checkout') !== -1 || value.indexOf('/cart') !== -1) return 'ecommerce_checkout';
                     if (value.indexOf('/tracking') !== -1 || value.indexOf('/track') !== -1) return 'logistics_tracking';
                     if (value.indexOf('/login') !== -1 || value.indexOf('/signin') !== -1) return 'login_journey';
@@ -188,4 +189,3 @@
         </script>
     </x-modal>
 @endif
-

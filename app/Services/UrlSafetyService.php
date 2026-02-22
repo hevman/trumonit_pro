@@ -9,9 +9,9 @@ class UrlSafetyService
     /**
      * @throws UnsafeUrlException
      */
-    public static function assertSafeForScanning(string $url): void
+    public static function assertSafeForScanning(string $url, ?array $allowedPorts = null): void
     {
-        self::resolveSafeTarget($url);
+        self::resolveSafeTarget($url, $allowedPorts);
     }
 
     /**
@@ -96,7 +96,7 @@ class UrlSafetyService
      *
      * @throws UnsafeUrlException
      */
-    public static function resolveSafeTarget(string $url): array
+    public static function resolveSafeTarget(string $url, ?array $allowedPorts = null): array
     {
         $parsed = parse_url($url);
 
@@ -138,7 +138,7 @@ class UrlSafetyService
             throw new UnsafeUrlException('Invalid port.');
         }
 
-        $allowedPorts = config('wids.http.allowed_ports', [80, 443]);
+        $allowedPorts = is_array($allowedPorts) ? $allowedPorts : config('wids.http.allowed_ports', [80, 443]);
 
         if (is_array($allowedPorts) && $allowedPorts !== [] && ! in_array($port, $allowedPorts, true)) {
             throw new UnsafeUrlException('Port not allowed.');

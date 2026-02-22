@@ -13,6 +13,7 @@ use App\Services\TagService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -197,7 +198,7 @@ class MonitoredUrlBulkController extends Controller
                 'expected_status_min' => ['nullable', 'integer', 'min:100', 'max:599'],
                 'expected_status_max' => ['nullable', 'integer', 'min:100', 'max:599', 'gte:expected_status_min'],
                 'is_active' => ['nullable', 'boolean'],
-                'scan_mode' => ['nullable', 'string', Rule::in(['http', 'journey'])],
+                'scan_mode' => ['nullable', 'string', Rule::in(['http', 'journey', 'port', 'heartbeat'])],
                 'appearance_min_distance' => ['nullable', 'integer', 'min:0', 'max:64'],
                 'alert_after_failures' => ['nullable', 'integer', 'min:1', 'max:10'],
                 'alert_cooldown_minutes' => ['nullable', 'integer', 'min:0', 'max:10080'],
@@ -273,6 +274,22 @@ class MonitoredUrlBulkController extends Controller
                     $oldFrequencyMinutes = (int) $monitoredUrl->frequency_minutes;
 
                     $scanMode = $row['scan_mode'] ?? $monitoredUrl->scan_mode ?? 'http';
+                    $contentRules = array_key_exists('content_rules', $row)
+                        ? (is_array($row['content_rules']) ? $row['content_rules'] : [])
+                        : (is_array($monitoredUrl->content_rules) ? $monitoredUrl->content_rules : []);
+
+                    if ($scanMode === 'heartbeat') {
+                        $heartbeatRules = is_array($contentRules['heartbeat'] ?? null) ? $contentRules['heartbeat'] : [];
+                        $heartbeatRules['token'] = is_string($heartbeatRules['token'] ?? null) && trim((string) $heartbeatRules['token']) !== ''
+                            ? trim((string) $heartbeatRules['token'])
+                            : Str::random(48);
+                        $heartbeatRules['grace_minutes'] = min(10080, max(0, (int) ($heartbeatRules['grace_minutes'] ?? 3)));
+                        $contentRules['heartbeat'] = $heartbeatRules;
+                    }
+
+                    if ($contentRules === []) {
+                        $contentRules = null;
+                    }
 
                     try {
                         [$expectedStatusMin, $expectedStatusMax] = app(ExpectedStatusRangeService::class)->resolve(
@@ -306,18 +323,24 @@ class MonitoredUrlBulkController extends Controller
                     $monitoredUrl->fill([
                         'display_name' => array_key_exists('display_name', $row) ? $row['display_name'] : $monitoredUrl->display_name,
                         'frequency_minutes' => array_key_exists('frequency_minutes', $row) ? $row['frequency_minutes'] : $monitoredUrl->frequency_minutes,
-                        'timeout_seconds' => array_key_exists('timeout_seconds', $row) ? $row['timeout_seconds'] : $monitoredUrl->timeout_seconds,
-                        'follow_redirects' => array_key_exists('follow_redirects', $row) ? $row['follow_redirects'] : $monitoredUrl->follow_redirects,
+                        'timeout_seconds' => array_key_exists('timeout_seconds', $row)
+                            ? $row['timeout_seconds']
+                            : ($scanMode === 'port' ? 10 : ($scanMode === 'heartbeat' ? 5 : $monitoredUrl->timeout_seconds)),
+                        'follow_redirects' => $scanMode === 'http' || $scanMode === 'journey'
+                            ? (array_key_exists('follow_redirects', $row) ? $row['follow_redirects'] : $monitoredUrl->follow_redirects)
+                            : false,
                         'expected_status_min' => $expectedStatusMin,
                         'expected_status_max' => $expectedStatusMax,
                         'is_active' => $newIsActive,
                         'next_scan_at' => $nextScanAt,
                         'scan_mode' => $scanMode,
-                        'appearance_min_distance' => array_key_exists('appearance_min_distance', $row) ? $row['appearance_min_distance'] : $monitoredUrl->appearance_min_distance,
+                        'appearance_min_distance' => $scanMode === 'http' || $scanMode === 'journey'
+                            ? (array_key_exists('appearance_min_distance', $row) ? $row['appearance_min_distance'] : $monitoredUrl->appearance_min_distance)
+                            : null,
                         'alert_after_failures' => array_key_exists('alert_after_failures', $row) ? $row['alert_after_failures'] : $monitoredUrl->alert_after_failures,
                         'alert_cooldown_minutes' => array_key_exists('alert_cooldown_minutes', $row) ? $row['alert_cooldown_minutes'] : $monitoredUrl->alert_cooldown_minutes,
                         'journey_steps' => $scanMode === 'journey' ? ($row['journey_steps'] ?? $monitoredUrl->journey_steps) : null,
-                        'content_rules' => array_key_exists('content_rules', $row) ? $row['content_rules'] : $monitoredUrl->content_rules,
+                        'content_rules' => $contentRules,
                     ]);
                     $monitoredUrl->save();
 
@@ -329,6 +352,18 @@ class MonitoredUrlBulkController extends Controller
 
                 $isActive = array_key_exists('is_active', $row) ? (bool) $row['is_active'] : true;
                 $scanMode = $row['scan_mode'] ?? 'http';
+                $contentRules = is_array($row['content_rules'] ?? null) ? $row['content_rules'] : [];
+                if ($scanMode === 'heartbeat') {
+                    $heartbeatRules = is_array($contentRules['heartbeat'] ?? null) ? $contentRules['heartbeat'] : [];
+                    $heartbeatRules['token'] = is_string($heartbeatRules['token'] ?? null) && trim((string) $heartbeatRules['token']) !== ''
+                        ? trim((string) $heartbeatRules['token'])
+                        : Str::random(48);
+                    $heartbeatRules['grace_minutes'] = min(10080, max(0, (int) ($heartbeatRules['grace_minutes'] ?? 3)));
+                    $contentRules['heartbeat'] = $heartbeatRules;
+                }
+                if ($contentRules === []) {
+                    $contentRules = null;
+                }
                 $defaultAlertAfterFailures = min(10, max(1, (int) config('wids.alerts.default_after_failures', 2)));
                 $defaultAlertCooldownMinutes = min(10080, max(0, (int) config('wids.alerts.default_cooldown_minutes', 10)));
 
@@ -353,16 +388,20 @@ class MonitoredUrlBulkController extends Controller
                     'is_active' => $isActive,
                     'next_scan_at' => $isActive ? now() : null,
                     'frequency_minutes' => $row['frequency_minutes'] ?? 1440,
-                    'timeout_seconds' => $row['timeout_seconds'] ?? 30,
-                    'follow_redirects' => $row['follow_redirects'] ?? true,
+                    'timeout_seconds' => $row['timeout_seconds'] ?? ($scanMode === 'port' ? 10 : ($scanMode === 'heartbeat' ? 5 : 30)),
+                    'follow_redirects' => $scanMode === 'http' || $scanMode === 'journey'
+                        ? ($row['follow_redirects'] ?? true)
+                        : false,
                     'expected_status_min' => $expectedStatusMin,
                     'expected_status_max' => $expectedStatusMax,
                     'scan_mode' => $scanMode,
-                    'appearance_min_distance' => $row['appearance_min_distance'] ?? null,
+                    'appearance_min_distance' => $scanMode === 'http' || $scanMode === 'journey'
+                        ? ($row['appearance_min_distance'] ?? null)
+                        : null,
                     'alert_after_failures' => $row['alert_after_failures'] ?? $defaultAlertAfterFailures,
                     'alert_cooldown_minutes' => $row['alert_cooldown_minutes'] ?? $defaultAlertCooldownMinutes,
                     'journey_steps' => $scanMode === 'journey' ? ($row['journey_steps'] ?? null) : null,
-                    'content_rules' => $row['content_rules'] ?? null,
+                    'content_rules' => $contentRules,
                 ]);
 
                 app(TagService::class)->syncMonitoredUrlTags($createdUrl, $tagNames);

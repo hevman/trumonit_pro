@@ -81,12 +81,16 @@ class ScanMonitoredUrlJob implements ShouldQueue
             ];
 
             [$snapshot, $body] = $this->performScan($monitoredUrl, $snapshotData);
+            $scanMode = is_string($monitoredUrl->scan_mode) ? strtolower(trim($monitoredUrl->scan_mode)) : 'http';
 
-            if (($monitoredUrl->scan_mode ?? 'http') !== 'journey') {
+            if ($scanMode === 'http') {
                 $this->tryCaptureScreenshot($monitoredUrl, $snapshot);
             }
-            $this->tryCaptureDns($monitoredUrl, $snapshot);
-            $this->tryCaptureTls($monitoredUrl, $snapshot);
+
+            if (in_array($scanMode, ['http', 'journey'], true)) {
+                $this->tryCaptureDns($monitoredUrl, $snapshot);
+                $this->tryCaptureTls($monitoredUrl, $snapshot);
+            }
 
             $previousSnapshot = UrlSnapshot::query()
                 ->where('monitored_url_id', $monitoredUrl->id)
@@ -266,6 +270,14 @@ class ScanMonitoredUrlJob implements ShouldQueue
     private function performScan(MonitoredUrl $monitoredUrl, array $snapshotData): array
     {
         $scanMode = is_string($monitoredUrl->scan_mode) ? strtolower(trim($monitoredUrl->scan_mode)) : 'http';
+
+        if ($scanMode === 'heartbeat') {
+            return $this->scanViaHeartbeat($monitoredUrl, $snapshotData);
+        }
+
+        if ($scanMode === 'port') {
+            return $this->scanViaPort($monitoredUrl, $snapshotData);
+        }
 
         if ($scanMode === 'journey') {
             return $this->scanViaJourney($monitoredUrl, $snapshotData);
@@ -584,6 +596,183 @@ class ScanMonitoredUrlJob implements ShouldQueue
             }
 
             return [$snapshot, $body];
+        } catch (\Throwable $e) {
+            $snapshot = UrlSnapshot::query()->create(array_merge($snapshotData, [
+                'error_message' => $e->getMessage(),
+            ]));
+
+            return [$snapshot, null];
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $snapshotData
+     * @return array{0: UrlSnapshot, 1: ?string}
+     */
+    private function scanViaPort(MonitoredUrl $monitoredUrl, array $snapshotData): array
+    {
+        try {
+            $parsed = parse_url((string) $monitoredUrl->url);
+
+            if (! is_array($parsed)) {
+                throw new \RuntimeException('Invalid URL for TCP port monitor.');
+            }
+
+            $host = strtolower(trim((string) ($parsed['host'] ?? '')));
+            $scheme = strtolower(trim((string) ($parsed['scheme'] ?? 'https')));
+
+            if ($host === '') {
+                throw new \RuntimeException('URL host is required for TCP port monitor.');
+            }
+
+            $defaultPort = isset($parsed['port']) ? (int) $parsed['port'] : ($scheme === 'http' ? 80 : 443);
+            $contentRules = is_array($monitoredUrl->content_rules) ? $monitoredUrl->content_rules : [];
+            $portRules = is_array($contentRules['port'] ?? null) ? $contentRules['port'] : [];
+            $overridePort = is_numeric($portRules['port'] ?? null) ? (int) $portRules['port'] : null;
+
+            $port = $overridePort ?? $defaultPort;
+
+            if ($port < 1 || $port > 65535) {
+                throw new \RuntimeException('Invalid TCP port.');
+            }
+
+            $normalizedUrl = sprintf('%s://%s:%d', $scheme !== '' ? $scheme : 'https', $host, $port);
+            $allowedPorts = config('wids.port.allowed_ports', []);
+            $allowedPorts = is_array($allowedPorts) ? array_values(array_unique(array_map('intval', $allowedPorts))) : [];
+            $allowedPorts = array_values(array_filter($allowedPorts, fn (int $value): bool => $value > 0 && $value <= 65535));
+
+            $resolvedTarget = UrlSafetyService::resolveSafeTarget($normalizedUrl, $allowedPorts);
+
+            $connectIp = (string) ($resolvedTarget['connect_ip'] ?? '');
+            $address = filter_var($connectIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) ? '['.$connectIp.']' : $connectIp;
+            $timeoutSeconds = min(30, max(1, (int) ($monitoredUrl->timeout_seconds ?? 10)));
+
+            $startedAt = microtime(true);
+            $errno = 0;
+            $errstr = '';
+            $socket = @stream_socket_client(
+                sprintf('tcp://%s:%d', $address, $port),
+                $errno,
+                $errstr,
+                $timeoutSeconds,
+                STREAM_CLIENT_CONNECT
+            );
+            $responseTimeMs = (int) round((microtime(true) - $startedAt) * 1000);
+
+            if (! is_resource($socket)) {
+                throw new \RuntimeException('Port connect failed'.($errstr !== '' ? ': '.$errstr : '.'));
+            }
+
+            try {
+                fclose($socket);
+            } catch (\Throwable) {
+            }
+
+            $meta = is_array($snapshotData['meta'] ?? null) ? $snapshotData['meta'] : [];
+            $meta['port'] = [
+                'host' => (string) $resolvedTarget['host'],
+                'port' => $port,
+                'connect_ip' => $connectIp,
+                'resolved_ips' => (array) ($resolvedTarget['resolved_ips'] ?? []),
+                'open' => true,
+            ];
+
+            $snapshot = UrlSnapshot::query()->create(array_merge($snapshotData, [
+                'request_url' => $normalizedUrl,
+                'final_url' => sprintf('tcp://%s:%d', (string) $resolvedTarget['host'], $port),
+                'http_status' => min(599, max(100, (int) config('wids.port.success_status_code', 204))),
+                'response_time_ms' => $responseTimeMs,
+                'meta' => $meta,
+            ]));
+
+            return [$snapshot, null];
+        } catch (\Throwable $e) {
+            $meta = is_array($snapshotData['meta'] ?? null) ? $snapshotData['meta'] : [];
+            $meta['port'] = [
+                'open' => false,
+            ];
+
+            $snapshot = UrlSnapshot::query()->create(array_merge($snapshotData, [
+                'error_message' => $e->getMessage(),
+                'meta' => $meta,
+            ]));
+
+            return [$snapshot, null];
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $snapshotData
+     * @return array{0: UrlSnapshot, 1: ?string}
+     */
+    private function scanViaHeartbeat(MonitoredUrl $monitoredUrl, array $snapshotData): array
+    {
+        try {
+            $now = now();
+            $contentRules = is_array($monitoredUrl->content_rules) ? $monitoredUrl->content_rules : [];
+            $heartbeatRules = is_array($contentRules['heartbeat'] ?? null) ? $contentRules['heartbeat'] : [];
+            $lastCheckInAtIso = is_string($heartbeatRules['last_check_in_at'] ?? null)
+                ? trim((string) $heartbeatRules['last_check_in_at'])
+                : '';
+            $lastCheckInAt = $lastCheckInAtIso !== '' ? \Carbon\CarbonImmutable::parse($lastCheckInAtIso) : null;
+            $frequencyMinutes = min(43200, max(1, (int) ($monitoredUrl->frequency_minutes ?? 5)));
+            $graceMinutes = min(10080, max(0, (int) ($heartbeatRules['grace_minutes'] ?? 3)));
+            $overdueAfterMinutes = $frequencyMinutes + $graceMinutes;
+
+            $isOverdue = false;
+            $overdueByMinutes = 0;
+            $awaitingFirstCheckIn = false;
+
+            if ($lastCheckInAt === null) {
+                $awaitingFirstCheckIn = true;
+                $ageMinutes = (int) $monitoredUrl->created_at?->diffInMinutes($now, true);
+
+                if ($ageMinutes > $overdueAfterMinutes) {
+                    $isOverdue = true;
+                    $overdueByMinutes = $ageMinutes - $overdueAfterMinutes;
+                }
+            } else {
+                $deadline = $lastCheckInAt->addMinutes($overdueAfterMinutes);
+
+                if ($now->greaterThan($deadline)) {
+                    $isOverdue = true;
+                    $overdueByMinutes = $deadline->diffInMinutes($now, true);
+                }
+            }
+
+            $meta = is_array($snapshotData['meta'] ?? null) ? $snapshotData['meta'] : [];
+            $meta['heartbeat'] = [
+                'token' => is_string($heartbeatRules['token'] ?? null) ? (string) $heartbeatRules['token'] : null,
+                'last_check_in_at' => $lastCheckInAt?->toISOString(),
+                'frequency_minutes' => $frequencyMinutes,
+                'grace_minutes' => $graceMinutes,
+                'overdue_after_minutes' => $overdueAfterMinutes,
+                'overdue' => $isOverdue,
+                'overdue_by_minutes' => $overdueByMinutes,
+                'awaiting_first_check_in' => $awaitingFirstCheckIn,
+            ];
+
+            if ($isOverdue) {
+                $reason = $lastCheckInAt === null
+                    ? 'No heartbeat check-in received.'
+                    : 'Heartbeat check-in overdue.';
+
+                $snapshot = UrlSnapshot::query()->create(array_merge($snapshotData, [
+                    'error_message' => $reason,
+                    'meta' => $meta,
+                ]));
+
+                return [$snapshot, null];
+            }
+
+            $snapshot = UrlSnapshot::query()->create(array_merge($snapshotData, [
+                'final_url' => $monitoredUrl->url,
+                'http_status' => 204,
+                'response_time_ms' => null,
+                'meta' => $meta,
+            ]));
+
+            return [$snapshot, null];
         } catch (\Throwable $e) {
             $snapshot = UrlSnapshot::query()->create(array_merge($snapshotData, [
                 'error_message' => $e->getMessage(),
@@ -967,6 +1156,40 @@ class ScanMonitoredUrlJob implements ShouldQueue
         $noiseControls = $this->resolveIncidentNoiseControls();
         $defaultAlertAfterFailures = min(10, max(1, (int) config('wids.alerts.default_after_failures', 2)));
         $currentAlertAfterFailures = min(10, max(1, (int) ($monitoredUrl->alert_after_failures ?? $defaultAlertAfterFailures)));
+        $heartbeatMeta = is_array($snapshot->meta['heartbeat'] ?? null) ? $snapshot->meta['heartbeat'] : null;
+
+        if (($monitoredUrl->scan_mode ?? 'http') === 'heartbeat'
+            && is_array($heartbeatMeta)
+            && ($heartbeatMeta['overdue'] ?? false) === true) {
+            $incidents[] = [
+                'tenant_id' => $monitoredUrl->tenant_id,
+                'monitored_url_id' => $monitoredUrl->id,
+                'previous_snapshot_id' => $previousSnapshot?->id,
+                'current_snapshot_id' => $snapshot->id,
+                'kind' => 'heartbeat_missed',
+                'fingerprint' => $this->computeFingerprint('heartbeat_missed', [
+                    (string) ($heartbeatMeta['token'] ?? ''),
+                ]),
+                'severity' => 90,
+                'status' => 'open',
+                'summary' => 'Heartbeat check-in overdue',
+                'details' => [
+                    'heartbeat' => $heartbeatMeta,
+                    'consecutive_failures' => (int) ($monitoredUrl->consecutive_failures ?? 0),
+                    'alert_after_failures' => $currentAlertAfterFailures,
+                ],
+                'detected_at' => $snapshot->fetched_at,
+                'last_seen_at' => $snapshot->fetched_at,
+            ];
+
+            return $this->attachIncidentAlertContext(
+                $incidents,
+                $monitoredUrl,
+                $snapshot,
+                $suppressContentSignals,
+                $currentAlertAfterFailures,
+            );
+        }
 
         if ($snapshot->error_message !== null) {
             $incidents[] = [
@@ -1322,6 +1545,13 @@ class ScanMonitoredUrlJob implements ShouldQueue
 
         if (in_array('journey_failed', $kinds, true) && ! isset($activeKinds['journey_failed']) && $journeyOk === true) {
             $this->resolveOpenIncidentsByKind($monitoredUrl, 'journey_failed', $now);
+        }
+
+        $heartbeat = is_array($snapshot->meta['heartbeat'] ?? null) ? $snapshot->meta['heartbeat'] : null;
+        $heartbeatOverdue = is_array($heartbeat) ? (bool) ($heartbeat['overdue'] ?? false) : false;
+
+        if (in_array('heartbeat_missed', $kinds, true) && ! isset($activeKinds['heartbeat_missed']) && $heartbeatOverdue === false) {
+            $this->resolveOpenIncidentsByKind($monitoredUrl, 'heartbeat_missed', $now);
         }
     }
 

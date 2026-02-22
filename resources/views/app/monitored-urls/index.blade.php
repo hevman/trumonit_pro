@@ -311,6 +311,8 @@
                             <option value="">{{ __('messages.actions.all') }}</option>
                             <option value="http" {{ ($filters['scan_mode'] ?? '') === 'http' ? 'selected' : '' }}>{{ __('messages.monitored_urls.mode_http') }}</option>
                             <option value="journey" {{ ($filters['scan_mode'] ?? '') === 'journey' ? 'selected' : '' }}>{{ __('messages.monitored_urls.mode_journey') }}</option>
+                            <option value="port" {{ ($filters['scan_mode'] ?? '') === 'port' ? 'selected' : '' }}>{{ __('messages.monitored_urls.mode_port') }}</option>
+                            <option value="heartbeat" {{ ($filters['scan_mode'] ?? '') === 'heartbeat' ? 'selected' : '' }}>{{ __('messages.monitored_urls.mode_heartbeat') }}</option>
                         </select>
                     </div>
 

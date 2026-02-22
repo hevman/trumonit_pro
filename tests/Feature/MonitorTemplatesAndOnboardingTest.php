@@ -31,8 +31,9 @@ class MonitorTemplatesAndOnboardingTest extends TestCase
             ->assertOk()
             ->assertSee('Onboarding wizard')
             ->assertSee('Website uptime')
-            ->assertSee('Status page / marketing site')
-            ->assertSee('API health endpoint');
+            ->assertSee('API health endpoint')
+            ->assertSee('Keyword monitor')
+            ->assertSee('Cron heartbeat');
     }
 
     public function test_member_cannot_open_onboarding_wizard(): void
@@ -131,5 +132,38 @@ class MonitorTemplatesAndOnboardingTest extends TestCase
         Queue::assertPushed(ScanMonitoredUrlJob::class, function (ScanMonitoredUrlJob $job) use ($monitor): bool {
             return $job->monitoredUrlId === $monitor->id;
         });
+    }
+
+    public function test_heartbeat_template_generates_token_and_grace_defaults(): void
+    {
+        $tenant = Tenant::query()->create([
+            'name' => 'Acme',
+            'slug' => 'acme',
+        ]);
+
+        $owner = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role' => 'owner',
+        ]);
+
+        $this->actingAs($owner);
+
+        $this->post(route('monitored-urls.store'), [
+            'template' => 'cron_heartbeat',
+            'url' => 'https://example.com/cron',
+            'display_name' => 'Cron',
+            'is_active' => true,
+        ])->assertRedirect();
+
+        $monitor = MonitoredUrl::query()
+            ->where('tenant_id', $tenant->id)
+            ->where('url', 'https://example.com/cron')
+            ->firstOrFail();
+
+        $this->assertSame('heartbeat', $monitor->scan_mode);
+        $this->assertIsArray($monitor->content_rules);
+        $this->assertIsArray($monitor->content_rules['heartbeat'] ?? null);
+        $this->assertNotEmpty($monitor->content_rules['heartbeat']['token'] ?? null);
+        $this->assertSame(3, (int) ($monitor->content_rules['heartbeat']['grace_minutes'] ?? 0));
     }
 }

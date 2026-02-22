@@ -68,6 +68,8 @@
                             <select id="scan_mode" name="scan_mode" class="app-input">
                                 <option value="http" {{ old('scan_mode', 'http') === 'http' ? 'selected' : '' }}>{{ __('messages.monitored_urls.scan_mode_http') }}</option>
                                 <option value="journey" {{ old('scan_mode') === 'journey' ? 'selected' : '' }}>{{ __('messages.monitored_urls.scan_mode_journey') }}</option>
+                                <option value="port" {{ old('scan_mode') === 'port' ? 'selected' : '' }}>{{ __('messages.monitored_urls.scan_mode_port') }}</option>
+                                <option value="heartbeat" {{ old('scan_mode') === 'heartbeat' ? 'selected' : '' }}>{{ __('messages.monitored_urls.scan_mode_heartbeat') }}</option>
                             </select>
                             <div class="app-help">{{ __('messages.monitored_urls.scan_mode_help') }}</div>
                         </div>
@@ -133,6 +135,24 @@
                                 <input type="checkbox" name="follow_redirects" value="1" class="app-checkbox" {{ old('follow_redirects', 1) ? 'checked' : '' }} />
                                 {{ __('Follow redirects') }}
                             </label>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1" for="keyword_must_include">{{ __('messages.monitored_urls.keyword_must_include') }}</label>
+                                <input id="keyword_must_include" name="keyword_must_include" type="text" value="{{ old('keyword_must_include') }}" class="app-input" placeholder="{{ __('messages.monitored_urls.keyword_placeholder') }}" />
+                                <div class="app-help">{{ __('messages.monitored_urls.keyword_help') }}</div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1" for="port_number">{{ __('messages.monitored_urls.port_number') }}</label>
+                                <input id="port_number" name="port_number" type="number" min="1" max="65535" value="{{ old('port_number') }}" class="app-input" placeholder="443" />
+                                <div class="app-help">{{ __('messages.monitored_urls.port_help') }}</div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1" for="heartbeat_grace_minutes">{{ __('messages.monitored_urls.heartbeat_grace_minutes') }}</label>
+                                <input id="heartbeat_grace_minutes" name="heartbeat_grace_minutes" type="number" min="0" max="10080" value="{{ old('heartbeat_grace_minutes') }}" class="app-input" placeholder="3" />
+                                <div class="app-help">{{ __('messages.monitored_urls.heartbeat_grace_help') }}</div>
+                            </div>
                         </div>
 
                         <div>
@@ -239,6 +259,24 @@
                 setInputValue('appearance_min_distance', defaults.appearance_min_distance);
                 setInputValue('alert_after_failures', defaults.alert_after_failures);
                 setInputValue('alert_cooldown_minutes', defaults.alert_cooldown_minutes);
+                if (defaults.content_rules && typeof defaults.content_rules === 'object') {
+                    var allowKeywords = Array.isArray(defaults.content_rules.allow_keywords) ? defaults.content_rules.allow_keywords : [];
+                    setInputValue('keyword_must_include', allowKeywords.length > 0 ? allowKeywords.join(', ') : '');
+
+                    var portDefaults = defaults.content_rules.port && typeof defaults.content_rules.port === 'object'
+                        ? defaults.content_rules.port
+                        : null;
+                    setInputValue('port_number', portDefaults && typeof portDefaults.port !== 'undefined' ? portDefaults.port : '');
+
+                    var heartbeatDefaults = defaults.content_rules.heartbeat && typeof defaults.content_rules.heartbeat === 'object'
+                        ? defaults.content_rules.heartbeat
+                        : null;
+                    setInputValue('heartbeat_grace_minutes', heartbeatDefaults && typeof heartbeatDefaults.grace_minutes !== 'undefined' ? heartbeatDefaults.grace_minutes : '');
+                } else {
+                    setInputValue('keyword_must_include', '');
+                    setInputValue('port_number', '');
+                    setInputValue('heartbeat_grace_minutes', '');
+                }
                 setJsonValue('content_rules', defaults.content_rules);
                 setJsonValue('journey_steps', defaults.journey_steps);
             }

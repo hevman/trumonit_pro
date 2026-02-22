@@ -13,6 +13,7 @@ use App\Services\ScanQueueRoutingService;
 use App\Services\TagService;
 use App\Services\TenantQuotaService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -72,17 +73,48 @@ class MonitoredUrlController extends Controller
             'expected_status_min' => ['nullable', 'integer', 'min:100', 'max:599'],
             'expected_status_max' => ['nullable', 'integer', 'min:100', 'max:599', 'gte:expected_status_min'],
             'is_active' => ['nullable', 'boolean'],
-            'scan_mode' => ['nullable', 'string', Rule::in(['http', 'journey'])],
+            'scan_mode' => ['nullable', 'string', Rule::in(['http', 'journey', 'port', 'heartbeat'])],
             'appearance_min_distance' => ['nullable', 'integer', 'min:0', 'max:64'],
             'alert_after_failures' => ['nullable', 'integer', 'min:1', 'max:10'],
             'alert_cooldown_minutes' => ['nullable', 'integer', 'min:0', 'max:10080'],
             'journey_steps' => ['nullable', 'array', 'max:30'],
             'content_rules' => ['nullable', 'array'],
+            'keyword_must_include' => ['nullable', 'string', 'max:255'],
+            'port_number' => ['nullable', 'integer', 'min:1', 'max:65535'],
+            'heartbeat_grace_minutes' => ['nullable', 'integer', 'min:0', 'max:10080'],
         ]);
 
         $scanMode = $data['scan_mode'] ?? 'http';
         $journeySteps = $scanMode === 'journey' ? ($data['journey_steps'] ?? null) : null;
-        $contentRules = $data['content_rules'] ?? null;
+        $contentRules = is_array($data['content_rules'] ?? null) ? $data['content_rules'] : [];
+
+        $keywordList = $this->normalizeKeywordList($data['keyword_must_include'] ?? null);
+        if ($keywordList !== []) {
+            $existingAllow = is_array($contentRules['allow_keywords'] ?? null) ? $contentRules['allow_keywords'] : [];
+            $contentRules['enabled'] = $contentRules['enabled'] ?? true;
+            $contentRules['allow_keywords'] = array_values(array_unique(array_merge($existingAllow, $keywordList)));
+        }
+
+        if ($scanMode === 'port' && is_numeric($data['port_number'] ?? null)) {
+            $portRules = is_array($contentRules['port'] ?? null) ? $contentRules['port'] : [];
+            $portRules['port'] = (int) $data['port_number'];
+            $contentRules['port'] = $portRules;
+        }
+
+        if ($scanMode === 'heartbeat') {
+            $heartbeatRules = is_array($contentRules['heartbeat'] ?? null) ? $contentRules['heartbeat'] : [];
+            $heartbeatRules['token'] = is_string($heartbeatRules['token'] ?? null) && trim((string) $heartbeatRules['token']) !== ''
+                ? trim((string) $heartbeatRules['token'])
+                : Str::random(48);
+            $heartbeatRules['grace_minutes'] = is_numeric($data['heartbeat_grace_minutes'] ?? null)
+                ? min(10080, max(0, (int) $data['heartbeat_grace_minutes']))
+                : min(10080, max(0, (int) ($heartbeatRules['grace_minutes'] ?? 3)));
+            $contentRules['heartbeat'] = $heartbeatRules;
+        }
+
+        if ($contentRules === []) {
+            $contentRules = null;
+        }
 
         try {
             [$expectedStatusMin, $expectedStatusMax] = app(ExpectedStatusRangeService::class)->resolve(
@@ -114,14 +146,18 @@ class MonitoredUrlController extends Controller
             'url' => $data['url'],
             'display_name' => $data['display_name'] ?? null,
             'frequency_minutes' => $data['frequency_minutes'] ?? 1440,
-            'timeout_seconds' => $data['timeout_seconds'] ?? 30,
-            'follow_redirects' => $data['follow_redirects'] ?? true,
+            'timeout_seconds' => $data['timeout_seconds'] ?? ($scanMode === 'port' ? 10 : ($scanMode === 'heartbeat' ? 5 : 30)),
+            'follow_redirects' => $scanMode === 'http' || $scanMode === 'journey'
+                ? ($data['follow_redirects'] ?? true)
+                : false,
             'expected_status_min' => $expectedStatusMin,
             'expected_status_max' => $expectedStatusMax,
             'is_active' => $data['is_active'] ?? true,
             'next_scan_at' => ($data['is_active'] ?? true) ? now() : null,
             'scan_mode' => $scanMode,
-            'appearance_min_distance' => $data['appearance_min_distance'] ?? null,
+            'appearance_min_distance' => $scanMode === 'http' || $scanMode === 'journey'
+                ? ($data['appearance_min_distance'] ?? null)
+                : null,
             'alert_after_failures' => $data['alert_after_failures'] ?? $defaultAlertAfterFailures,
             'alert_cooldown_minutes' => $data['alert_cooldown_minutes'] ?? $defaultAlertCooldownMinutes,
             'journey_steps' => $journeySteps,
@@ -181,12 +217,15 @@ class MonitoredUrlController extends Controller
             'expected_status_min' => ['nullable', 'integer', 'min:100', 'max:599'],
             'expected_status_max' => ['nullable', 'integer', 'min:100', 'max:599', 'gte:expected_status_min'],
             'is_active' => ['nullable', 'boolean'],
-            'scan_mode' => ['nullable', 'string', Rule::in(['http', 'journey'])],
+            'scan_mode' => ['nullable', 'string', Rule::in(['http', 'journey', 'port', 'heartbeat'])],
             'appearance_min_distance' => ['nullable', 'integer', 'min:0', 'max:64'],
             'alert_after_failures' => ['nullable', 'integer', 'min:1', 'max:10'],
             'alert_cooldown_minutes' => ['nullable', 'integer', 'min:0', 'max:10080'],
             'journey_steps' => ['nullable', 'array', 'max:30'],
             'content_rules' => ['nullable', 'array'],
+            'keyword_must_include' => ['nullable', 'string', 'max:255'],
+            'port_number' => ['nullable', 'integer', 'min:1', 'max:65535'],
+            'heartbeat_grace_minutes' => ['nullable', 'integer', 'min:0', 'max:10080'],
         ]);
 
         $monitoredUrl = MonitoredUrl::query()
@@ -211,6 +250,40 @@ class MonitoredUrlController extends Controller
         $before['tags'] = $beforeTags;
 
         $scanMode = $data['scan_mode'] ?? $monitoredUrl->scan_mode ?? 'http';
+        $contentRules = is_array($data['content_rules'] ?? null) ? $data['content_rules'] : $monitoredUrl->content_rules;
+        $contentRules = is_array($contentRules) ? $contentRules : [];
+
+        if (array_key_exists('keyword_must_include', $data)) {
+            $keywordList = $this->normalizeKeywordList($data['keyword_must_include'] ?? null);
+
+            if ($keywordList === []) {
+                unset($contentRules['allow_keywords']);
+            } else {
+                $contentRules['enabled'] = $contentRules['enabled'] ?? true;
+                $contentRules['allow_keywords'] = $keywordList;
+            }
+        }
+
+        if ($scanMode === 'port' && array_key_exists('port_number', $data) && is_numeric($data['port_number'])) {
+            $portRules = is_array($contentRules['port'] ?? null) ? $contentRules['port'] : [];
+            $portRules['port'] = (int) $data['port_number'];
+            $contentRules['port'] = $portRules;
+        }
+
+        if ($scanMode === 'heartbeat') {
+            $heartbeatRules = is_array($contentRules['heartbeat'] ?? null) ? $contentRules['heartbeat'] : [];
+            $heartbeatRules['token'] = is_string($heartbeatRules['token'] ?? null) && trim((string) $heartbeatRules['token']) !== ''
+                ? trim((string) $heartbeatRules['token'])
+                : Str::random(48);
+            $heartbeatRules['grace_minutes'] = array_key_exists('heartbeat_grace_minutes', $data) && is_numeric($data['heartbeat_grace_minutes'])
+                ? min(10080, max(0, (int) $data['heartbeat_grace_minutes']))
+                : min(10080, max(0, (int) ($heartbeatRules['grace_minutes'] ?? 3)));
+            $contentRules['heartbeat'] = $heartbeatRules;
+        }
+
+        if ($contentRules === []) {
+            $contentRules = null;
+        }
 
         $tagNames = $beforeTags;
 
@@ -259,18 +332,24 @@ class MonitoredUrlController extends Controller
         $monitoredUrl->fill([
             'display_name' => array_key_exists('display_name', $data) ? $data['display_name'] : $monitoredUrl->display_name,
             'frequency_minutes' => array_key_exists('frequency_minutes', $data) ? $data['frequency_minutes'] : $monitoredUrl->frequency_minutes,
-            'timeout_seconds' => array_key_exists('timeout_seconds', $data) ? $data['timeout_seconds'] : $monitoredUrl->timeout_seconds,
-            'follow_redirects' => array_key_exists('follow_redirects', $data) ? $data['follow_redirects'] : $monitoredUrl->follow_redirects,
+            'timeout_seconds' => array_key_exists('timeout_seconds', $data)
+                ? $data['timeout_seconds']
+                : ($scanMode === 'port' ? 10 : ($scanMode === 'heartbeat' ? 5 : $monitoredUrl->timeout_seconds)),
+            'follow_redirects' => $scanMode === 'http' || $scanMode === 'journey'
+                ? (array_key_exists('follow_redirects', $data) ? $data['follow_redirects'] : $monitoredUrl->follow_redirects)
+                : false,
             'expected_status_min' => $expectedStatusMin,
             'expected_status_max' => $expectedStatusMax,
             'is_active' => array_key_exists('is_active', $data) ? $data['is_active'] : $monitoredUrl->is_active,
             'next_scan_at' => $nextScanAt,
             'scan_mode' => $scanMode,
-            'appearance_min_distance' => array_key_exists('appearance_min_distance', $data) ? $data['appearance_min_distance'] : $monitoredUrl->appearance_min_distance,
+            'appearance_min_distance' => $scanMode === 'http' || $scanMode === 'journey'
+                ? (array_key_exists('appearance_min_distance', $data) ? $data['appearance_min_distance'] : $monitoredUrl->appearance_min_distance)
+                : null,
             'alert_after_failures' => array_key_exists('alert_after_failures', $data) ? $data['alert_after_failures'] : $monitoredUrl->alert_after_failures,
             'alert_cooldown_minutes' => array_key_exists('alert_cooldown_minutes', $data) ? $data['alert_cooldown_minutes'] : $monitoredUrl->alert_cooldown_minutes,
             'journey_steps' => $scanMode === 'journey' ? ($data['journey_steps'] ?? $monitoredUrl->journey_steps) : null,
-            'content_rules' => array_key_exists('content_rules', $data) ? $data['content_rules'] : $monitoredUrl->content_rules,
+            'content_rules' => $contentRules,
         ]);
         $monitoredUrl->save();
 
@@ -405,5 +484,34 @@ class MonitoredUrlController extends Controller
             'message' => 'Baseline updated.',
             'monitored_url' => $monitoredUrl,
         ]);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function normalizeKeywordList(mixed $rawValue): array
+    {
+        if (! is_string($rawValue)) {
+            return [];
+        }
+
+        $parts = preg_split('/[,\\n]/', $rawValue) ?: [];
+        $keywords = [];
+
+        foreach ($parts as $part) {
+            if (! is_string($part)) {
+                continue;
+            }
+
+            $normalized = trim($part);
+
+            if ($normalized === '') {
+                continue;
+            }
+
+            $keywords[] = mb_substr($normalized, 0, 120);
+        }
+
+        return array_values(array_unique($keywords));
     }
 }

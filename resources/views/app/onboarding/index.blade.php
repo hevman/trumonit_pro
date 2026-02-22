@@ -36,7 +36,7 @@
                     <div>
                         @php
                             $defaultTemplate = old('template') ?: 'website_uptime';
-                            $featuredTemplateKeys = ['website_uptime', 'login_journey', 'api_health', 'status_page'];
+                            $featuredTemplateKeys = ['website_uptime', 'keyword_presence', 'api_health', 'cron_heartbeat'];
                             $templateByKey = collect($monitorTemplates)->keyBy('key');
                             $featuredTemplates = collect($featuredTemplateKeys)
                                 ->map(fn (string $key) => $templateByKey->get($key))
@@ -154,6 +154,10 @@
                 var value = raw.trim().toLowerCase();
                 if (!value) {
                     return null;
+                }
+
+                if (value.indexOf('/cron') !== -1 || value.indexOf('/heartbeat') !== -1) {
+                    return 'cron_heartbeat';
                 }
 
                 if (value.indexOf('/checkout') !== -1 || value.indexOf('/cart') !== -1) {

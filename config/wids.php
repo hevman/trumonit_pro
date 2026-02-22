@@ -9,6 +9,11 @@ return [
         'max_body_bytes' => (int) env('WIDS_HTTP_MAX_BODY_BYTES', 2_000_000),
     ],
 
+    'port' => [
+        'allowed_ports' => array_values(array_filter(array_map('intval', array_map('trim', explode(',', (string) env('WIDS_PORT_ALLOWED_PORTS', '22,25,53,80,110,143,443,465,587,993,995,1433,1521,2049,2379,2380,27017,3000,3306,3389,4000,5000,5432,5672,6379,8080,8443,9000,9200,9300,11211,27018')))))),
+        'success_status_code' => (int) env('WIDS_PORT_SUCCESS_STATUS_CODE', 204),
+    ],
+
     'rate_limits' => [
         'tenant_requests_per_minute' => (int) env('WIDS_TENANT_RPM', 120),
         'host_requests_per_minute' => (int) env('WIDS_HOST_RPM', 120),
@@ -507,6 +512,57 @@ return [
                 ],
             ],
         ],
+        'keyword_presence' => [
+            'name' => 'Keyword monitor',
+            'description' => 'Checks whether expected text marker exists on the page.',
+            'defaults' => [
+                'scan_mode' => 'http',
+                'frequency_minutes' => 5,
+                'timeout_seconds' => 20,
+                'follow_redirects' => true,
+                'expected_status_min' => 200,
+                'expected_status_max' => 399,
+                'alert_after_failures' => 2,
+                'alert_cooldown_minutes' => 20,
+                'content_rules' => [
+                    'enabled' => true,
+                    'allow_keywords' => ['OK'],
+                ],
+            ],
+        ],
+        'tcp_port' => [
+            'name' => 'TCP port monitor',
+            'description' => 'Verifies that TCP port is reachable from outside (connect check).',
+            'defaults' => [
+                'scan_mode' => 'port',
+                'frequency_minutes' => 2,
+                'timeout_seconds' => 10,
+                'follow_redirects' => false,
+                'expected_status_min' => 200,
+                'expected_status_max' => 299,
+                'alert_after_failures' => 2,
+                'alert_cooldown_minutes' => 10,
+            ],
+        ],
+        'cron_heartbeat' => [
+            'name' => 'Cron heartbeat',
+            'description' => 'Expects periodic check-ins from cron/job and alerts on missing ping.',
+            'defaults' => [
+                'scan_mode' => 'heartbeat',
+                'frequency_minutes' => 5,
+                'timeout_seconds' => 5,
+                'follow_redirects' => false,
+                'expected_status_min' => 200,
+                'expected_status_max' => 299,
+                'alert_after_failures' => 1,
+                'alert_cooldown_minutes' => 5,
+                'content_rules' => [
+                    'heartbeat' => [
+                        'grace_minutes' => 3,
+                    ],
+                ],
+            ],
+        ],
     ],
 
     'retention' => [
@@ -578,7 +634,7 @@ return [
     'incidents' => [
         'auto_resolve' => [
             'enabled' => env('WIDS_AUTO_RESOLVE_ENABLED', true),
-            'kinds' => array_values(array_filter(array_map('trim', explode(',', (string) env('WIDS_AUTO_RESOLVE_KINDS', 'fetch_error,unexpected_status,journey_failed'))))),
+            'kinds' => array_values(array_filter(array_map('trim', explode(',', (string) env('WIDS_AUTO_RESOLVE_KINDS', 'fetch_error,unexpected_status,journey_failed,heartbeat_missed'))))),
         ],
         'noise_controls' => [
             'browser_console_error_min_count' => (int) env('WIDS_INCIDENT_BROWSER_CONSOLE_MIN_COUNT', 2),
