@@ -9,6 +9,7 @@
     $homeUrl = route('localized.public.home', ['locale' => app()->getLocale()]);
     $pricingUrl = route('localized.public.pricing', ['locale' => app()->getLocale()]);
     $faqIndexUrl = route('localized.public.faq.index', ['locale' => app()->getLocale()]);
+    $solutionsIndexUrl = route('localized.public.solutions.index', ['locale' => app()->getLocale()]);
     $cookiesUrl = route('localized.legal.cookies', ['locale' => app()->getLocale()]);
     $privacyUrl = route('localized.legal.privacy', ['locale' => app()->getLocale()]);
     $termsUrl = route('localized.legal.terms', ['locale' => app()->getLocale()]);
@@ -90,6 +91,7 @@
 
                 <nav class="hidden lg:flex items-center gap-1 text-sm">
                     <a href="{{ $homeUrl }}#features" class="rounded-md px-3 py-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100">{{ __('messages.welcome.nav_features') }}</a>
+                    <a href="{{ $solutionsIndexUrl }}" class="rounded-md px-3 py-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100">{{ $isPl ? 'Scenariusze' : 'Use cases' }}</a>
                     <a href="{{ $faqIndexUrl }}" class="rounded-md px-3 py-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100">{{ __('faq.nav_faq') }}</a>
                     <a href="{{ $pricingUrl }}" class="rounded-md px-3 py-2 text-slate-900 bg-slate-100 dark:text-slate-100 dark:bg-slate-800">{{ __('messages.welcome.nav_pricing') }}</a>
                 </nav>
@@ -203,6 +205,8 @@
                         <a class="hover:underline" href="{{ $homeUrl }}">{{ $isPl ? 'Strona glowna' : 'Home' }}</a>
                         <span class="opacity-40">&middot;</span>
                         <a class="hover:underline" href="{{ $pricingUrl }}">{{ __('messages.welcome.nav_pricing') }}</a>
+                        <span class="opacity-40">&middot;</span>
+                        <a class="hover:underline" href="{{ $solutionsIndexUrl }}">{{ $isPl ? 'Scenariusze' : 'Use cases' }}</a>
                         <span class="opacity-40">&middot;</span>
                         <a class="hover:underline" href="{{ $faqIndexUrl }}">{{ __('faq.nav_faq') }}</a>
                         <span class="opacity-40">&middot;</span>
