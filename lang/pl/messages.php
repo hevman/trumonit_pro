@@ -19,11 +19,11 @@ return [
 
     'auth' => [
         'email' => 'Email',
-        'password' => 'Haslo',
-        'name' => 'Imie i nazwisko',
-        'tenant_name' => 'Nazwa workspace',
+        'password' => 'Hasło',
+        'name' => 'Imię i nazwisko',
+        'tenant_name' => 'Organizacja (workspace)',
         'login_title' => 'Logowanie',
-        'register_title' => 'Utworz konto',
+        'register_title' => 'Utwórz konto',
     ],
 
     'actions' => [
