@@ -50,7 +50,7 @@ class OidcSessionTest extends TestCase
             'state' => $state,
         ]));
 
-        $response->assertRedirect(route('monitored-urls.index', absolute: false));
+        $response->assertRedirect(route('dashboard', absolute: false));
         $this->assertAuthenticatedAs($user->fresh());
         $this->assertDatabaseHas('user_identities', [
             'tenant_id' => $tenant->id,
@@ -92,7 +92,7 @@ class OidcSessionTest extends TestCase
             'state' => $state,
         ]));
 
-        $response->assertRedirect(route('monitored-urls.index', absolute: false));
+        $response->assertRedirect(route('dashboard', absolute: false));
         $this->assertAuthenticated();
 
         $user = User::query()

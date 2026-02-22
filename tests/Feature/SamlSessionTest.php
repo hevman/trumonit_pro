@@ -92,7 +92,7 @@ class SamlSessionTest extends TestCase
             'SAMLResponse' => $samlResponse,
         ]);
 
-        $response->assertRedirect(route('monitored-urls.index', absolute: false));
+        $response->assertRedirect(route('dashboard', absolute: false));
         $this->assertAuthenticatedAs($user->fresh());
 
         $this->assertDatabaseHas('user_identities', [
@@ -165,7 +165,7 @@ class SamlSessionTest extends TestCase
             'SAMLResponse' => $samlResponse,
         ]);
 
-        $response->assertRedirect(route('monitored-urls.index', absolute: false));
+        $response->assertRedirect(route('dashboard', absolute: false));
         $this->assertAuthenticated();
 
         $user = User::query()
@@ -346,7 +346,7 @@ class SamlSessionTest extends TestCase
             'SAMLResponse' => $samlResponse,
         ]);
 
-        $response->assertRedirect(route('monitored-urls.index', absolute: false));
+        $response->assertRedirect(route('dashboard', absolute: false));
         $this->assertAuthenticated();
 
         $user = User::query()
@@ -404,7 +404,7 @@ class SamlSessionTest extends TestCase
             'SAMLResponse' => $encryptedSamlResponse,
         ]);
 
-        $response->assertRedirect(route('monitored-urls.index', absolute: false));
+        $response->assertRedirect(route('dashboard', absolute: false));
         $this->assertAuthenticated();
 
         $user = User::query()
@@ -508,7 +508,7 @@ class SamlSessionTest extends TestCase
             'SAMLResponse' => $responseSignedEncryptedSamlResponse,
         ]);
 
-        $response->assertRedirect(route('monitored-urls.index', absolute: false));
+        $response->assertRedirect(route('dashboard', absolute: false));
         $this->assertAuthenticated();
     }
 

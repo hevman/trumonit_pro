@@ -27,6 +27,6 @@ class RegistrationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('monitored-urls.index', absolute: false));
+        $response->assertRedirect(route('dashboard', absolute: false));
     }
 }

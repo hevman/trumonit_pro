@@ -112,7 +112,7 @@ class SamlSessionController extends Controller
                 request: $request,
             );
 
-            return redirect()->intended(route('monitored-urls.index', absolute: false));
+            return redirect()->intended(route('dashboard', absolute: false));
         } catch (\Throwable $e) {
             return $this->loginError($e->getMessage(), $tenantSlug);
         }
