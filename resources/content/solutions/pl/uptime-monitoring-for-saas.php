@@ -41,7 +41,7 @@ return array (
   'problem' => 'Zespoły przepuszczają incydenty albo wypalają się przez szum alertów. Bez stabilnych checków i eskalacji monitoring staje się tłem i przestaje być używany.',
   'approach' => 
   array (
-    0 => 'Dodaj 2-3 monitory dla najbardziej krytycznych endpointow.',
+    0 => 'Dodaj 2-3 monitory dla najbardziej krytycznych endpointów.',
     1 => 'Ustaw próg kolejnych błędów przed alertem (nie page na single failure).',
     2 => 'Włącz multi‑region dla monitorów o dużym wpływie.',
     3 => 'Skonfiguruj eskalacje i maintenance windows.',
