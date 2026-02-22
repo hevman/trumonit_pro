@@ -15,7 +15,10 @@
                             <div class="text-sm">{{ __('messages.dashboard.onboarding_text') }}</div>
                         </div>
                         <div class="flex gap-2">
-                            <a href="{{ route('onboarding.show') }}" class="app-button-primary">
+                            <button type="button" class="app-button-primary" x-on:click="$dispatch('open-modal', 'quick-add-monitor')">
+                                {{ __('messages.dashboard.action_create_monitor') }}
+                            </button>
+                            <a href="{{ route('onboarding.show') }}" class="app-button-secondary">
                                 {{ __('messages.dashboard.onboarding_open') }}
                             </a>
                             <a href="{{ route('monitored-urls.create') }}" class="app-button-secondary">

@@ -15,12 +15,11 @@
                     <a href="{{ route('monitored-urls.bulk') }}" class="app-button-secondary">
                         {{ __('messages.actions.import_export') }}
                     </a>
-                    <a href="{{ route('onboarding.show') }}" class="app-button-primary">
+                    <button type="button" class="app-button-primary" x-on:click="$dispatch('open-modal', 'quick-add-monitor')">
                         {{ __('messages.dashboard.action_create_monitor') }}
-                    </a>
-                    <a href="{{ route('monitored-urls.create') }}" class="app-button-secondary">
-                        {{ __('messages.dashboard.onboarding_advanced') }}
-                    </a>
+                    </button>
+                    <a href="{{ route('onboarding.show') }}" class="app-button-secondary">{{ __('messages.quick_add.open_wizard') }}</a>
+                    <a href="{{ route('monitored-urls.create') }}" class="app-button-secondary">{{ __('messages.dashboard.onboarding_advanced') }}</a>
                 </div>
             @endif
         </div>

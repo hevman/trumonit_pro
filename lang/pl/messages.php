@@ -164,6 +164,22 @@ return [
         ],
     ],
 
+    'quick_add' => [
+        'title' => 'Szybkie dodanie monitora',
+        'subtitle' => 'Dodaj monitor w minutę. Ustawienia zaawansowane dopracujesz później.',
+        'url_label' => 'URL',
+        'type_label' => 'Typ monitora',
+        'interval_label' => 'Częstotliwość',
+        'interval_help' => 'Rekomendacja: 5 min dla większości stron.',
+        'name_label' => 'Nazwa (opcjonalnie)',
+        'tags_label' => 'Tagi (opcjonalnie)',
+        'open_wizard' => 'Otwórz kreator',
+        'open_advanced' => 'Formularz zaawansowany',
+        'open_notifications' => 'Powiadomienia',
+        'submit' => 'Utwórz i uruchom pierwszy skan',
+        'suggested_prefix' => 'Sugerowane: ',
+    ],
+
     'monitored_urls' => [
         'title' => 'Monitorowane URL-e',
         'new' => 'Nowy monitorowany URL',

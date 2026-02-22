@@ -163,6 +163,22 @@ return [
         ],
     ],
 
+    'quick_add' => [
+        'title' => 'Quick add monitor',
+        'subtitle' => 'Add a monitor in under a minute. You can tune advanced settings later.',
+        'url_label' => 'URL',
+        'type_label' => 'Monitor type',
+        'interval_label' => 'Check interval',
+        'interval_help' => 'Recommended: 5 min for most sites.',
+        'name_label' => 'Name (optional)',
+        'tags_label' => 'Tags (optional)',
+        'open_wizard' => 'Open wizard',
+        'open_advanced' => 'Open advanced form',
+        'open_notifications' => 'Notifications',
+        'submit' => 'Create and run first check',
+        'suggested_prefix' => 'Suggested: ',
+    ],
+
     'monitored_urls' => [
         'title' => 'Monitored URLs',
         'new' => 'New monitored URL',
