@@ -12,8 +12,8 @@ return array (
   array (
     0 => 'choose-monitoring-plan',
   ),
-  'question' => 'Jak wybrac plan monitoringu strony?',
-  'answer' => '<p>Dobieraj plan wedlug liczby monitorow, czestotliwosci skanow, liczby kanalow powiadomien oraz potrzeb status page i workflow zespolowego.</p><p>Zacznij od mniejszego planu i skaluj, gdy rosna wolumen monitorow, wymagania reakcji i potrzeby governance.</p>',
-  'meta_title' => 'Jak wybrac plan monitoringu strony? | TruMonit',
-  'meta_description' => 'Dobieraj plan wedlug liczby monitorow, czestotliwosci skanow, liczby kanalow powiadomien oraz potrzeb status page i workflow zespolowego.Zacznij od mniejszego p...',
+  'question' => 'Jak wybrać plan monitoringu strony?',
+  'answer' => '<p>Dobieraj plan wedlug liczby monitorow, częstotliwosci skanow, liczby kanałow powiadomien oraz potrzeb status page i workflow zespołowego.</p><p>Zacznij od mniejszego planu i skaluj, gdy rosna wolumen monitorow, wymagania reakcji i potrzeby governance.</p>',
+  'meta_title' => 'Jak wybrać plan monitoringu strony? | TruMonit',
+  'meta_description' => 'Dobieraj plan wedlug liczby monitorow, częstotliwosci skanow, liczby kanałow powiadomien oraz potrzeb status page i workflow zespołowego.Zacznij od mniejszego p...',
 );

@@ -11,8 +11,8 @@ return array (
   'related_solutions' => 
   array (
   ),
-  'question' => 'Jak monitorowac wygasanie domeny?',
+  'question' => 'Jak monitorować wygasanie domeny?',
   'answer' => '<p>Ustaw alerty dla terminu wygasania domeny z duzym wyprzedzeniem, np. 60, 30 i 14 dni.</p><p>Powiadomienia powinny trafic do technicznego i biznesowego ownera, aby uniknac punktu pojedynczej awarii.</p>',
-  'meta_title' => 'Jak monitorowac wygasanie domeny? | TruMonit',
+  'meta_title' => 'Jak monitorować wygasanie domeny? | TruMonit',
   'meta_description' => 'Ustaw alerty dla terminu wygasania domeny z duzym wyprzedzeniem, np. 60, 30 i 14 dni.Powiadomienia powinny trafic do technicznego i biznesowego ownera, aby unik...',
 );

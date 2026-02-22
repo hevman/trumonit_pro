@@ -45,11 +45,11 @@ return array (
     1 => 'Ustaw próg kolejnych błędów przed alertem (nie page na single failure).',
     2 => 'Włącz multi‑region dla monitorów o dużym wpływie.',
     3 => 'Skonfiguruj eskalacje i maintenance windows.',
-    4 => 'Raz w tygodniu przejrzyj incydenty: falszywe alarmy i braki w playbooku.',
+    4 => 'Raz w tygodniu przejrzyj incydenty: fałszywe alarmy i braki w playbooku.',
   ),
   'proof' => 
   array (
-    0 => 'Timeline i historia incydentow (co, kiedy i jak dlugo).',
+    0 => 'Timeline i historia incydentów (co, kiedy i jak długo).',
     1 => 'Mniej fałszywych alertów dzięki progom i multi‑region.',
     2 => 'Status page do komunikacji z klientami.',
   ),

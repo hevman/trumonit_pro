@@ -14,7 +14,7 @@ return array (
     1 => 'uptime-monitoring-for-saas',
   ),
   'question' => 'Blad sieci vs blad aplikacji: jak to rozroznic w monitoringu?',
-  'answer' => '<p>Rozdzielaj bledy transportu (DNS, TLS, timeout, connect) od bledow aplikacyjnych (5xx, bledna logika, zly payload).</p><p>Obie klasy zwykle wymagaja innych ownerow i innej sciezki mitygacji.</p>',
+  'answer' => '<p>Rozdzielaj błędy transportu (DNS, TLS, timeout, connect) od błędów aplikacyjnych (5xx, błędna logika, zly payload).</p><p>Obie klasy zwykle wymagaja innych ownerow i innej sciezki mitygacji.</p>',
   'meta_title' => 'Blad sieci vs blad aplikacji: jak to rozroznic w monitoringu? | TruMonit',
-  'meta_description' => 'Rozdzielaj bledy transportu (DNS, TLS, timeout, connect) od bledow aplikacyjnych (5xx, bledna logika, zly payload).Obie klasy zwykle wymagaja innych ownerow i i...',
+  'meta_description' => 'Rozdzielaj błędy transportu (DNS, TLS, timeout, connect) od błędów aplikacyjnych (5xx, błędna logika, zly payload).Obie klasy zwykle wymagaja innych ownerow i i...',
 );

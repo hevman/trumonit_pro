@@ -12,7 +12,7 @@ return array (
   array (
   ),
   'question' => 'Czym jest error budget w monitoringu SLO?',
-  'answer' => '<p>Error budget to dopuszczalny poziom niedostepnosci wynikajacy z SLO, np. 0.1% dla celu 99.9% uptime.</p><p>Tempo spalania budzetu pomaga decydowac, kiedy priorytetem jest stabilnosc zamiast nowych funkcji.</p>',
+  'answer' => '<p>Error budget to dopuszczalny poziom niedostępności wynikajacy z SLO, np. 0.1% dla celu 99.9% uptime.</p><p>Tempo spalania budzetu pomaga decydowac, kiedy priorytetem jest stabilnosc zamiast nowych funkcji.</p>',
   'meta_title' => 'Czym jest error budget w monitoringu SLO? | TruMonit',
-  'meta_description' => 'Error budget to dopuszczalny poziom niedostepnosci wynikajacy z SLO, np. 0.1% dla celu 99.9% uptime.Tempo spalania budzetu pomaga decydowac, kiedy priorytetem j...',
+  'meta_description' => 'Error budget to dopuszczalny poziom niedostępności wynikajacy z SLO, np. 0.1% dla celu 99.9% uptime.Tempo spalania budzetu pomaga decydowac, kiedy priorytetem j...',
 );

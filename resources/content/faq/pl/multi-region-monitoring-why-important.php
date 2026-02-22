@@ -13,8 +13,8 @@ return array (
     0 => 'uptime-monitoring-for-saas',
     1 => 'reduce-false-alerts',
   ),
-  'question' => 'Dlaczego monitoring z wielu regionow jest wazny?',
-  'answer' => '<p>Check z jednego regionu moze dawac falszywe alarmy, gdy problem dotyczy tylko jednej trasy sieciowej. Multi-region potwierdza, czy problem jest globalny czy lokalny.</p><p>To poprawia jakosc sygnalu i przyspiesza przekazanie incydentu do wlasciwego zespolu.</p>',
-  'meta_title' => 'Dlaczego monitoring z wielu regionow jest wazny? | TruMonit',
-  'meta_description' => 'Check z jednego regionu moze dawac falszywe alarmy, gdy problem dotyczy tylko jednej trasy sieciowej. Multi-region potwierdza, czy problem jest globalny czy lok...',
+  'question' => 'Dlaczego monitoring z wielu regionow jest ważny?',
+  'answer' => '<p>Check z jednego regionu moze dawac fałszywe alarmy, gdy problem dotyczy tylko jednej trasy sieciowej. Multi-region potwierdza, czy problem jest globalny czy lokalny.</p><p>To poprawia jakosc sygnału i przyspiesza przekazanie incydentu do wlasciwego zespołu.</p>',
+  'meta_title' => 'Dlaczego monitoring z wielu regionow jest ważny? | TruMonit',
+  'meta_description' => 'Check z jednego regionu moze dawac fałszywe alarmy, gdy problem dotyczy tylko jednej trasy sieciowej. Multi-region potwierdza, czy problem jest globalny czy lok...',
 );

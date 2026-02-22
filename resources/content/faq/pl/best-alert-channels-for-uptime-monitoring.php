@@ -14,8 +14,8 @@ return array (
     1 => 'reduce-false-alerts',
     2 => 'incident-response-playbook',
   ),
-  'question' => 'Jakie kanaly alertow sa najlepsze dla monitoringu uptime?',
-  'answer' => '<p>W praktyce warto miec co najmniej dwa kanaly: szybki (PagerDuty, telefon, push) i wspolpracy (Slack, Teams, email).</p><p>Kanaly powinny byc mapowane do poziomu krytycznosci, aby tylko najwazniejsze incydenty budzily dyzur.</p>',
-  'meta_title' => 'Jakie kanaly alertow sa najlepsze dla monitoringu uptime? | TruMonit',
-  'meta_description' => 'W praktyce warto miec co najmniej dwa kanaly: szybki (PagerDuty, telefon, push) i wspolpracy (Slack, Teams, email).Kanaly powinny byc mapowane do poziomu krytyc...',
+  'question' => 'Jakie kanały alertów są najlepsze dla monitoringu uptime?',
+  'answer' => '<p>W praktyce warto mieć co najmniej dwa kanały: szybki (PagerDuty, telefon, push) i wspolpracy (Slack, Teams, email).</p><p>Kanaly powinny być mapowane do poziomu krytyczności, aby tylko najwazniejsze incydenty budzily dyzur.</p>',
+  'meta_title' => 'Jakie kanały alertów są najlepsze dla monitoringu uptime? | TruMonit',
+  'meta_description' => 'W praktyce warto mieć co najmniej dwa kanały: szybki (PagerDuty, telefon, push) i wspolpracy (Slack, Teams, email).Kanaly powinny być mapowane do poziomu krytyc...',
 );

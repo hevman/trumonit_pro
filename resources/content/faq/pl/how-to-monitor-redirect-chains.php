@@ -11,8 +11,8 @@ return array (
   'related_solutions' => 
   array (
   ),
-  'question' => 'Jak monitorowac lancuchy przekierowan?',
+  'question' => 'Jak monitorować łańcuchy przekierowan?',
   'answer' => '<p>Wlacz podazanie za redirectami i weryfikuj URL koncowy, kod odpowiedzi, poprawny TLS oraz liczbe hopow.</p><p>Alarmuj przy nieoczekiwanym wydluzeniu lancucha, bo rosnie latency i spada jakosc crawl dla SEO.</p>',
-  'meta_title' => 'Jak monitorowac lancuchy przekierowan? | TruMonit',
+  'meta_title' => 'Jak monitorować łańcuchy przekierowan? | TruMonit',
   'meta_description' => 'Wlacz podazanie za redirectami i weryfikuj URL koncowy, kod odpowiedzi, poprawny TLS oraz liczbe hopow.Alarmuj przy nieoczekiwanym wydluzeniu lancucha, bo rosni...',
 );

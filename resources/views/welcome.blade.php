@@ -2,10 +2,10 @@
 @php
     $isPl = app()->getLocale() === 'pl';
     $seoTitle = $isPl
-        ? 'TruMonit - Monitoring uptime, SSL i endpointow API'
+        ? 'TruMonit - Monitoring uptime, SSL i endpointów API'
         : 'TruMonit - Uptime, SSL, and API Endpoint Monitoring';
     $seoDescription = $isPl
-        ? 'TruMonit zapewnia monitoring 24/7 stron i API, alerty w czasie rzeczywistym oraz status page dla klientow i zespolow.'
+        ? 'TruMonit zapewnia monitoring 24/7 stron i API, alerty w czasie rzeczywistym oraz status page dla klientów i zespołów.'
         : 'TruMonit delivers 24/7 website and API monitoring, real-time alerts, and status pages for teams and clients.';
     $homeUrl = route('localized.public.home', ['locale' => app()->getLocale()]);
     $pricingUrl = route('localized.public.pricing', ['locale' => app()->getLocale()]);
@@ -339,7 +339,7 @@
                         <span class="opacity-40">&middot;</span>
                         <a class="hover:underline" href="{{ $cookiesUrl }}">{{ app()->getLocale() === 'pl' ? 'Cookies' : 'Cookies' }}</a>
                         <span class="opacity-40">&middot;</span>
-                        <a class="hover:underline" href="{{ $privacyUrl }}">{{ app()->getLocale() === 'pl' ? 'Prywatnosc' : 'Privacy' }}</a>
+                        <a class="hover:underline" href="{{ $privacyUrl }}">{{ app()->getLocale() === 'pl' ? 'Prywatność' : 'Privacy' }}</a>
                         <span class="opacity-40">&middot;</span>
                         <a class="hover:underline" href="{{ $termsUrl }}">{{ app()->getLocale() === 'pl' ? 'Warunki' : 'Terms' }}</a>
                     </div>

@@ -4,7 +4,7 @@
         ? 'FAQ monitoringu stron i API | TruMonit'
         : 'Website and API Monitoring FAQ | TruMonit';
     $seoDescription = $isPl
-        ? 'FAQ o monitoringu uptime, endpointow API, SSL, status page i redukcji falszywych alertow.'
+        ? 'FAQ o monitoringu uptime, endpointów API, SSL, status page i redukcji fałszywych alertów.'
         : 'FAQ about uptime monitoring, API endpoint checks, SSL expiry, status pages, and reducing false alerts.';
     $homeUrl = route('localized.public.home', ['locale' => app()->getLocale()]);
     $pricingUrl = route('localized.public.pricing', ['locale' => app()->getLocale()]);
@@ -150,7 +150,7 @@
                         <span class="opacity-40">&middot;</span>
                         <a class="hover:underline" href="{{ $faqIndexUrl }}">{{ __('faq.nav_faq') }}</a>
                         <span class="opacity-40">&middot;</span>
-                        <a class="hover:underline" href="{{ $privacyUrl }}">{{ app()->getLocale() === 'pl' ? 'Prywatnosc' : 'Privacy' }}</a>
+                        <a class="hover:underline" href="{{ $privacyUrl }}">{{ app()->getLocale() === 'pl' ? 'Prywatność' : 'Privacy' }}</a>
                         <span class="opacity-40">&middot;</span>
                         <a class="hover:underline" href="{{ $termsUrl }}">{{ app()->getLocale() === 'pl' ? 'Warunki' : 'Terms' }}</a>
                     </div>

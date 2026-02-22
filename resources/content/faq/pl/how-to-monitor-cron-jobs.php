@@ -11,8 +11,8 @@ return array (
   'related_solutions' => 
   array (
   ),
-  'question' => 'Jak monitorowac cron jobs i zadania cykliczne?',
-  'answer' => '<p>Najprosciej przez heartbeat: po kazdym poprawnym wykonaniu job wysyla sygnal. Brak sygnalu w czasie oznacza incydent.</p><p>Warto monitorowac nie tylko brak wykonania, ale tez zbyt dlugi czas trwania zadania.</p>',
-  'meta_title' => 'Jak monitorowac cron jobs i zadania cykliczne? | TruMonit',
-  'meta_description' => 'Najprosciej przez heartbeat: po kazdym poprawnym wykonaniu job wysyla sygnal. Brak sygnalu w czasie oznacza incydent.Warto monitorowac nie tylko brak wykonania,...',
+  'question' => 'Jak monitorować cron jobs i zadania cykliczne?',
+  'answer' => '<p>Najprościej przez heartbeat: po każdym poprawnym wykonaniu job wysyla sygnał. Brak sygnału w czasie oznacza incydent.</p><p>Warto monitorować nie tylko brak wykonania, ale też zbyt długi czas trwania zadania.</p>',
+  'meta_title' => 'Jak monitorować cron jobs i zadania cykliczne? | TruMonit',
+  'meta_description' => 'Najprościej przez heartbeat: po każdym poprawnym wykonaniu job wysyla sygnał. Brak sygnału w czasie oznacza incydent.Warto monitorować nie tylko brak wykonania,...',
 );

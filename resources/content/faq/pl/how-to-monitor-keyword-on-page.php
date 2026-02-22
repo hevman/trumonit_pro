@@ -11,8 +11,8 @@ return array (
   'related_solutions' => 
   array (
   ),
-  'question' => 'Jak monitorowac slowo kluczowe lub marker tresci na stronie?',
-  'answer' => '<p>Dodaj assertion tresci, np. oczekiwany tekst, klucz JSON lub marker HTML, ktory musi byc obecny.</p><p>Wybieraj stabilne markery techniczne zamiast dynamicznego copy marketingowego, aby ograniczyc falszywe alarmy.</p>',
-  'meta_title' => 'Jak monitorowac slowo kluczowe lub marker tresci na stronie? | TruMonit',
-  'meta_description' => 'Dodaj assertion tresci, np. oczekiwany tekst, klucz JSON lub marker HTML, ktory musi byc obecny.Wybieraj stabilne markery techniczne zamiast dynamicznego copy m...',
+  'question' => 'Jak monitorować slowo kluczowe lub marker tresci na stronie?',
+  'answer' => '<p>Dodaj assertion tresci, np. oczekiwany tekst, klucz JSON lub marker HTML, który musi być obecny.</p><p>Wybieraj stabilne markery techniczne zamiast dynamicznego copy marketingowego, aby ograniczyc fałszywe alarmy.</p>',
+  'meta_title' => 'Jak monitorować slowo kluczowe lub marker tresci na stronie? | TruMonit',
+  'meta_description' => 'Dodaj assertion tresci, np. oczekiwany tekst, klucz JSON lub marker HTML, który musi być obecny.Wybieraj stabilne markery techniczne zamiast dynamicznego copy m...',
 );

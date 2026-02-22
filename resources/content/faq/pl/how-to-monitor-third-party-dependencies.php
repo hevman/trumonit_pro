@@ -11,8 +11,8 @@ return array (
   'related_solutions' => 
   array (
   ),
-  'question' => 'Jak monitorowac zaleznosci zewnetrzne?',
-  'answer' => '<p>Wydziel krytycznych dostawcow (platnosci, auth, DNS, CDN, email) i oznacz ich w monitorach jako dependencies.</p><p>To przyspiesza ocene, czy incydent jest wewnetrzny czy zewnetrzny oraz ulatwia komunikacje z klientami.</p>',
-  'meta_title' => 'Jak monitorowac zaleznosci zewnetrzne? | TruMonit',
-  'meta_description' => 'Wydziel krytycznych dostawcow (platnosci, auth, DNS, CDN, email) i oznacz ich w monitorach jako dependencies.To przyspiesza ocene, czy incydent jest wewnetrzny...',
+  'question' => 'Jak monitorować zależności zewnętrzne?',
+  'answer' => '<p>Wydziel krytycznych dostawcow (płatności, auth, DNS, CDN, email) i oznacz ich w monitorach jako dependencies.</p><p>To przyspiesza ocene, czy incydent jest wewnętrzny czy zewnętrzny oraz ulatwia komunikację z klientami.</p>',
+  'meta_title' => 'Jak monitorować zależności zewnętrzne? | TruMonit',
+  'meta_description' => 'Wydziel krytycznych dostawcow (płatności, auth, DNS, CDN, email) i oznacz ich w monitorach jako dependencies.To przyspiesza ocene, czy incydent jest wewnętrzny...',
 );

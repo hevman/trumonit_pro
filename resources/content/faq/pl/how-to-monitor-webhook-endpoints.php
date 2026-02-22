@@ -11,8 +11,8 @@ return array (
   'related_solutions' => 
   array (
   ),
-  'question' => 'Jak monitorowac endpointy webhook?',
-  'answer' => '<p>Monitoruj skutecznosc odpowiedzi HTTP, opoznienie i powodzenie przetwarzania webhooka po stronie aplikacji.</p><p>Warto dodac synthetic webhook requests i bezpieczne payloady testowe, aby sprawdzac caly pipeline.</p>',
-  'meta_title' => 'Jak monitorowac endpointy webhook? | TruMonit',
+  'question' => 'Jak monitorować endpointy webhook?',
+  'answer' => '<p>Monitoruj skutecznosc odpowiedzi HTTP, opoznienie i powodzenie przetwarzania webhooka po stronie aplikacji.</p><p>Warto dodac synthetic webhook requests i bezpieczne payloady testowe, aby sprawdzać caly pipeline.</p>',
+  'meta_title' => 'Jak monitorować endpointy webhook? | TruMonit',
   'meta_description' => 'Monitoruj skutecznosc odpowiedzi HTTP, opoznienie i powodzenie przetwarzania webhooka po stronie aplikacji.Warto dodac synthetic webhook requests i bezpieczne p...',
 );

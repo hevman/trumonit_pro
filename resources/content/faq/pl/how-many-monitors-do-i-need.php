@@ -14,7 +14,7 @@ return array (
     1 => 'uptime-monitoring-for-saas',
   ),
   'question' => 'Ile monitorow potrzebuje na start?',
-  'answer' => '<p>Zacznij od krytycznych user journey i kluczowych API, a potem rozszerz o zaleznosci i przypadki brzegowe.</p><p>Lepsza zasada to jeden monitor na krytyczny flow, a nie jeden monitor na kazda podstrone.</p>',
+  'answer' => '<p>Zacznij od krytycznych user journey i kluczowych API, a potem rozszerz o zależności i przypadki brzegowe.</p><p>Lepsza zasada to jeden monitor na krytyczny flow, a nie jeden monitor na każda podstrone.</p>',
   'meta_title' => 'Ile monitorow potrzebuje na start? | TruMonit',
-  'meta_description' => 'Zacznij od krytycznych user journey i kluczowych API, a potem rozszerz o zaleznosci i przypadki brzegowe.Lepsza zasada to jeden monitor na krytyczny flow, a nie...',
+  'meta_description' => 'Zacznij od krytycznych user journey i kluczowych API, a potem rozszerz o zależności i przypadki brzegowe.Lepsza zasada to jeden monitor na krytyczny flow, a nie...',
 );

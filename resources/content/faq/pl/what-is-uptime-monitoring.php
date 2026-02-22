@@ -13,7 +13,7 @@ return array (
     0 => 'uptime-monitoring-for-saas',
   ),
   'question' => 'Czym jest monitoring uptime?',
-  'answer' => '<p><strong>Monitoring uptime</strong> to regularne sprawdzanie, czy Twoja strona lub API są dostępne i działają poprawnie. Najczęściej weryfikuje:</p>
+  'answer' => '<p><strong>Monitoring uptime</strong> to regułarne sprawdzanie, czy Twoja strona lub API są dostępne i działają poprawnie. Najczęściej weryfikuje:</p>
 
 <ul>
   <li>status HTTP (np. 2xx/3xx),</li>

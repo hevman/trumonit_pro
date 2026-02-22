@@ -212,7 +212,7 @@
                         <span class="opacity-40">&middot;</span>
                         <a class="hover:underline" href="{{ $cookiesUrl }}">{{ $isPl ? 'Cookies' : 'Cookies' }}</a>
                         <span class="opacity-40">&middot;</span>
-                        <a class="hover:underline" href="{{ $privacyUrl }}">{{ $isPl ? 'Prywatnosc' : 'Privacy' }}</a>
+                        <a class="hover:underline" href="{{ $privacyUrl }}">{{ $isPl ? 'Prywatność' : 'Privacy' }}</a>
                         <span class="opacity-40">&middot;</span>
                         <a class="hover:underline" href="{{ $termsUrl }}">{{ $isPl ? 'Warunki' : 'Terms' }}</a>
                     </div>
