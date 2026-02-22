@@ -32,7 +32,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->put('auth_session_started_at', now()->timestamp);
         $request->session()->forget('sso_auth');
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended(route('monitored-urls.index', absolute: false));
     }
 
     /**

@@ -83,6 +83,25 @@
                         </a>
                     </div>
 
+                    <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                        <span>{{ __('messages.monitored_urls.state') }}:</span>
+                        <a class="app-chip hover:bg-gray-200 dark:hover:bg-gray-700" href="{{ route('monitored-urls.index') }}">
+                            {{ __('messages.monitored_urls.all_state') }}
+                        </a>
+                        <a class="app-chip-danger hover:bg-red-200 dark:hover:bg-red-900/60" href="{{ route('monitored-urls.index', ['state' => 'down']) }}">
+                            {{ __('messages.monitored_urls.state_down') }}
+                        </a>
+                        <a class="app-chip-success hover:bg-emerald-200 dark:hover:bg-emerald-900/60" href="{{ route('monitored-urls.index', ['state' => 'up']) }}">
+                            {{ __('messages.monitored_urls.state_up') }}
+                        </a>
+                        <a class="app-chip hover:bg-gray-200 dark:hover:bg-gray-700" href="{{ route('monitored-urls.index', ['state' => 'paused']) }}">
+                            {{ __('messages.monitored_urls.state_paused') }}
+                        </a>
+                        <a class="app-chip-warning hover:bg-amber-200 dark:hover:bg-amber-900/60" href="{{ route('monitored-urls.index', ['state' => 'muted']) }}">
+                            {{ __('messages.monitored_urls.state_muted') }}
+                        </a>
+                    </div>
+
                     <div class="mt-4 overflow-x-auto">
                         <table class="min-w-full text-sm">
                             <thead class="bg-gray-50 text-gray-600 dark:bg-gray-900/70 dark:text-gray-300">
