@@ -14,23 +14,26 @@ return array (
     1 => 'choose-monitoring-plan',
   ),
   'question' => 'How often should I check my website?',
-  'answer' => '<p>Most teams start with <strong>1–5 minute</strong> checks. For critical flows (checkout, login, core API), <strong>1 minute</strong> is common. For low-risk pages, 5 minutes is usually enough.</p>
+  'answer' => '<p>For most teams, the right starting point is <strong>1-5 minute checks</strong>. Use 1 minute for revenue-critical paths (checkout, login, API auth), and 5 minutes for lower-risk pages. One frequency for everything is rarely optimal.</p>
 
-<h3>How to pick frequency</h3>
+<h3>Practical interval model</h3>
 <ul>
-  <li><strong>1 min</strong>: critical endpoints and "money path" journeys.</li>
-  <li><strong>5 min</strong>: informational pages and lower-risk integrations.</li>
-  <li><strong>Mix intervals</strong>: do not use one frequency for everything.</li>
+  <li><strong>1 minute:</strong> money-path endpoints and business-critical APIs.</li>
+  <li><strong>3 minutes:</strong> important but non-critical service components.</li>
+  <li><strong>5 minutes:</strong> informational pages and low-risk integrations.</li>
 </ul>
 
-<h3>More important than frequency</h3>
+<h3>What matters more than interval</h3>
 <ul>
-  <li>Consecutive failures (2–3) + retries + cooldown to reduce noise.</li>
-  <li>Multi-region checks for critical monitors (DNS/routing issues happen).</li>
-  <li>Reasonable timeouts and stable content assertions.</li>
+  <li>Consecutive failures (2-3) before alerting.</li>
+  <li>Short retries and cooldown to prevent alert storms.</li>
+  <li>Multi-region checks for high-impact monitors.</li>
+  <li>Content assertions to detect false 200 responses.</li>
 </ul>
 
-<p>Rule of thumb: cover your critical paths at 1 min first, then expand coverage at 5 min.</p>',
+<p>If your uptime checker is noisy, faster intervals only amplify noise. Tune thresholds and routing first, then increase frequency where the business impact justifies it.</p>
+
+<p>Related: <a href="/en/solutions/uptime-checker-for-multi-site-teams">uptime checker for multi-site teams</a>, <a href="/en/solutions/ping-monitoring-vs-http-monitoring">ping monitoring vs HTTP monitoring</a>, and <a href="/en/solutions/choose-monitoring-plan">choose monitoring plan</a>.</p>',
   'meta_title' => 'How often should I check my website? | TruMonit',
-  'meta_description' => 'How to choose monitoring frequency: 1 min for critical paths, 5 min for lower-risk pages. Noise reduction: retries, consecutive failures, cooldown, multi-region.',
+  'meta_description' => 'Choose monitoring frequency by risk: 1 minute for critical flows, 5 minutes for lower-risk pages, plus retries and cooldown to reduce alert noise.',
 );

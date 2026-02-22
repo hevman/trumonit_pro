@@ -15,22 +15,26 @@ return array (
     2 => 'incident-response-playbook',
   ),
   'question' => 'What is a maintenance window in monitoring?',
-  'answer' => '<p>A <strong>maintenance window</strong> is a scheduled time period when alerts are temporarily silenced during planned work: deploys, migrations, infrastructure changes.</p>
+  'answer' => '<p>A <strong>maintenance window</strong> is a planned period where selected alerts are muted while you run expected-risk work such as deployments, migrations, or infrastructure changes. It protects on-call focus and keeps incident history meaningful.</p>
 
-<h3>Why it matters</h3>
+<h3>When to use it</h3>
 <ul>
-  <li>Prevents alert spam during changes you expect to be noisy.</li>
-  <li>Keeps incident history cleaner (fewer false positives).</li>
+  <li>Version releases that can restart services.</li>
+  <li>Database or cache migrations.</li>
+  <li>Network changes, DNS moves, CDN reconfiguration.</li>
 </ul>
 
-<h3>How to use it safely</h3>
+<h3>How to avoid masking real outages</h3>
 <ul>
-  <li>Always set a clear <strong>start and end</strong> time.</li>
-  <li>Assign an <strong>owner</strong> to end the window early if needed.</li>
-  <li>Run a post-deploy verification checklist for critical pages and APIs.</li>
+  <li>Mute only relevant monitors, not the whole environment.</li>
+  <li>Set exact start and end times with one accountable owner.</li>
+  <li>Keep critical synthetic checks visible where possible.</li>
+  <li>Run a post-change verification checklist before closing the window.</li>
 </ul>
 
-<p>More: <a href=\"/en/solutions/maintenance-windows-during-deploys\">maintenance windows during deploys (practical guide)</a>.</p>',
+<p>A good maintenance-window policy reduces false alerts without hiding actual incidents. Teams that skip policy usually either drown in noise or miss real regressions.</p>
+
+<p>Related: <a href="/en/solutions/maintenance-windows-during-deploys">maintenance windows during deploys</a>, <a href="/en/solutions/reduce-false-alerts">reduce false alerts</a>, and <a href="/en/solutions/release-regression-monitoring">release regression monitoring</a>.</p>',
   'meta_title' => 'What is a maintenance window in monitoring? | TruMonit',
-  'meta_description' => 'Maintenance windows in monitoring: what they are, how to set start/end and ownership, and how to avoid masking real incidents. Practical post-deploy checklist.',
+  'meta_description' => 'Maintenance windows mute expected deployment noise while preserving signal. Use scoped muting, clear ownership, and post-deploy verification to avoid blind spots.',
 );

@@ -16,23 +16,33 @@ return array (
     3 => 'webhook-end-to-end-monitoring',
   ),
   'question' => 'How do I monitor webhook endpoints?',
-  'answer' => '<p>Webhooks fail silently: the provider keeps sending, but you return 4xx, you respond too slowly (timeouts), or the async processing fails. Monitor the pipeline, not just the endpoint.</p>
+  'answer' => '<p>Webhook incidents are often silent. The provider keeps sending events, but your endpoint may time out, reject signatures, or fail in downstream processing. Monitor the full pipeline, not only the first HTTP response.</p>
 
-<h3>What to measure</h3>
+<h3>Core webhook checks</h3>
 <ul>
-  <li><strong>HTTP</strong>: 2xx vs 4xx/5xx and response time (provider timeout risk).</li>
-  <li><strong>Idempotency</strong>: retries should not duplicate operations.</li>
-  <li><strong>Processing</strong>: event reaches the queue and completes successfully.</li>
+  <li><strong>Ingress health:</strong> status codes, latency, timeout rate.</li>
+  <li><strong>Security path:</strong> signature validation success vs rejected requests.</li>
+  <li><strong>Processing path:</strong> queue acceptance, job success, retry/failure rates.</li>
+  <li><strong>Business marker:</strong> event reaches expected domain state (for example invoice created).</li>
 </ul>
 
-<h3>Practical hardening</h3>
+<h3>How to reduce webhook alert noise</h3>
 <ul>
-  <li>Validate signatures (Stripe/GitHub/etc.) and log rejected requests.</li>
-  <li>Return 2xx fast and process heavy work asynchronously.</li>
-  <li>Add a synthetic test event and assert a stable marker.</li>
+  <li>Separate 4xx integration mistakes from 5xx platform errors.</li>
+  <li>Use short retry windows and deduplication for burst traffic.</li>
+  <li>Route severe failures to on-call, minor provider spikes to async channel.</li>
 </ul>
 
-<p>Related: <a href=\"/en/solutions/api-endpoint-monitoring\">API endpoint monitoring</a> and <a href=\"/en/solutions/alert-routing-slack-teams-webhooks\">alert routing (Slack/Teams/webhooks)</a>.</p>',
+<h3>Operational hardening</h3>
+<ul>
+  <li>Return 2xx quickly and process heavy logic asynchronously.</li>
+  <li>Use idempotency keys to avoid duplicate side effects.</li>
+  <li>Run synthetic test events after deploys and provider config changes.</li>
+</ul>
+
+<p>If webhook delivery is revenue-critical, this setup usually delivers faster gains than adding more generic uptime checks.</p>
+
+<p>Related: <a href="/en/solutions/webhook-end-to-end-monitoring">webhook end-to-end monitoring</a>, <a href="/en/solutions/api-endpoint-monitoring">API endpoint monitoring</a>, and <a href="/en/solutions/alert-routing-slack-teams-webhooks">alert routing</a>.</p>',
   'meta_title' => 'How do I monitor webhook endpoints? | TruMonit',
-  'meta_description' => 'Webhook monitoring checklist: HTTP status and latency, provider timeouts, idempotency, retries, and downstream queue processing success. Test end-to-end safely.',
+  'meta_description' => 'Monitor webhook endpoints end to end: ingress latency, signature validation, queue processing, and business outcomes to detect silent failures early.',
 );

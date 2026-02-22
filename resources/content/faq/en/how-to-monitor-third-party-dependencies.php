@@ -15,24 +15,28 @@ return array (
     2 => 'reduce-false-alerts',
   ),
   'question' => 'How do I monitor third-party dependencies?',
-  'answer' => '<p>Third-party dependencies can take down your customer journey even when your servers are healthy: payments, auth, CDN, DNS, upstream APIs. If you do not monitor them separately, every vendor issue looks like “your outage”.</p>
+  'answer' => '<p>Third-party dependencies can break your customer journey even when your servers are healthy. Payments, auth providers, CDN, DNS, and external APIs must be monitored as separate components, not hidden inside one generic uptime check.</p>
 
-<h3>Keep it simple</h3>
+<p>Without component-level visibility, every vendor issue looks like your outage. That slows triage, creates internal confusion, and delays customer communication.</p>
+
+<h3>Practical dependency monitoring model</h3>
 <ul>
-  <li>List the top 5 dependencies that break login/checkout/email delivery.</li>
-  <li>Add separate monitors for each vendor (separate from your endpoints).</li>
-  <li>Route alerts by severity (not every vendor blip is Sev1).</li>
-  <li>Communicate scope via a <a href=\"/en/solutions/status-page-for-saas\">status page</a>.</li>
+  <li>List top dependencies that affect login, checkout, and key API workflows.</li>
+  <li>Create separate monitors per dependency and per region for critical vendors.</li>
+  <li>Define severity rules: not every vendor latency spike should trigger paging.</li>
+  <li>Attach ownership so alerts reach teams that can act immediately.</li>
 </ul>
 
-<h3>Common mistakes</h3>
+<h3>What to include in incident response</h3>
 <ul>
-  <li>One “everything” monitor with no components.</li>
-  <li>No labels, so diagnosis restarts from scratch.</li>
-  <li>No comms plan for vendor incidents.</li>
+  <li>Dependency component status on your public status page.</li>
+  <li>Fallback/feature-degradation playbook for known vendor failures.</li>
+  <li>Post-incident review by dependency to improve routing and escalation.</li>
 </ul>
 
-<p>See also: <a href=\"/en/solutions/monitoring-third-party-dependencies\">full dependency monitoring scenario</a>.</p>',
+<p>If you compare website monitoring tools, prioritize dependency visibility and clear incident routing over dashboard complexity. This directly affects MTTR and customer trust.</p>
+
+<p>Related: <a href="/en/solutions/monitoring-third-party-dependencies">monitoring third-party dependencies</a>, <a href="/en/solutions/status-page-for-saas">status page for SaaS</a>, and <a href="/en/solutions/website-downtime-alerts-setup">website downtime alerts setup</a>.</p>',
   'meta_title' => 'How do I monitor third-party dependencies? | TruMonit',
-  'meta_description' => 'Third-party dependency monitoring: separate monitors for CDN/DNS/payments/auth, severity-based alert routing, and clear incident communication via status page.',
+  'meta_description' => 'Monitor third-party dependencies with separate components, severity-based routing, and status page communication to reduce MTTR during vendor incidents.',
 );

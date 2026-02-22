@@ -13,25 +13,36 @@ return array (
     0 => 'reduce-false-alerts',
   ),
   'question' => 'How do I reduce false alerts?',
-  'answer' => '<p>False alerts usually come from overly aggressive thresholds and missing basics like retries and cooldown. The goal is "high signal, low noise" so on-call trusts the pager.</p>
+  'answer' => '<p>False alerts are rarely a tooling problem alone. Most come from threshold choices, weak routing, and no incident hygiene. The goal is to make alerts actionable so on-call responds fast instead of muting channels.</p>
 
-<h3>Settings that matter most</h3>
+<h3>High-impact defaults for SMB teams</h3>
 <ul>
-  <li>Alert after <strong>2–3 consecutive failures</strong>, not after one.</li>
-  <li><strong>Retries</strong> to separate transient glitches from real outages.</li>
-  <li><strong>Cooldown</strong> + deduplication: one incident should not page repeatedly.</li>
-  <li><strong>Maintenance windows</strong> for planned work.</li>
-  <li><strong>Multi-region</strong> for critical endpoints (DNS/routing issues are regional).</li>
+  <li>Alert after <strong>2-3 consecutive failures</strong>, not after one failed check.</li>
+  <li>Use <strong>short retries</strong> to absorb transient network spikes.</li>
+  <li>Enable <strong>cooldown + deduplication</strong> so one outage does not page repeatedly.</li>
+  <li>Use <strong>maintenance windows</strong> during deployments and migrations.</li>
+  <li>Add <strong>multi-region checks</strong> for critical endpoints to reduce regional false positives.</li>
 </ul>
 
-<h3>Common noise sources</h3>
+<h3>Common causes of noisy monitoring</h3>
 <ul>
-  <li>Timeouts set too tight for normal variance.</li>
-  <li>Brittle content assertions (dynamic fields, timestamps).</li>
-  <li>No separation: network vs app vs 3rd-party failures.</li>
+  <li>Timeouts that are tighter than normal production variance.</li>
+  <li>Brittle content assertions based on dynamic text or timestamps.</li>
+  <li>One alert stream for all failures (network, app, dependency), with no ownership split.</li>
+  <li>No separation between warning and paging severity.</li>
 </ul>
 
-<p>If alerts are noisy, people mute them. That is how incidents get missed.</p>',
+<h3>Simple monthly tuning routine</h3>
+<ul>
+  <li>Review top 10 alerts by frequency.</li>
+  <li>Tag each alert as true positive or false positive.</li>
+  <li>Adjust threshold/retry/cooldown only for noisy checks first.</li>
+  <li>Track acknowledgement time and MTTR after each change.</li>
+</ul>
+
+<p>If you are evaluating a website monitoring tool, this is the key question: does it help you lower alert fatigue while improving response time? Cleaner alert policy usually beats adding more monitor types.</p>
+
+<p>Related: <a href="/en/solutions/reduce-false-alerts">reduce false alerts</a>, <a href="/en/solutions/alert-routing-slack-teams-webhooks">alert routing</a>, and <a href="/en/faq/network-error-vs-application-error-monitoring">network vs application errors</a>.</p>',
   'meta_title' => 'How do I reduce false alerts? | TruMonit',
-  'meta_description' => 'Reduce false alerts with consecutive failures + retries, cooldown/deduplication, maintenance windows, and multi-region checks. Practical defaults for high signal.',
+  'meta_description' => 'Reduce false alerts with better thresholds, retries, cooldown, ownership-based routing, and maintenance windows to improve signal and response speed.',
 );
