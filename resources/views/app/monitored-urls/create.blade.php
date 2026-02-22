@@ -24,7 +24,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('monitored-urls.store') }}" class="space-y-4">
+                <form method="POST" action="{{ route('monitored-urls.store') }}" class="space-y-4" x-data="{ advancedOpen: {{ (old('content_rules') || old('journey_steps')) ? 'true' : 'false' }} }">
                     @csrf
 
                     <div>
@@ -72,44 +72,8 @@
                             <div class="app-help">{{ __('messages.monitored_urls.scan_mode_help') }}</div>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1" for="appearance_min_distance">{{ __('Appearance threshold (pHash distance)') }}</label>
-                            <input id="appearance_min_distance" name="appearance_min_distance" type="number" min="0" max="64" value="{{ old('appearance_min_distance') }}" class="app-input" />
-                            <div class="app-help">{{ __('Optional. Higher value means fewer alerts for small UI changes.') }}</div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
                             <label class="block text-sm font-medium mb-1" for="frequency_minutes">{{ __('messages.monitored_urls.frequency_minutes') }}</label>
                             <input id="frequency_minutes" name="frequency_minutes" type="number" value="{{ old('frequency_minutes', 1440) }}" class="app-input" />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1" for="timeout_seconds">{{ __('messages.monitored_urls.timeout_seconds') }}</label>
-                            <input id="timeout_seconds" name="timeout_seconds" type="number" value="{{ old('timeout_seconds', 30) }}" class="app-input" />
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-1" for="expected_status_min">{{ __('Expected status min') }}</label>
-                            <input id="expected_status_min" name="expected_status_min" type="number" value="{{ old('expected_status_min', 200) }}" class="app-input" />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1" for="expected_status_max">{{ __('Expected status max') }}</label>
-                            <input id="expected_status_max" name="expected_status_max" type="number" value="{{ old('expected_status_max', 399) }}" class="app-input" />
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-1" for="alert_after_failures">{{ __('messages.monitored_urls.alert_after_failures') }}</label>
-                            <input id="alert_after_failures" name="alert_after_failures" type="number" min="1" max="10" value="{{ old('alert_after_failures', 1) }}" class="app-input" />
-                            <div class="app-help">{{ __('Create DOWN incidents only after N consecutive failures.') }}</div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1" for="alert_cooldown_minutes">{{ __('messages.monitored_urls.alert_cooldown_minutes') }}</label>
-                            <input id="alert_cooldown_minutes" name="alert_cooldown_minutes" type="number" min="0" max="10080" value="{{ old('alert_cooldown_minutes', 0) }}" class="app-input" />
-                            <div class="app-help">{{ __('0 = no cooldown.') }}</div>
                         </div>
                     </div>
 
@@ -118,23 +82,70 @@
                             <input type="checkbox" name="is_active" value="1" class="app-checkbox" {{ old('is_active', 1) ? 'checked' : '' }} />
                             {{ __('messages.monitored_urls.is_active') }}
                         </label>
-
-                        <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                            <input type="checkbox" name="follow_redirects" value="1" class="app-checkbox" {{ old('follow_redirects', 1) ? 'checked' : '' }} />
-                            {{ __('Follow redirects') }}
-                        </label>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium mb-1" for="content_rules">{{ __('Content rules (JSON)') }}</label>
-                        <textarea id="content_rules" name="content_rules" rows="6" class="app-input font-mono text-xs">{{ old('content_rules') }}</textarea>
-                        <div class="app-help">{{ __('Example') }}: {"enabled":true,"deny_keywords":["hacked by"],"deny_regexes":["/SQLSTATE\\[/i"]}</div>
+                    <div class="pt-1">
+                        <button type="button" class="app-button-secondary" @click="advancedOpen = !advancedOpen">
+                            <span x-show="!advancedOpen">{{ __('messages.actions.show_advanced') }}</span>
+                            <span x-show="advancedOpen" x-cloak>{{ __('messages.actions.hide_advanced') }}</span>
+                        </button>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium mb-1" for="journey_steps">{{ __('messages.monitored_urls.journey_steps_label') }}</label>
-                        <textarea id="journey_steps" name="journey_steps" rows="8" class="app-input font-mono text-xs">{{ old('journey_steps') }}</textarea>
-                        <div class="app-help">{{ __('messages.monitored_urls.journey_steps_help') }}</div>
+                    <div x-show="advancedOpen" x-cloak class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1" for="timeout_seconds">{{ __('messages.monitored_urls.timeout_seconds') }}</label>
+                                <input id="timeout_seconds" name="timeout_seconds" type="number" value="{{ old('timeout_seconds', 30) }}" class="app-input" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1" for="appearance_min_distance">{{ __('Appearance threshold (pHash distance)') }}</label>
+                                <input id="appearance_min_distance" name="appearance_min_distance" type="number" min="0" max="64" value="{{ old('appearance_min_distance') }}" class="app-input" />
+                                <div class="app-help">{{ __('Optional. Higher value means fewer alerts for small UI changes.') }}</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1" for="expected_status_min">{{ __('Expected status min') }}</label>
+                                <input id="expected_status_min" name="expected_status_min" type="number" value="{{ old('expected_status_min', 200) }}" class="app-input" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1" for="expected_status_max">{{ __('Expected status max') }}</label>
+                                <input id="expected_status_max" name="expected_status_max" type="number" value="{{ old('expected_status_max', 399) }}" class="app-input" />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1" for="alert_after_failures">{{ __('messages.monitored_urls.alert_after_failures') }}</label>
+                                <input id="alert_after_failures" name="alert_after_failures" type="number" min="1" max="10" value="{{ old('alert_after_failures', 1) }}" class="app-input" />
+                                <div class="app-help">{{ __('Create DOWN incidents only after N consecutive failures.') }}</div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1" for="alert_cooldown_minutes">{{ __('messages.monitored_urls.alert_cooldown_minutes') }}</label>
+                                <input id="alert_cooldown_minutes" name="alert_cooldown_minutes" type="number" min="0" max="10080" value="{{ old('alert_cooldown_minutes', 0) }}" class="app-input" />
+                                <div class="app-help">{{ __('0 = no cooldown.') }}</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                <input type="checkbox" name="follow_redirects" value="1" class="app-checkbox" {{ old('follow_redirects', 1) ? 'checked' : '' }} />
+                                {{ __('Follow redirects') }}
+                            </label>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-1" for="content_rules">{{ __('Content rules (JSON)') }}</label>
+                            <textarea id="content_rules" name="content_rules" rows="6" class="app-input font-mono text-xs">{{ old('content_rules') }}</textarea>
+                            <div class="app-help">{{ __('Example') }}: {"enabled":true,"deny_keywords":["hacked by"],"deny_regexes":["/SQLSTATE\\[/i"]}</div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-1" for="journey_steps">{{ __('messages.monitored_urls.journey_steps_label') }}</label>
+                            <textarea id="journey_steps" name="journey_steps" rows="8" class="app-input font-mono text-xs">{{ old('journey_steps') }}</textarea>
+                            <div class="app-help">{{ __('messages.monitored_urls.journey_steps_help') }}</div>
+                        </div>
                     </div>
 
                     <div class="pt-2">

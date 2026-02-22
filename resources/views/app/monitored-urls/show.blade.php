@@ -149,7 +149,7 @@
             <div class="app-card">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                        <div class="text-sm text-gray-600 dark:text-gray-400">{{ __('Baseline') }}</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">{{ __('messages.monitored_urls.baseline_label') }}</div>
                         <div class="font-medium">
                             @if ($monitoredUrl->baselineSnapshot)
                                 <a class="hover:underline" href="{{ route('snapshots.show', $monitoredUrl->baselineSnapshot) }}">
@@ -157,7 +157,8 @@
                                 </a>
                                 <div class="text-xs text-gray-600 dark:text-gray-400">{{ $monitoredUrl->baseline_set_at?->toDateTimeString() ?? '' }}</div>
                             @else
-                                -
+                                <div class="text-sm text-gray-700 dark:text-gray-300">{{ __('messages.monitored_urls.baseline_missing_title') }}</div>
+                                <div class="app-help">{{ __('messages.monitored_urls.baseline_missing_body') }}</div>
                             @endif
                         </div>
                     </div>
@@ -167,7 +168,7 @@
                             @csrf
                             <input type="hidden" name="snapshot_id" value="{{ $snapshots->first()->id }}">
                             <button class="app-button-primary" type="submit">
-                                {{ __('Set baseline to latest') }}
+                                {{ $monitoredUrl->baselineSnapshot ? __('messages.monitored_urls.baseline_update_button') : __('messages.monitored_urls.baseline_set_button') }}
                             </button>
                         </form>
                     @endif

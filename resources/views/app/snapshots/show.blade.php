@@ -12,12 +12,12 @@
 
                 @if ($snapshot->monitoredUrl)
                     @if ($snapshot->monitoredUrl->baseline_snapshot_id === $snapshot->id)
-                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ __('Baseline') }}</span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ __('messages.monitored_urls.baseline_label') }}</span>
                     @elseif ($isOwner)
                         <form method="POST" action="{{ route('monitored-urls.baseline', $snapshot->monitoredUrl) }}">
                             @csrf
                             <input type="hidden" name="snapshot_id" value="{{ $snapshot->id }}">
-                            <button class="app-link" type="submit">{{ __('Set as baseline') }}</button>
+                            <button class="app-link" type="submit">{{ __('messages.monitored_urls.baseline_set_as_button') }}</button>
                         </form>
                     @else
                         <span class="text-sm text-gray-600 dark:text-gray-400">{{ __('Read-only') }}</span>
