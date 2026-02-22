@@ -34,25 +34,56 @@
                     <input type="hidden" name="is_active" value="1" />
 
                     <div>
-                        <label class="mb-1 block text-sm font-medium text-gray-900 dark:text-gray-100" for="template">{{ __('messages.onboarding.template_label') }}</label>
-                        <select id="template" name="template" class="app-input" required>
-                            <option value="">{{ __('messages.onboarding.template_placeholder') }}</option>
-                            @foreach ($monitorTemplates as $template)
-                                <option value="{{ $template['key'] }}" {{ old('template') === $template['key'] ? 'selected' : '' }}>
-                                    {{ $template['name'] }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
-                            {{ __('messages.onboarding.template_pick_help') }}
+                        @php
+                            $defaultTemplate = old('template') ?: 'website_uptime';
+                            $featuredTemplateKeys = ['website_uptime', 'login_journey', 'api_health', 'status_page'];
+                            $templateByKey = collect($monitorTemplates)->keyBy('key');
+                            $featuredTemplates = collect($featuredTemplateKeys)
+                                ->map(fn (string $key) => $templateByKey->get($key))
+                                ->filter()
+                                ->values()
+                                ->all();
+                        @endphp
+
+                        <div class="mb-1 block text-sm font-medium text-gray-900 dark:text-gray-100">
+                            {{ __('messages.onboarding.template_label') }}
                         </div>
-                        <div id="template-suggestion" class="mt-2 hidden text-xs text-gray-600 dark:text-gray-400"></div>
-                        <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
-                            <div class="mb-1 font-medium text-gray-700 dark:text-gray-300">{{ __('messages.onboarding.template_help_title') }}</div>
-                            @foreach ($monitorTemplates as $template)
-                                <div><span class="font-medium text-gray-800 dark:text-gray-200">{{ $template['name'] }}</span>: {{ $template['description'] }}</div>
+
+                        <div id="template-cards" class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            @foreach ($featuredTemplates as $template)
+                                <button
+                                    type="button"
+                                    data-template-key="{{ $template['key'] }}"
+                                    class="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left transition hover:border-gray-300 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700 dark:hover:bg-gray-900/60"
+                                >
+                                    <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $template['name'] }}</div>
+                                    <div class="mt-1 text-xs leading-relaxed text-gray-600 dark:text-gray-400">{{ $template['description'] }}</div>
+                                </button>
                             @endforeach
                         </div>
+
+                        <div id="template-suggestion" class="mt-3 hidden text-xs text-gray-600 dark:text-gray-400"></div>
+
+                        <details class="mt-4">
+                            <summary class="cursor-pointer select-none text-sm font-medium text-gray-900 dark:text-gray-100">
+                                {{ __('messages.onboarding.advanced_templates_label') }}
+                            </summary>
+                            <div class="mt-3">
+                                <label class="mb-1 block text-sm font-medium text-gray-900 dark:text-gray-100" for="template">
+                                    {{ __('messages.onboarding.template_placeholder') }}
+                                </label>
+                                <select id="template" name="template" class="app-input" required>
+                                    @foreach ($monitorTemplates as $template)
+                                        <option value="{{ $template['key'] }}" {{ $defaultTemplate === $template['key'] ? 'selected' : '' }}>
+                                            {{ $template['name'] }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                                    {{ __('messages.onboarding.template_pick_help') }}
+                                </div>
+                            </div>
+                        </details>
                     </div>
 
                     <div>
@@ -94,9 +125,25 @@
             var url = document.getElementById('url');
             var template = document.getElementById('template');
             var suggestion = document.getElementById('template-suggestion');
+            var cardsWrap = document.getElementById('template-cards');
+            var userPicked = false;
 
             if (!url || !template) {
                 return;
+            }
+
+            function setActiveCard(key) {
+                if (!cardsWrap) return;
+                var cards = cardsWrap.querySelectorAll('[data-template-key]');
+                for (var i = 0; i < cards.length; i++) {
+                    var card = cards[i];
+                    var isActive = card.getAttribute('data-template-key') === key;
+                    if (isActive) {
+                        card.classList.add('ring-2', 'ring-indigo-500', 'border-indigo-200');
+                    } else {
+                        card.classList.remove('ring-2', 'ring-indigo-500', 'border-indigo-200');
+                    }
+                }
             }
 
             function guessTemplateKey(raw) {
@@ -125,19 +172,10 @@
                     return 'api_health';
                 }
 
-                return 'status_page';
+                return 'website_uptime';
             }
 
             function maybeApplySuggestion() {
-                // Only auto-suggest if user hasn't picked a template yet.
-                if (template.value) {
-                    if (suggestion) {
-                        suggestion.classList.add('hidden');
-                        suggestion.textContent = '';
-                    }
-                    return;
-                }
-
                 var key = guessTemplateKey(url.value);
                 if (!key) {
                     if (suggestion) {
@@ -155,30 +193,57 @@
                     }
                 }
 
-                for (var i = 0; i < template.options.length; i++) {
-                    if (template.options[i].value === key) {
-                        template.value = key;
-                        break;
+                if (!userPicked) {
+                    for (var i = 0; i < template.options.length; i++) {
+                        if (template.options[i].value === key) {
+                            template.value = key;
+                            break;
+                        }
                     }
                 }
 
-                if (suggestion && matchedLabel) {
-                    // Plain text only (no HTML).
-                    suggestion.textContent = ({{ json_encode(app()->getLocale() === 'pl' ? 'Sugerowany szablon: ' : 'Suggested template: ') }} + matchedLabel + '.');
+                setActiveCard(template.value);
+
+                if (suggestion && matchedLabel && !userPicked) {
+                    suggestion.textContent = ({{ json_encode(app()->getLocale() === 'pl' ? 'Sugerowany typ: ' : 'Suggested: ') }} + matchedLabel + '.');
                     suggestion.classList.remove('hidden');
+                } else if (suggestion) {
+                    suggestion.classList.add('hidden');
+                    suggestion.textContent = '';
                 }
             }
 
             url.addEventListener('change', maybeApplySuggestion);
             url.addEventListener('blur', maybeApplySuggestion);
 
+            if (cardsWrap) {
+                cardsWrap.addEventListener('click', function (event) {
+                    var target = event.target.closest('[data-template-key]');
+                    if (!target) return;
+                    var key = target.getAttribute('data-template-key');
+                    if (!key) return;
+                    userPicked = true;
+                    template.value = key;
+                    setActiveCard(key);
+                    if (suggestion) {
+                        suggestion.classList.add('hidden');
+                        suggestion.textContent = '';
+                    }
+                });
+            }
+
             template.addEventListener('change', function () {
+                userPicked = true;
+                setActiveCard(template.value);
                 if (!suggestion) {
                     return;
                 }
                 suggestion.classList.add('hidden');
                 suggestion.textContent = '';
             });
+
+            // Initial sync.
+            setActiveCard(template.value || {{ json_encode($defaultTemplate) }});
         });
     </script>
 </x-app-layout>

@@ -30,6 +30,7 @@ class MonitorTemplatesAndOnboardingTest extends TestCase
             ->get(route('onboarding.show'))
             ->assertOk()
             ->assertSee('Onboarding wizard')
+            ->assertSee('Website uptime')
             ->assertSee('Status page / marketing site')
             ->assertSee('API health endpoint');
     }
@@ -120,7 +121,7 @@ class MonitorTemplatesAndOnboardingTest extends TestCase
             ->assertRedirect(route('monitored-urls.show', $monitor))
             ->assertSessionHas(
                 'status',
-                'Monitor created. First scan dispatched. After first snapshot appears, click "Set baseline to latest".',
+                'Monitor created. First scan dispatched.',
             );
 
         $this->assertSame(2, $monitor->frequency_minutes);

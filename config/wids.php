@@ -373,6 +373,22 @@ return [
     ],
 
     'monitor_templates' => [
+        'website_uptime' => [
+            'name' => 'Website uptime',
+            'description' => 'Basic website uptime check (HTTP). Best default for most sites.',
+            'defaults' => [
+                'scan_mode' => 'http',
+                'frequency_minutes' => 5,
+                'timeout_seconds' => 20,
+                'follow_redirects' => true,
+                'expected_status_min' => 200,
+                'expected_status_max' => 399,
+                // Keep this "uptime-first" template low-noise. Visual/baseline workflows are optional.
+                'appearance_min_distance' => null,
+                'alert_after_failures' => 2,
+                'alert_cooldown_minutes' => 30,
+            ],
+        ],
         'status_page' => [
             'name' => 'Status page / marketing site',
             'description' => 'Homepage check with screenshot and status/outage keyword rules.',

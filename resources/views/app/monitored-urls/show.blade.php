@@ -33,6 +33,46 @@
 
     <div class="app-page">
         <div class="app-container">
+            @if (session('onboarding_created'))
+                <div class="app-card app-card-success mb-4">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ __('Monitor added') }}</div>
+                            @if ($latestSnapshot?->fetched_at)
+                                <div class="text-sm text-gray-700 dark:text-gray-300">
+                                    {{ __('First check completed') }}: {{ $latestSnapshot->fetched_at->toDateTimeString() }}
+                                </div>
+                            @else
+                                <div class="text-sm text-gray-700 dark:text-gray-300">
+                                    {{ __('First check is running. Refresh in a few seconds.') }}
+                                </div>
+                            @endif
+                        </div>
+                        @if ($isOwner)
+                            <div class="flex flex-wrap gap-2">
+                                @if (! $hasNotificationChannels)
+                                    <a href="{{ route('notification-channels.edit') }}" class="app-button-primary">
+                                        {{ __('Configure notifications') }}
+                                    </a>
+                                @endif
+                                <form method="POST" action="{{ route('monitored-urls.scan', $monitoredUrl) }}">
+                                    @csrf
+                                    <button class="app-button-secondary" type="submit">{{ __('messages.actions.scan_now') }}</button>
+                                </form>
+                                <a href="{{ route('monitored-urls.index') }}" class="app-button-secondary">
+                                    {{ __('messages.nav.monitored_urls') }}
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                    @if ($isOwner && ! $hasNotificationChannels)
+                        <div class="mt-3 text-xs text-gray-700 dark:text-gray-300">
+                            {{ __('You will not receive alerts until you configure at least one notification channel (Email/Slack/Webhook).') }}
+                        </div>
+                    @endif
+                </div>
+            @endif
+
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="app-card">
                     <div class="text-sm text-gray-600 dark:text-gray-400">{{ __('Status') }}</div>
@@ -146,34 +186,36 @@
                 </div>
             </div>
 
-            <div class="app-card">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div>
-                        <div class="text-sm text-gray-600 dark:text-gray-400">{{ __('messages.monitored_urls.baseline_label') }}</div>
-                        <div class="font-medium">
-                            @if ($monitoredUrl->baselineSnapshot)
-                                <a class="hover:underline" href="{{ route('snapshots.show', $monitoredUrl->baselineSnapshot) }}">
-                                    {{ __('Snapshot') }} #{{ $monitoredUrl->baselineSnapshot->id }}
-                                </a>
-                                <div class="text-xs text-gray-600 dark:text-gray-400">{{ $monitoredUrl->baseline_set_at?->toDateTimeString() ?? '' }}</div>
-                            @else
-                                <div class="text-sm text-gray-700 dark:text-gray-300">{{ __('messages.monitored_urls.baseline_missing_title') }}</div>
-                                <div class="app-help">{{ __('messages.monitored_urls.baseline_missing_body') }}</div>
-                            @endif
+            @if ($shouldShowBaselinePanel)
+                <div class="app-card">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">{{ __('messages.monitored_urls.baseline_label') }}</div>
+                            <div class="font-medium">
+                                @if ($monitoredUrl->baselineSnapshot)
+                                    <a class="hover:underline" href="{{ route('snapshots.show', $monitoredUrl->baselineSnapshot) }}">
+                                        {{ __('Snapshot') }} #{{ $monitoredUrl->baselineSnapshot->id }}
+                                    </a>
+                                    <div class="text-xs text-gray-600 dark:text-gray-400">{{ $monitoredUrl->baseline_set_at?->toDateTimeString() ?? '' }}</div>
+                                @else
+                                    <div class="text-sm text-gray-700 dark:text-gray-300">{{ __('messages.monitored_urls.baseline_missing_title') }}</div>
+                                    <div class="app-help">{{ __('messages.monitored_urls.baseline_missing_body') }}</div>
+                                @endif
+                            </div>
                         </div>
-                    </div>
 
-                    @if ($isOwner && $snapshots->first())
-                        <form method="POST" action="{{ route('monitored-urls.baseline', $monitoredUrl) }}">
-                            @csrf
-                            <input type="hidden" name="snapshot_id" value="{{ $snapshots->first()->id }}">
-                            <button class="app-button-primary" type="submit">
-                                {{ $monitoredUrl->baselineSnapshot ? __('messages.monitored_urls.baseline_update_button') : __('messages.monitored_urls.baseline_set_button') }}
-                            </button>
-                        </form>
-                    @endif
+                        @if ($isOwner && $snapshots->first())
+                            <form method="POST" action="{{ route('monitored-urls.baseline', $monitoredUrl) }}">
+                                @csrf
+                                <input type="hidden" name="snapshot_id" value="{{ $snapshots->first()->id }}">
+                                <button class="app-button-primary" type="submit">
+                                    {{ $monitoredUrl->baselineSnapshot ? __('messages.monitored_urls.baseline_update_button') : __('messages.monitored_urls.baseline_set_button') }}
+                                </button>
+                            </form>
+                        @endif
+                    </div>
                 </div>
-            </div>
+            @endif
 
             <div class="app-card">
                 <div class="px-4 py-3 border-b font-medium">{{ __('messages.monitored_urls.snapshots') }}</div>

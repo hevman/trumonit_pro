@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'app_name' => 'TruMonit',
@@ -117,17 +117,22 @@ return [
         'steps_title' => 'Utwórz pierwszy monitor w 3 krokach',
         'step_1' => 'Wybierz szablon.',
         'step_2' => 'Podaj URL i opcjonalną nazwę/tagi.',
-        'step_3' => 'Zapisz, poczekaj na pierwszy skan, a potem ustaw wzorzec porównania.',
-        'template_label' => 'Szablon',
+        'step_3' => 'Zapisz i poczekaj na pierwszy skan. Baseline jest opcjonalny (tylko dla monitorów wizualnych/journey).',
+        'template_label' => 'Typ monitora',
+        'advanced_templates_label' => 'Więcej szablonów (zaawansowane)',
         'template_placeholder' => 'Wybierz szablon',
-        'template_pick_help' => 'Nie wiesz co wybrać? Strona główna = Strona marketingowa, /login = Scenariusz logowania, /health = Health-check API, /checkout = Checkout, /tracking = Śledzenie.',
+        'template_pick_help' => 'Wskazówka: /login zwykle pasuje do „Scenariusza logowania”, a /health do „API health”.',
         'template_help_title' => 'Szczegóły szablonów',
         'url_placeholder' => 'https://example.com',
         'display_name_placeholder' => 'np. Strona główna',
         'tags_placeholder' => 'prod, marketing',
-        'baseline_guidance' => 'Wzorzec porównania: po pierwszym skanie wejdź w monitor i kliknij "Ustaw baseline na najnowszy". To oznacza: "to jest poprawny stan", do którego porównujemy kolejne skany.',
+        'baseline_guidance' => 'Baseline (opcjonalnie): dla monitorów wizualnych/journey możesz ustawić baseline po pierwszym snapshotcie, żeby zmniejszyć liczbę fałszywych alarmów.',
         'create_monitor' => 'Utwórz monitor',
         'templates' => [
+            'website_uptime' => [
+                'name' => 'Uptime strony (HTTP)',
+                'description' => 'Podstawowy monitoring dostępności (HTTP). Najlepszy domyślny wybór dla większości stron.',
+            ],
             'status_page' => [
                 'name' => 'Strona marketingowa (screenshot + status)',
                 'description' => 'Sprawdzenie strony głównej ze screenshotem i regułami status/outage.',
@@ -414,3 +419,4 @@ return [
         'final_cta' => 'Zacznij teraz',
     ],
 ];
+

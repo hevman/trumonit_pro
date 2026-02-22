@@ -16,6 +16,7 @@ use App\Services\MonitorTemplateService;
 use App\Services\ScanQueueRoutingService;
 use App\Services\TagService;
 use App\Services\TenantQuotaService;
+use App\Services\TenantNotificationChannelService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
@@ -686,12 +687,13 @@ class MonitoredUrlController extends Controller
         }
 
         $statusMessage = $fromOnboarding
-            ? 'Monitor created. First scan dispatched. After first snapshot appears, click "Set baseline to latest".'
+            ? 'Monitor created. First scan dispatched.'
             : 'Monitored URL created.';
 
         return redirect()
             ->route('monitored-urls.show', $monitoredUrl)
-            ->with('status', $statusMessage);
+            ->with('status', $statusMessage)
+            ->with('onboarding_created', $fromOnboarding ? 1 : 0);
     }
 
     public function show(Request $request, MonitoredUrl $monitoredUrl)
@@ -720,6 +722,20 @@ class MonitoredUrlController extends Controller
             ->limit(25)
             ->get();
 
+        $channels = app(TenantNotificationChannelService::class)->channelsForTenantId((int) $tenantId);
+        $hasNotificationChannels = false;
+        if (is_array($channels)) {
+            $hasNotificationChannels = (count($channels['webhook_urls'] ?? [])
+                    + count($channels['slack_webhook_urls'] ?? [])
+                    + count($channels['teams_webhook_urls'] ?? [])
+                    + count($channels['discord_webhook_urls'] ?? [])
+                    + count($channels['email_recipients'] ?? [])) > 0;
+        }
+
+        $appearanceMinDistance = $monitoredUrl->appearance_min_distance;
+        $shouldShowBaselinePanel = ($monitoredUrl->scan_mode ?? 'http') === 'journey'
+            || (is_int($appearanceMinDistance) && $appearanceMinDistance >= 0 && $appearanceMinDistance < 64);
+
         return view('app.monitored-urls.show', [
             'monitoredUrl' => $monitoredUrl,
             'snapshots' => $snapshots,
@@ -728,6 +744,8 @@ class MonitoredUrlController extends Controller
             'stats24h' => $stats24h,
             'stats7d' => $stats7d,
             'incidents' => $incidents,
+            'hasNotificationChannels' => $hasNotificationChannels,
+            'shouldShowBaselinePanel' => $shouldShowBaselinePanel,
         ]);
     }
 
