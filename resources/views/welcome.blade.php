@@ -182,13 +182,13 @@
                     {{ $isPl ? 'Jak mierzymy SLA i czas detekcji' : 'How We Measure SLA and Detection Time' }}
                 </h2>
                 <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                    {{ $isPl ? 'Wyniki opieramy na pomiarach outside-in z wielu probe, deduplikacji incydentow i metrykach lagu kolejki. W panelu operacyjnym utrzymujemy raporty z drillow i kalibracji progow alertow.' : 'We base results on outside-in checks across multiple probes, incident deduplication, and queue lag metrics. Ops panel keeps drill artifacts and alert-threshold calibration history.' }}
+                    {{ $isPl ? 'Wyniki opieramy na pomiarach outside-in z wielu probe, deduplikacji incydentów i metrykach opóźnień kolejki. W panelu operacyjnym utrzymujemy raporty z ćwiczeń i kalibracji progów alertów.' : 'We base results on outside-in checks across multiple probes, incident deduplication, and queue lag metrics. Ops panel keeps drill artifacts and alert-threshold calibration history.' }}
                 </p>
                 <ul class="mt-4 grid gap-2 text-sm text-slate-600 dark:text-slate-300 md:grid-cols-2">
-                    <li>• {{ $isPl ? 'SLA i uptime liczone na podstawie snapshotow monitorow oraz statusow publicznych.' : 'SLA and uptime are calculated from monitor snapshots and public statuses.' }}</li>
-                    <li>• {{ $isPl ? 'Czas detekcji oparty o p95 opoznien harmonogramu i kolejek skanow.' : 'Detection time is based on p95 scheduler and scan-queue delays.' }}</li>
+                    <li>• {{ $isPl ? 'SLA i uptime liczone na podstawie snapshotów monitorów oraz statusów publicznych.' : 'SLA and uptime are calculated from monitor snapshots and public statuses.' }}</li>
+                    <li>• {{ $isPl ? 'Czas detekcji oparty o p95 opóźnień harmonogramu i kolejek skanów.' : 'Detection time is based on p95 scheduler and scan-queue delays.' }}</li>
                     <li>• {{ $isPl ? 'Fałszywe alarmy ograniczane przez quorum multi-region oraz cooldowny.' : 'False alarms are reduced via multi-region quorum and cooldown rules.' }}</li>
-                    <li>• {{ $isPl ? 'Dane operacyjne i progi sa przegladane cyklicznie w runbookach.' : 'Operational metrics and thresholds are reviewed regularly in runbooks.' }}</li>
+                    <li>• {{ $isPl ? 'Dane operacyjne i progi są przeglądane cyklicznie w runbookach.' : 'Operational metrics and thresholds are reviewed regularly in runbooks.' }}</li>
                 </ul>
             </section>
 
@@ -273,10 +273,10 @@
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight">
-                            {{ app()->getLocale() === 'pl' ? 'Najczestsze pytania o monitoring' : 'Most asked monitoring questions' }}
+                            {{ app()->getLocale() === 'pl' ? 'Najczęstsze pytania o monitoring' : 'Most asked monitoring questions' }}
                         </h2>
                         <p class="mt-2 text-slate-600 dark:text-slate-300">
-                            {{ app()->getLocale() === 'pl' ? 'FAQ pod konkretne use-case: uptime, API, SSL i incydenty.' : 'FAQ focused on real use cases: uptime, APIs, SSL, and incident workflows.' }}
+                            {{ app()->getLocale() === 'pl' ? 'FAQ pod konkretne przypadki użycia: uptime, API, SSL i incydenty.' : 'FAQ focused on real use cases: uptime, APIs, SSL, and incident workflows.' }}
                         </p>
                     </div>
                     <a href="{{ $faqIndexUrl }}" class="inline-flex rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
