@@ -315,6 +315,80 @@ trait TM_AdminPageTrait
                                 </div>
                             <?php endif; ?>
 
+                            <?php if ($connected): ?>
+                                <?php
+                                $incidentsTabUrl = add_query_arg(
+                                    ['page' => self::MENU_SLUG, 'tm_tab' => 'incidents'],
+                                    admin_url('admin.php')
+                                );
+                                $monitorsTabUrl = add_query_arg(
+                                    ['page' => self::MENU_SLUG, 'tm_tab' => 'monitors'],
+                                    admin_url('admin.php')
+                                );
+
+                                $latestIncident = is_array($recentIncidents[0] ?? null) ? $recentIncidents[0] : [];
+                                $latestIncidentSummary = (string) ($latestIncident['summary'] ?? '');
+                                $latestIncidentDetectedAt = (string) ($latestIncident['detected_at'] ?? '');
+
+                                $latestMonitor = is_array($recentMonitors[0] ?? null) ? $recentMonitors[0] : [];
+                                $latestMonitorId = isset($latestMonitor['id']) ? (int) $latestMonitor['id'] : 0;
+                                $hasAnyMonitor = $latestMonitorId > 0;
+
+                                $uptimeStatus = __('Unknown', 'trumonit-monitor');
+                                $uptimeColor = '#646970';
+                                if (is_int($incidentsOpen)) {
+                                    if ($incidentsOpen <= 0) {
+                                        $uptimeStatus = __('OK', 'trumonit-monitor');
+                                        $uptimeColor = '#007017';
+                                    } else {
+                                        $uptimeStatus = __('Attention', 'trumonit-monitor');
+                                        $uptimeColor = '#b45309';
+                                    }
+                                }
+                                ?>
+                                <div style="margin:12px 0; padding:12px; border:1px solid #e5e7eb; border-radius:12px; background:#f6f7f7;">
+                                    <div class="tm-muted" style="margin-bottom:6px;"><?php echo esc_html__('Value proof', 'trumonit-monitor'); ?></div>
+                                    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;">
+                                        <div style="min-width:260px;flex:1;">
+                                            <div>
+                                                <strong><?php echo esc_html__('Uptime status', 'trumonit-monitor'); ?>:</strong>
+                                                <span style="color:<?php echo esc_attr($uptimeColor); ?>;"><?php echo esc_html($uptimeStatus); ?></span>
+                                                <?php if (is_int($incidentsOpen)): ?>
+                                                    <span class="tm-muted">(<?php echo esc_html(sprintf(__('%d open incidents', 'trumonit-monitor'), $incidentsOpen)); ?>)</span>
+                                                <?php endif; ?>
+                                            </div>
+                                            <div style="margin-top:6px;">
+                                                <strong><?php echo esc_html__('Latest incident', 'trumonit-monitor'); ?>:</strong>
+                                                <?php if ($latestIncidentSummary !== ''): ?>
+                                                    <span><?php echo esc_html($latestIncidentSummary); ?></span>
+                                                    <?php if ($latestIncidentDetectedAt !== ''): ?>
+                                                        <span class="tm-muted">(<?php echo esc_html($latestIncidentDetectedAt); ?>)</span>
+                                                    <?php endif; ?>
+                                                    <a href="<?php echo esc_url($incidentsTabUrl); ?>" class="tm-muted" style="margin-left:6px;"><?php echo esc_html__('View', 'trumonit-monitor'); ?></a>
+                                                <?php else: ?>
+                                                    <span class="tm-muted"><?php echo esc_html__('No incidents found.', 'trumonit-monitor'); ?></span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                        <div class="tm-actions" style="align-items:flex-start;">
+                                            <?php if (!$canRunScan && $scanRequiresOwner): ?>
+                                                <span class="tm-muted"><?php echo esc_html__('Owner token required', 'trumonit-monitor'); ?></span>
+                                            <?php elseif ($hasAnyMonitor && $canRunScan): ?>
+                                                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="display:inline;">
+                                                    <?php wp_nonce_field('tm_run_scan'); ?>
+                                                    <input type="hidden" name="action" value="tm_run_scan" />
+                                                    <input type="hidden" name="tm_tab" value="overview" />
+                                                    <input type="hidden" name="monitor_id" value="<?php echo esc_attr((string) $latestMonitorId); ?>" />
+                                                    <button type="submit" class="button button-primary"><?php echo esc_html__('Run scan', 'trumonit-monitor'); ?></button>
+                                                </form>
+                                            <?php else: ?>
+                                                <a class="button button-secondary" href="<?php echo esc_url($monitorsTabUrl); ?>"><?php echo esc_html__('Open monitors', 'trumonit-monitor'); ?></a>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
                             <div class="tm-kpis">
                                 <div class="tm-kpi">
                                     <div class="tm-muted"><?php echo esc_html__('Monitors', 'trumonit-monitor'); ?></div>

@@ -128,13 +128,18 @@ trait TM_AdminActionsTrait
         }
         check_admin_referer('tm_run_scan');
 
+        $preferredTab = isset($_POST['tm_tab']) ? sanitize_key((string) wp_unslash($_POST['tm_tab'])) : 'monitors';
+        if ($preferredTab === '') {
+            $preferredTab = 'monitors';
+        }
+
         if (!$this->is_connected()) {
-            $this->admin_redirect_with_message(__('Connect first.', 'trumonit-monitor'), true, 'monitors');
+            $this->admin_redirect_with_message(__('Connect first.', 'trumonit-monitor'), true, $preferredTab);
         }
 
         $monitorId = isset($_POST['monitor_id']) ? (int) wp_unslash($_POST['monitor_id']) : 0;
         if ($monitorId <= 0) {
-            $this->admin_redirect_with_message(__('Invalid monitor selected.', 'trumonit-monitor'), true, 'monitors');
+            $this->admin_redirect_with_message(__('Invalid monitor selected.', 'trumonit-monitor'), true, $preferredTab);
         }
 
         $res = $this->api_run_scan($monitorId);
@@ -145,10 +150,10 @@ trait TM_AdminActionsTrait
             } else {
                 $err = (string) ($res['error'] ?? __('Run scan failed.', 'trumonit-monitor'));
             }
-            $this->admin_redirect_with_message(sprintf(__('Run scan failed: %s', 'trumonit-monitor'), $err), true, 'monitors');
+            $this->admin_redirect_with_message(sprintf(__('Run scan failed: %s', 'trumonit-monitor'), $err), true, $preferredTab);
         }
 
         $this->refresh_dashboard_summary();
-        $this->admin_redirect_with_message(__('Scan queued.', 'trumonit-monitor'), false, 'monitors');
+        $this->admin_redirect_with_message(__('Scan queued.', 'trumonit-monitor'), false, $preferredTab);
     }
 }

@@ -1,6 +1,6 @@
 === TruMonit Monitor ===
 Contributors: trumonit
-Tags: uptime monitoring, website monitoring, api monitoring, incidents, status page
+Tags: uptime monitoring, website monitoring, synthetic monitoring, api monitoring, incident alerts, status page
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
@@ -8,7 +8,7 @@ Stable tag: 0.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Connect WordPress with TruMonit and view monitor and incident health in wp-admin.
+Connect WordPress with TruMonit for uptime monitoring, website monitoring, synthetic monitoring, incident alerts, API monitoring, and status page health in wp-admin.
 
 == Description ==
 
@@ -17,7 +17,7 @@ TruMonit Monitor provides a lightweight admin panel inside WordPress:
 * Connect using TruMonit API token
 * Login via API (email + password) to fetch token
 * Validate connection against API
-* See monitor count and incident totals
+* Uptime monitoring snapshot (monitor count + incident totals)
 * Review recent monitors and incidents in wp-admin
 * Trigger "Run scan" for selected monitor
 * Monitor/incident tab filters with pagination

@@ -395,6 +395,26 @@ trait TM_ApiClientTrait
         $cachedRecentMonitors = is_array($prev['recent_monitors'] ?? null) ? $prev['recent_monitors'] : [];
         $cachedRecentIncidents = is_array($prev['recent_incidents'] ?? null) ? $prev['recent_incidents'] : [];
 
+        // Provide a small "value proof" snapshot on Overview without extra requests:
+        // both api_*_total() calls use list endpoints with per_page=1, so we can reuse rows.
+        $recentMonitors = $cachedRecentMonitors;
+        $recentMonitorsError = '';
+        if (!empty($monitors['ok'])) {
+            $rows = is_array($monitors['rows'] ?? null) ? $monitors['rows'] : [];
+            $recentMonitors = array_slice($rows, 0, 1);
+        } else {
+            $recentMonitorsError = (string) ($monitors['error'] ?? '');
+        }
+
+        $recentIncidents = $cachedRecentIncidents;
+        $recentIncidentsError = '';
+        if (!empty($incidentsAll['ok'])) {
+            $rows = is_array($incidentsAll['rows'] ?? null) ? $incidentsAll['rows'] : [];
+            $recentIncidents = array_slice($rows, 0, 1);
+        } else {
+            $recentIncidentsError = (string) ($incidentsAll['error'] ?? '');
+        }
+
         $summary = [
             'tenant_name' => (string) ($tenant['name'] ?? ''),
             'tenant_slug' => (string) ($tenant['slug'] ?? ''),
@@ -413,11 +433,11 @@ trait TM_ApiClientTrait
                 'monitors' => !empty($monitors['ok']) ? '' : (string) ($monitors['error'] ?? ''),
                 'incidents_open' => !empty($incidentsOpen['ok']) ? '' : (string) ($incidentsOpen['error'] ?? ''),
                 'incidents_total' => !empty($incidentsAll['ok']) ? '' : (string) ($incidentsAll['error'] ?? ''),
-                'recent_monitors' => '',
-                'recent_incidents' => '',
+                'recent_monitors' => $recentMonitorsError,
+                'recent_incidents' => $recentIncidentsError,
             ],
-            'recent_monitors' => $cachedRecentMonitors,
-            'recent_incidents' => $cachedRecentIncidents,
+            'recent_monitors' => $recentMonitors,
+            'recent_incidents' => $recentIncidents,
         ];
 
         $this->set_last_summary($summary);
