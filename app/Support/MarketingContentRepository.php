@@ -357,11 +357,13 @@ class MarketingContentRepository
             $relatedSolutions = $this->normalizeStringList($raw['related_solutions'] ?? []);
             $answer = $this->expandFaqAnswerIfThin($slug, $locale, $question, $answer, $relatedSolutions);
             $metaDescription = $this->normalizeFaqMetaDescription(
+                $slug,
                 (string) ($raw['meta_description'] ?? ''),
                 $question,
                 strip_tags($answer),
                 $locale
             );
+            $answer = $this->appendFaqLeadSection($slug, $locale, $answer, $relatedSolutions);
 
             $articles[] = [
                 'slug' => $slug,
@@ -732,7 +734,7 @@ class MarketingContentRepository
         return trim($meta);
     }
 
-    private function normalizeFaqMetaDescription(string $rawMeta, string $question, string $answerText, string $locale): string
+    private function normalizeFaqMetaDescription(string $slug, string $rawMeta, string $question, string $answerText, string $locale): string
     {
         $meta = trim($rawMeta);
         if ($meta === '') {

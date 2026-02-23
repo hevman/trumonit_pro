@@ -257,8 +257,8 @@ return [
                     'free' => (int) env('WIDS_BILLING_STRIPE_UNIT_AMOUNT_FREE', 0),
                     'lite' => (int) env('WIDS_BILLING_STRIPE_UNIT_AMOUNT_LITE', 3900),
                     'pro' => (int) env('WIDS_BILLING_STRIPE_UNIT_AMOUNT_PRO', 14900),
-                    // Enterprise is custom in pricing copy; default is for local testing.
-                    'enterprise' => (int) env('WIDS_BILLING_STRIPE_UNIT_AMOUNT_ENTERPRISE', 39900),
+                    // Enterprise default fallback amount for local/testing (USD cents).
+                    'enterprise' => (int) env('WIDS_BILLING_STRIPE_UNIT_AMOUNT_ENTERPRISE', 28900),
                 ],
             ],
             'paddle' => [
