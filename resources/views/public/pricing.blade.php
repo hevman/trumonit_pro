@@ -30,32 +30,32 @@
     $matrixRows = $isPl
         ? [
             [
-                'label' => 'Monitory',
+                'label' => 'Aktywne monitory',
                 'free' => '5',
                 'lite' => '100',
                 'pro' => '300',
                 'enterprise' => '1000',
             ],
             [
-                'label' => 'Min. interwal checkow',
+                'label' => 'Minimalny interwał sprawdzeń',
                 'free' => '5 min',
                 'lite' => '1 min',
                 'pro' => '1 min',
                 'enterprise' => '1 min',
             ],
             [
-                'label' => 'Status page',
+                'label' => 'Strony statusowe',
                 'free' => '1',
                 'lite' => '3',
                 'pro' => '10',
                 'enterprise' => '50',
             ],
             [
-                'label' => 'Integracje alertow',
+                'label' => 'Kanały alertów',
                 'free' => 'Email',
                 'lite' => 'Email + webhook',
                 'pro' => 'Email + Slack/Teams/webhook',
-                'enterprise' => 'Email + Slack/Teams/Discord/webhook + routing',
+                'enterprise' => 'Email + Slack/Teams/Discord/webhook + reguły routingu',
             ],
             [
                 'label' => 'Retencja danych',
@@ -65,17 +65,17 @@
                 'enterprise' => '365 dni',
             ],
             [
-                'label' => 'Private probes (self-hosted)',
-                'free' => 'X',
-                'lite' => 'X',
+                'label' => 'Sondy prywatne (self-hosted)',
+                'free' => 'Nie',
+                'lite' => 'Nie',
                 'pro' => 'Tak (do 30)',
                 'enterprise' => 'Tak (bez limitu)',
             ],
             [
-                'label' => 'Priorytetowy onboarding / wsparcie',
-                'free' => 'X',
-                'lite' => 'X',
-                'pro' => 'X',
+                'label' => 'Priorytetowe wdrożenie i wsparcie',
+                'free' => 'Nie',
+                'lite' => 'Nie',
+                'pro' => 'Nie',
                 'enterprise' => 'Tak',
             ],
         ]
