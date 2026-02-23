@@ -22,8 +22,8 @@
         'name' => $isPl ? 'Plany TruMonit' : 'TruMonit plans',
         'itemListElement' => [
             ['@type' => 'Offer', 'name' => __('messages.welcome.price_free_name'), 'price' => '0', 'priceCurrency' => 'USD'],
-            ['@type' => 'Offer', 'name' => __('messages.welcome.price_lite_name'), 'price' => '39', 'priceCurrency' => 'USD'],
-            ['@type' => 'Offer', 'name' => __('messages.welcome.price_pro_name'), 'price' => '149', 'priceCurrency' => 'USD'],
+            ['@type' => 'Offer', 'name' => __('messages.welcome.price_lite_name'), 'price' => '29', 'priceCurrency' => 'USD'],
+            ['@type' => 'Offer', 'name' => __('messages.welcome.price_pro_name'), 'price' => '79', 'priceCurrency' => 'USD'],
             ['@type' => 'Offer', 'name' => __('messages.welcome.price_enterprise_name'), 'price' => '289', 'priceCurrency' => 'USD'],
         ],
     ];
@@ -32,13 +32,13 @@
             [
                 'label' => 'Monitory',
                 'free' => '5',
-                'lite' => '25',
-                'pro' => '100',
-                'enterprise' => '500',
+                'lite' => '100',
+                'pro' => '300',
+                'enterprise' => '1000',
             ],
             [
                 'label' => 'Min. interwal checkow',
-                'free' => '1 min',
+                'free' => '5 min',
                 'lite' => '1 min',
                 'pro' => '1 min',
                 'enterprise' => '1 min',
@@ -83,13 +83,13 @@
             [
                 'label' => 'Monitors',
                 'free' => '5',
-                'lite' => '25',
-                'pro' => '100',
-                'enterprise' => '500',
+                'lite' => '100',
+                'pro' => '300',
+                'enterprise' => '1000',
             ],
             [
                 'label' => 'Min check interval',
-                'free' => '1 min',
+                'free' => '5 min',
                 'lite' => '1 min',
                 'pro' => '1 min',
                 'enterprise' => '1 min',
