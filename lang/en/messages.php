@@ -463,7 +463,7 @@ return [
         'price_pro_text' => 'For growing SaaS and agencies that need stronger workflows and integrations.',
         'price_enterprise_name' => 'Enterprise',
         'price_enterprise_value' => '$289/mo',
-        'price_enterprise_text' => 'For larger organizations needing governance, scale, and dedicated controls.',
+        'price_enterprise_text' => 'For teams that need high-scale coverage, faster detection, and priority onboarding/support.',
         'security_title' => 'Security-first architecture',
         'security_subtitle' => 'Operational safeguards designed for production environments.',
         'security_item_1' => 'Strict URL safety policy with SSRF hardening and DNS/IP validation.',

@@ -464,7 +464,7 @@ return [
         'price_pro_text' => 'Dla rosnącego SaaS i agencji, które potrzebują mocniejszych workflow i integracji.',
         'price_enterprise_name' => 'Enterprise',
         'price_enterprise_value' => '289 USD/mc',
-        'price_enterprise_text' => 'Dla organizacji wymagających governance, skali i dedykowanych kontroli.',
+        'price_enterprise_text' => 'Dla zespołów, które potrzebują dużej skali monitoringu, szybszej detekcji i priorytetowego onboardingu/wsparcia.',
         'security_title' => 'Architektura security-first',
         'security_subtitle' => 'Zabezpieczenia operacyjne zaprojektowane pod środowiska produkcyjne.',
         'security_item_1' => 'Twarda polityka URL safety z SSRF hardening i walidacją DNS/IP.',

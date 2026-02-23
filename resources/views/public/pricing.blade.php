@@ -22,25 +22,25 @@
         'name' => $isPl ? 'Plany TruMonit' : 'TruMonit plans',
         'itemListElement' => [
             ['@type' => 'Offer', 'name' => __('messages.welcome.price_free_name'), 'price' => '0', 'priceCurrency' => 'USD'],
-            ['@type' => 'Offer', 'name' => __('messages.welcome.price_lite_name')],
-            ['@type' => 'Offer', 'name' => __('messages.welcome.price_pro_name')],
-            ['@type' => 'Offer', 'name' => __('messages.welcome.price_enterprise_name')],
+            ['@type' => 'Offer', 'name' => __('messages.welcome.price_lite_name'), 'price' => '39', 'priceCurrency' => 'USD'],
+            ['@type' => 'Offer', 'name' => __('messages.welcome.price_pro_name'), 'price' => '149', 'priceCurrency' => 'USD'],
+            ['@type' => 'Offer', 'name' => __('messages.welcome.price_enterprise_name'), 'price' => '289', 'priceCurrency' => 'USD'],
         ],
     ];
     $matrixRows = $isPl
         ? [
-            ['label' => 'Monitory', 'free' => '5', 'lite' => '25', 'pro' => '100', 'enterprise' => 'Custom'],
-            ['label' => 'Interwal skanow', 'free' => '5 min', 'lite' => '1 min', 'pro' => '30 sec', 'enterprise' => 'Custom'],
-            ['label' => 'Status page', 'free' => '1', 'lite' => '3', 'pro' => '10', 'enterprise' => 'Unlimited'],
-            ['label' => 'Integracje alertow', 'free' => 'Email', 'lite' => 'Email + webhook', 'pro' => 'Email + Slack/Teams/webhook', 'enterprise' => 'Custom routing'],
-            ['label' => 'Retencja danych', 'free' => '7 dni', 'lite' => '30 dni', 'pro' => '90 dni', 'enterprise' => 'Custom'],
+            ['label' => 'Monitory', 'free' => '5', 'lite' => '25', 'pro' => '100', 'enterprise' => '500'],
+            ['label' => 'Interwal skanow', 'free' => '5 min', 'lite' => '1 min', 'pro' => '30 sec', 'enterprise' => '10 sec'],
+            ['label' => 'Status page', 'free' => '1', 'lite' => '3', 'pro' => '10', 'enterprise' => '50'],
+            ['label' => 'Integracje alertow', 'free' => 'Email', 'lite' => 'Email + webhook', 'pro' => 'Email + Slack/Teams/webhook', 'enterprise' => 'Email + Slack/Teams/Discord/webhook + routing'],
+            ['label' => 'Retencja danych', 'free' => '7 dni', 'lite' => '30 dni', 'pro' => '90 dni', 'enterprise' => '365 dni'],
         ]
         : [
-            ['label' => 'Monitors', 'free' => '5', 'lite' => '25', 'pro' => '100', 'enterprise' => 'Custom'],
-            ['label' => 'Scan interval', 'free' => '5 min', 'lite' => '1 min', 'pro' => '30 sec', 'enterprise' => 'Custom'],
-            ['label' => 'Status pages', 'free' => '1', 'lite' => '3', 'pro' => '10', 'enterprise' => 'Unlimited'],
-            ['label' => 'Alert channels', 'free' => 'Email', 'lite' => 'Email + webhook', 'pro' => 'Email + Slack/Teams/webhook', 'enterprise' => 'Custom routing'],
-            ['label' => 'Data retention', 'free' => '7 days', 'lite' => '30 days', 'pro' => '90 days', 'enterprise' => 'Custom'],
+            ['label' => 'Monitors', 'free' => '5', 'lite' => '25', 'pro' => '100', 'enterprise' => '500'],
+            ['label' => 'Scan interval', 'free' => '5 min', 'lite' => '1 min', 'pro' => '30 sec', 'enterprise' => '10 sec'],
+            ['label' => 'Status pages', 'free' => '1', 'lite' => '3', 'pro' => '10', 'enterprise' => '50'],
+            ['label' => 'Alert channels', 'free' => 'Email', 'lite' => 'Email + webhook', 'pro' => 'Email + Slack/Teams/webhook', 'enterprise' => 'Email + Slack/Teams/Discord/webhook + routing'],
+            ['label' => 'Data retention', 'free' => '7 days', 'lite' => '30 days', 'pro' => '90 days', 'enterprise' => '365 days'],
         ];
 @endphp
 <!DOCTYPE html>
@@ -148,8 +148,8 @@
                     <h2 class="font-semibold">{{ __('messages.welcome.price_enterprise_name') }}</h2>
                     <p class="mt-1 text-2xl font-semibold">{{ __('messages.welcome.price_enterprise_value') }}</p>
                     <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ __('messages.welcome.price_enterprise_text') }}</p>
-                    <a href="mailto:support@trumonit.pro" class="mt-4 inline-flex rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
-                        {{ $isPl ? 'Skontaktuj sie' : 'Contact sales' }}
+                    <a href="{{ route('register') }}" class="mt-4 inline-flex rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
+                        {{ $isPl ? 'Wybierz Enterprise' : 'Choose Enterprise' }}
                     </a>
                 </article>
             </section>
@@ -181,10 +181,10 @@
 
             <section class="mt-8 rounded-2xl bg-slate-900 p-6 sm:p-8 text-white dark:bg-indigo-600">
                 <h2 class="text-2xl font-semibold">
-                    {{ $isPl ? 'Potrzebujesz indywidualnego planu?' : 'Need a custom plan?' }}
+                    {{ $isPl ? 'Potrzebujesz wsparcia we wdrozeniu?' : 'Need onboarding support?' }}
                 </h2>
                 <p class="mt-2 text-slate-200 dark:text-indigo-50">
-                    {{ $isPl ? 'Przygotujemy limity, SLA i model wsparcia pod Twoj stack oraz skale ruchu.' : 'We can tailor limits, SLA, and support model to your stack and traffic profile.' }}
+                    {{ $isPl ? 'Pomożemy z konfiguracją monitoringu, routingiem alertów i migracją z obecnego narzędzia.' : 'We can help with monitoring setup, alert routing, and migration from your current tool.' }}
                 </p>
                 <div class="mt-5 flex flex-wrap gap-3">
                     <a href="mailto:support@trumonit.pro" class="inline-flex rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-100">
