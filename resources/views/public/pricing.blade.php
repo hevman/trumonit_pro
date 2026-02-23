@@ -27,20 +27,182 @@
             ['@type' => 'Offer', 'name' => __('messages.welcome.price_enterprise_name'), 'price' => '289', 'priceCurrency' => 'USD'],
         ],
     ];
+    $planTiers = config('wids.plan_tiers', []);
+    $planTiers = is_array($planTiers) ? $planTiers : [];
+    $privateProbesEnabled = (bool) config('wids.private_probes.enabled', false);
+    $privateProbeAllowedTiers = config('wids.private_probes.allowed_tiers', []);
+    $privateProbeAllowedTiers = is_array($privateProbeAllowedTiers) ? $privateProbeAllowedTiers : [];
+    $privateProbeAllowedSet = [];
+    foreach ($privateProbeAllowedTiers as $tierKey) {
+        if (! is_string($tierKey)) {
+            continue;
+        }
+        $tierKey = strtolower(trim($tierKey));
+        if ($tierKey !== '') {
+            $privateProbeAllowedSet[$tierKey] = true;
+        }
+    }
+    $privateProbeMaxActiveByTier = config('wids.private_probes.max_active_by_tier', []);
+    $privateProbeMaxActiveByTier = is_array($privateProbeMaxActiveByTier) ? $privateProbeMaxActiveByTier : [];
+    $planValue = static function (array $planTiers, string $tier, string $key, int $fallback = 0): int {
+        $tierConfig = is_array($planTiers[$tier] ?? null) ? $planTiers[$tier] : [];
+        return (int) ($tierConfig[$key] ?? $fallback);
+    };
+    $formatLimit = static function (int $value, bool $isPl): string {
+        if ($value <= 0) {
+            return $isPl ? 'Bez limitu' : 'Unlimited';
+        }
+        return $isPl ? number_format($value, 0, ',', ' ') : number_format($value, 0, '.', ',');
+    };
+    $formatDays = static function (int $days, bool $isPl): string {
+        if ($days <= 0) {
+            return $isPl ? 'Bez limitu' : 'Unlimited';
+        }
+        return $isPl ? $days.' dni' : $days.' days';
+    };
+    $formatStorageMb = static function (int $mb, bool $isPl) use ($formatLimit): string {
+        if ($mb <= 0) {
+            return $isPl ? 'Bez limitu' : 'Unlimited';
+        }
+        return $formatLimit($mb, $isPl).' MB';
+    };
+    $formatRpm = static function (int $rpm, bool $isPl) use ($formatLimit): string {
+        if ($rpm <= 0) {
+            return $isPl ? 'Bez limitu' : 'Unlimited';
+        }
+        return $formatLimit($rpm, $isPl).($isPl ? ' req/min' : ' req/min');
+    };
+    $privateProbeTierValue = static function (string $tier, bool $isPl, bool $enabled, array $allowedSet, array $maxActiveByTier, $formatLimit): string {
+        if (! $enabled) {
+            return 'X';
+        }
+        if ($allowedSet !== [] && ! isset($allowedSet[$tier])) {
+            return 'X';
+        }
+        $cap = (int) ($maxActiveByTier[$tier] ?? $maxActiveByTier['default'] ?? 0);
+        if ($cap <= 0) {
+            return $isPl ? 'Tak (bez limitu)' : 'Yes (unlimited)';
+        }
+        return $isPl
+            ? 'Tak (do '.$formatLimit($cap, true).')'
+            : 'Yes (up to '.$formatLimit($cap, false).')';
+    };
     $matrixRows = $isPl
         ? [
-            ['label' => 'Monitory', 'free' => '5', 'lite' => '25', 'pro' => '100', 'enterprise' => '500'],
-            ['label' => 'Interwal skanow', 'free' => '5 min', 'lite' => '1 min', 'pro' => '30 sec', 'enterprise' => '10 sec'],
-            ['label' => 'Status page', 'free' => '1', 'lite' => '3', 'pro' => '10', 'enterprise' => '50'],
-            ['label' => 'Integracje alertow', 'free' => 'Email', 'lite' => 'Email + webhook', 'pro' => 'Email + Slack/Teams/webhook', 'enterprise' => 'Email + Slack/Teams/Discord/webhook + routing'],
-            ['label' => 'Retencja danych', 'free' => '7 dni', 'lite' => '30 dni', 'pro' => '90 dni', 'enterprise' => '365 dni'],
+            [
+                'label' => 'Monitory (limit planu)',
+                'free' => $formatLimit($planValue($planTiers, 'free', 'max_monitored_urls', 3), true),
+                'lite' => $formatLimit($planValue($planTiers, 'lite', 'max_monitored_urls', 50), true),
+                'pro' => $formatLimit($planValue($planTiers, 'pro', 'max_monitored_urls', 300), true),
+                'enterprise' => $formatLimit($planValue($planTiers, 'enterprise', 'max_monitored_urls', 0), true),
+            ],
+            [
+                'label' => 'Min. interwal checkow',
+                'free' => '1 min',
+                'lite' => '1 min',
+                'pro' => '1 min',
+                'enterprise' => '1 min',
+            ],
+            [
+                'label' => 'Retencja danych',
+                'free' => $formatDays($planValue($planTiers, 'free', 'retention_days', 7), true),
+                'lite' => $formatDays($planValue($planTiers, 'lite', 'retention_days', 30), true),
+                'pro' => $formatDays($planValue($planTiers, 'pro', 'retention_days', 90), true),
+                'enterprise' => $formatDays($planValue($planTiers, 'enterprise', 'retention_days', 365), true),
+            ],
+            [
+                'label' => 'Storage quota',
+                'free' => $formatStorageMb($planValue($planTiers, 'free', 'storage_quota_mb', 256), true),
+                'lite' => $formatStorageMb($planValue($planTiers, 'lite', 'storage_quota_mb', 2048), true),
+                'pro' => $formatStorageMb($planValue($planTiers, 'pro', 'storage_quota_mb', 10240), true),
+                'enterprise' => $formatStorageMb($planValue($planTiers, 'enterprise', 'storage_quota_mb', 0), true),
+            ],
+            [
+                'label' => 'Tenant API limit',
+                'free' => $formatRpm($planValue($planTiers, 'free', 'tenant_rpm', 60), true),
+                'lite' => $formatRpm($planValue($planTiers, 'lite', 'tenant_rpm', 120), true),
+                'pro' => $formatRpm($planValue($planTiers, 'pro', 'tenant_rpm', 600), true),
+                'enterprise' => $formatRpm($planValue($planTiers, 'enterprise', 'tenant_rpm', 0), true),
+            ],
+            [
+                'label' => 'Private probes (self-hosted)',
+                'free' => $privateProbeTierValue('free', true, $privateProbesEnabled, $privateProbeAllowedSet, $privateProbeMaxActiveByTier, $formatLimit),
+                'lite' => $privateProbeTierValue('lite', true, $privateProbesEnabled, $privateProbeAllowedSet, $privateProbeMaxActiveByTier, $formatLimit),
+                'pro' => $privateProbeTierValue('pro', true, $privateProbesEnabled, $privateProbeAllowedSet, $privateProbeMaxActiveByTier, $formatLimit),
+                'enterprise' => $privateProbeTierValue('enterprise', true, $privateProbesEnabled, $privateProbeAllowedSet, $privateProbeMaxActiveByTier, $formatLimit),
+            ],
+            [
+                'label' => 'Status page',
+                'free' => 'Tak',
+                'lite' => 'Tak',
+                'pro' => 'Tak',
+                'enterprise' => 'Tak',
+            ],
+            [
+                'label' => 'Integracje alertow',
+                'free' => 'Email + webhook + Slack/Teams/Discord',
+                'lite' => 'Email + webhook + Slack/Teams/Discord',
+                'pro' => 'Email + webhook + Slack/Teams/Discord',
+                'enterprise' => 'Email + webhook + Slack/Teams/Discord',
+            ],
         ]
         : [
-            ['label' => 'Monitors', 'free' => '5', 'lite' => '25', 'pro' => '100', 'enterprise' => '500'],
-            ['label' => 'Scan interval', 'free' => '5 min', 'lite' => '1 min', 'pro' => '30 sec', 'enterprise' => '10 sec'],
-            ['label' => 'Status pages', 'free' => '1', 'lite' => '3', 'pro' => '10', 'enterprise' => '50'],
-            ['label' => 'Alert channels', 'free' => 'Email', 'lite' => 'Email + webhook', 'pro' => 'Email + Slack/Teams/webhook', 'enterprise' => 'Email + Slack/Teams/Discord/webhook + routing'],
-            ['label' => 'Data retention', 'free' => '7 days', 'lite' => '30 days', 'pro' => '90 days', 'enterprise' => '365 days'],
+            [
+                'label' => 'Monitors (plan limit)',
+                'free' => $formatLimit($planValue($planTiers, 'free', 'max_monitored_urls', 3), false),
+                'lite' => $formatLimit($planValue($planTiers, 'lite', 'max_monitored_urls', 50), false),
+                'pro' => $formatLimit($planValue($planTiers, 'pro', 'max_monitored_urls', 300), false),
+                'enterprise' => $formatLimit($planValue($planTiers, 'enterprise', 'max_monitored_urls', 0), false),
+            ],
+            [
+                'label' => 'Min check interval',
+                'free' => '1 min',
+                'lite' => '1 min',
+                'pro' => '1 min',
+                'enterprise' => '1 min',
+            ],
+            [
+                'label' => 'Data retention',
+                'free' => $formatDays($planValue($planTiers, 'free', 'retention_days', 7), false),
+                'lite' => $formatDays($planValue($planTiers, 'lite', 'retention_days', 30), false),
+                'pro' => $formatDays($planValue($planTiers, 'pro', 'retention_days', 90), false),
+                'enterprise' => $formatDays($planValue($planTiers, 'enterprise', 'retention_days', 365), false),
+            ],
+            [
+                'label' => 'Storage quota',
+                'free' => $formatStorageMb($planValue($planTiers, 'free', 'storage_quota_mb', 256), false),
+                'lite' => $formatStorageMb($planValue($planTiers, 'lite', 'storage_quota_mb', 2048), false),
+                'pro' => $formatStorageMb($planValue($planTiers, 'pro', 'storage_quota_mb', 10240), false),
+                'enterprise' => $formatStorageMb($planValue($planTiers, 'enterprise', 'storage_quota_mb', 0), false),
+            ],
+            [
+                'label' => 'Tenant API limit',
+                'free' => $formatRpm($planValue($planTiers, 'free', 'tenant_rpm', 60), false),
+                'lite' => $formatRpm($planValue($planTiers, 'lite', 'tenant_rpm', 120), false),
+                'pro' => $formatRpm($planValue($planTiers, 'pro', 'tenant_rpm', 600), false),
+                'enterprise' => $formatRpm($planValue($planTiers, 'enterprise', 'tenant_rpm', 0), false),
+            ],
+            [
+                'label' => 'Private probes (self-hosted)',
+                'free' => $privateProbeTierValue('free', false, $privateProbesEnabled, $privateProbeAllowedSet, $privateProbeMaxActiveByTier, $formatLimit),
+                'lite' => $privateProbeTierValue('lite', false, $privateProbesEnabled, $privateProbeAllowedSet, $privateProbeMaxActiveByTier, $formatLimit),
+                'pro' => $privateProbeTierValue('pro', false, $privateProbesEnabled, $privateProbeAllowedSet, $privateProbeMaxActiveByTier, $formatLimit),
+                'enterprise' => $privateProbeTierValue('enterprise', false, $privateProbesEnabled, $privateProbeAllowedSet, $privateProbeMaxActiveByTier, $formatLimit),
+            ],
+            [
+                'label' => 'Status page',
+                'free' => 'Yes',
+                'lite' => 'Yes',
+                'pro' => 'Yes',
+                'enterprise' => 'Yes',
+            ],
+            [
+                'label' => 'Alert integrations',
+                'free' => 'Email + webhook + Slack/Teams/Discord',
+                'lite' => 'Email + webhook + Slack/Teams/Discord',
+                'pro' => 'Email + webhook + Slack/Teams/Discord',
+                'enterprise' => 'Email + webhook + Slack/Teams/Discord',
+            ],
         ];
 @endphp
 <!DOCTYPE html>
@@ -159,20 +321,20 @@
                     <thead class="bg-slate-50 text-slate-700 dark:bg-slate-950/60 dark:text-slate-200">
                         <tr>
                             <th class="px-4 py-3 text-left">{{ $isPl ? 'Funkcja' : 'Feature' }}</th>
-                            <th class="px-4 py-3 text-left">{{ __('messages.welcome.price_free_name') }}</th>
-                            <th class="px-4 py-3 text-left">{{ __('messages.welcome.price_lite_name') }}</th>
-                            <th class="px-4 py-3 text-left">{{ __('messages.welcome.price_pro_name') }}</th>
-                            <th class="px-4 py-3 text-left">{{ __('messages.welcome.price_enterprise_name') }}</th>
+                            <th class="px-4 py-3 text-center">{{ __('messages.welcome.price_free_name') }}</th>
+                            <th class="px-4 py-3 text-center">{{ __('messages.welcome.price_lite_name') }}</th>
+                            <th class="px-4 py-3 text-center">{{ __('messages.welcome.price_pro_name') }}</th>
+                            <th class="px-4 py-3 text-center">{{ __('messages.welcome.price_enterprise_name') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
                         @foreach ($matrixRows as $row)
                             <tr>
                                 <td class="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">{{ $row['label'] }}</td>
-                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ $row['free'] }}</td>
-                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ $row['lite'] }}</td>
-                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ $row['pro'] }}</td>
-                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ $row['enterprise'] }}</td>
+                                <td class="px-4 py-3 text-center text-slate-600 dark:text-slate-300">{{ $row['free'] }}</td>
+                                <td class="px-4 py-3 text-center text-slate-600 dark:text-slate-300">{{ $row['lite'] }}</td>
+                                <td class="px-4 py-3 text-center text-slate-600 dark:text-slate-300">{{ $row['pro'] }}</td>
+                                <td class="px-4 py-3 text-center text-slate-600 dark:text-slate-300">{{ $row['enterprise'] }}</td>
                             </tr>
                         @endforeach
                     </tbody>
