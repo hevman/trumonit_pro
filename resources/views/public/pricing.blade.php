@@ -265,11 +265,14 @@
                         @endforeach
                     </tbody>
                 </table>
+                <p class="px-4 pb-4 pt-2 text-xs text-slate-500 dark:text-slate-400">
+                    {{ $isPl ? 'Limity dotyczą aktywnych monitorów w workspace. Potrzebujesz większej skali? Napisz do nas.' : 'Limits apply to active monitors per workspace. Need bigger scale? Contact us.' }}
+                </p>
             </section>
 
             <section class="mt-8 rounded-2xl bg-slate-900 p-6 sm:p-8 text-white dark:bg-indigo-600">
                 <h2 class="text-2xl font-semibold">
-                    {{ $isPl ? 'Potrzebujesz wsparcia we wdrozeniu?' : 'Need onboarding support?' }}
+                    {{ $isPl ? 'Potrzebujesz wsparcia przy wdrożeniu?' : 'Need onboarding support?' }}
                 </h2>
                 <p class="mt-2 text-slate-200 dark:text-indigo-50">
                     {{ $isPl ? 'Pomożemy z konfiguracją monitoringu, routingiem alertów i migracją z obecnego narzędzia.' : 'We can help with monitoring setup, alert routing, and migration from your current tool.' }}

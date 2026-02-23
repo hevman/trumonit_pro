@@ -58,28 +58,28 @@ return [
 
     'plan_tiers' => [
         'free' => [
-            'max_monitored_urls' => (int) env('WIDS_PLAN_FREE_MAX_URLS', 3),
-            'tenant_rpm' => (int) env('WIDS_PLAN_FREE_TENANT_RPM', 60),
-            'storage_quota_mb' => (int) env('WIDS_PLAN_FREE_STORAGE_QUOTA_MB', 256),
-            'retention_days' => (int) env('WIDS_PLAN_FREE_RETENTION_DAYS', 7),
+            'max_monitored_urls' => 5,
+            'tenant_rpm' => 60,
+            'storage_quota_mb' => 256,
+            'retention_days' => 7,
         ],
         'lite' => [
-            'max_monitored_urls' => (int) env('WIDS_PLAN_LITE_MAX_URLS', 50),
-            'tenant_rpm' => (int) env('WIDS_PLAN_LITE_TENANT_RPM', 120),
-            'storage_quota_mb' => (int) env('WIDS_PLAN_LITE_STORAGE_QUOTA_MB', 2048),
-            'retention_days' => (int) env('WIDS_PLAN_LITE_RETENTION_DAYS', 30),
+            'max_monitored_urls' => 100,
+            'tenant_rpm' => 120,
+            'storage_quota_mb' => 2048,
+            'retention_days' => 30,
         ],
         'pro' => [
-            'max_monitored_urls' => (int) env('WIDS_PLAN_PRO_MAX_URLS', 300),
-            'tenant_rpm' => (int) env('WIDS_PLAN_PRO_TENANT_RPM', 600),
-            'storage_quota_mb' => (int) env('WIDS_PLAN_PRO_STORAGE_QUOTA_MB', 10240),
-            'retention_days' => (int) env('WIDS_PLAN_PRO_RETENTION_DAYS', 90),
+            'max_monitored_urls' => 300,
+            'tenant_rpm' => 600,
+            'storage_quota_mb' => 10240,
+            'retention_days' => 90,
         ],
         'enterprise' => [
-            'max_monitored_urls' => (int) env('WIDS_PLAN_ENTERPRISE_MAX_URLS', 0),
-            'tenant_rpm' => (int) env('WIDS_PLAN_ENTERPRISE_TENANT_RPM', 0),
-            'storage_quota_mb' => (int) env('WIDS_PLAN_ENTERPRISE_STORAGE_QUOTA_MB', 0),
-            'retention_days' => (int) env('WIDS_PLAN_ENTERPRISE_RETENTION_DAYS', 365),
+            'max_monitored_urls' => 1000,
+            'tenant_rpm' => 0,
+            'storage_quota_mb' => 0,
+            'retention_days' => 365,
         ],
     ],
 
@@ -209,11 +209,11 @@ return [
             'default' => array_values(array_filter(array_map('trim', explode(',', (string) env('WIDS_PRIVATE_PROBES_ALLOWED_REGIONS_DEFAULT', '*'))))),
         ],
         'max_active_by_tier' => [
-            'free' => (int) env('WIDS_PRIVATE_PROBES_MAX_ACTIVE_FREE', 0),
-            'lite' => (int) env('WIDS_PRIVATE_PROBES_MAX_ACTIVE_LITE', 5),
-            'pro' => (int) env('WIDS_PRIVATE_PROBES_MAX_ACTIVE_PRO', 30),
-            'enterprise' => (int) env('WIDS_PRIVATE_PROBES_MAX_ACTIVE_ENTERPRISE', 0),
-            'default' => (int) env('WIDS_PRIVATE_PROBES_MAX_ACTIVE_DEFAULT', 10),
+            'free' => 0,
+            'lite' => 0,
+            'pro' => 30,
+            'enterprise' => 0,
+            'default' => 10,
         ],
         'fleet_policy' => [
             'auto_enforce_enabled' => env('WIDS_PRIVATE_PROBES_FLEET_AUTO_ENFORCE_ENABLED', false),
@@ -254,11 +254,11 @@ return [
                     'enterprise' => env('WIDS_BILLING_STRIPE_PRICE_ENTERPRISE'),
                 ],
                 'unit_amounts' => [
-                    'free' => (int) env('WIDS_BILLING_STRIPE_UNIT_AMOUNT_FREE', 0),
-                    'lite' => (int) env('WIDS_BILLING_STRIPE_UNIT_AMOUNT_LITE', 3900),
-                    'pro' => (int) env('WIDS_BILLING_STRIPE_UNIT_AMOUNT_PRO', 14900),
+                    'free' => 0,
+                    'lite' => 2900,
+                    'pro' => 7900,
                     // Enterprise default fallback amount for local/testing (USD cents).
-                    'enterprise' => (int) env('WIDS_BILLING_STRIPE_UNIT_AMOUNT_ENTERPRISE', 28900),
+                    'enterprise' => 28900,
                 ],
             ],
             'paddle' => [
