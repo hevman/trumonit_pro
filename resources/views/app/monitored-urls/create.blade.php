@@ -65,7 +65,7 @@
                             <div class="mb-1 block text-sm font-medium text-gray-900 dark:text-gray-100">
                                 {{ app()->getLocale() === 'pl' ? 'Wybierz cel monitoringu (polecane)' : 'Choose monitoring goal (recommended)' }}
                             </div>
-                            <div id="template-cards" class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                            <div id="template-cards" class="hidden grid grid-cols-1 gap-2 sm:grid-cols-2">
                                 @foreach ($featuredTemplates as $template)
                                     <button
                                         type="button"
@@ -97,6 +97,7 @@
                         </div>
                         <div id="template-description" class="app-help">{{ __('Pick a template and apply defaults, then adjust fields if needed.') }}</div>
                         <div class="app-help">{{ __('messages.onboarding.template_pick_help') }}</div>
+                        <div id="template-selected-state" class="mt-1 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
                     </div>
                     <div class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-200">
                         <div id="template-guide-for"></div>
@@ -244,14 +245,19 @@
             var cardsWrap = document.getElementById('template-cards');
             var guideFor = document.getElementById('template-guide-for');
             var guideAlert = document.getElementById('template-guide-alert');
+            var selectedState = document.getElementById('template-selected-state');
             var templateGuides = @json($templateGuide ?? []);
             var templateGuideFallback = @json($templateGuideFallback ?? []);
 
-            if (!select || !apply || !description) {
+            if (!select || !description) {
                 return;
             }
 
             var byKey = {};
+
+            if (cardsWrap) {
+                cardsWrap.classList.remove('hidden');
+            }
 
             for (var i = 0; i < templates.length; i++) {
                 var template = templates[i];
@@ -302,6 +308,16 @@
                 }
 
                 description.textContent = selected.description || @json(__('Template loaded.'));
+            }
+
+            function updateSelectedState() {
+                if (!selectedState) return;
+                var selectedOption = select.options[select.selectedIndex];
+                if (!selectedOption || !select.value) {
+                    selectedState.textContent = '';
+                    return;
+                }
+                selectedState.textContent = @json(app()->getLocale() === 'pl' ? 'Wybrany typ: ' : 'Selected type: ') + selectedOption.text;
             }
 
             function setActiveCard(key) {
@@ -365,12 +381,22 @@
                 setJsonValue('journey_steps', defaults.journey_steps);
             }
 
-            select.addEventListener('change', function () {
+            function syncTemplateState(applyDefaults) {
                 updateDescription();
                 updateTemplateGuide();
+                updateSelectedState();
                 setActiveCard(select.value);
+                if (applyDefaults === true) {
+                    applyTemplateDefaults();
+                }
+            }
+
+            select.addEventListener('change', function () {
+                syncTemplateState(true);
             });
-            apply.addEventListener('click', applyTemplateDefaults);
+            if (apply) {
+                apply.addEventListener('click', applyTemplateDefaults);
+            }
             if (cardsWrap) {
                 cardsWrap.addEventListener('click', function (event) {
                     var target = event.target.closest('[data-template-key]');
@@ -378,14 +404,10 @@
                     var key = target.getAttribute('data-template-key');
                     if (!key) return;
                     select.value = key;
-                    setActiveCard(key);
-                    updateDescription();
-                    updateTemplateGuide();
+                    syncTemplateState(true);
                 });
             }
-            updateDescription();
-            updateTemplateGuide();
-            setActiveCard(select.value);
+            syncTemplateState(false);
         });
     </script>
 </x-app-layout>

@@ -45,46 +45,42 @@
                                 ->all();
                         @endphp
 
-                        <div class="mb-1 block text-sm font-medium text-gray-900 dark:text-gray-100">
+                        <label class="mb-1 block text-sm font-medium text-gray-900 dark:text-gray-100" for="template">
                             {{ __('messages.onboarding.template_label') }}
-                        </div>
-
-                        <div id="template-cards" class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                            @foreach ($featuredTemplates as $template)
-                                <button
-                                    type="button"
-                                    data-template-key="{{ $template['key'] }}"
-                                    class="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left transition hover:border-gray-300 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700 dark:hover:bg-gray-900/60"
-                                >
-                                    <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $template['name'] }}</div>
-                                    <div class="mt-1 text-xs leading-relaxed text-gray-600 dark:text-gray-400">{{ $template['description'] }}</div>
-                                </button>
+                        </label>
+                        <select id="template" name="template" class="app-input" required>
+                            @foreach ($monitorTemplates as $template)
+                                <option value="{{ $template['key'] }}" {{ $defaultTemplate === $template['key'] ? 'selected' : '' }}>
+                                    {{ $template['name'] }}
+                                </option>
                             @endforeach
+                        </select>
+                        <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                            {{ __('messages.onboarding.template_pick_help') }}
                         </div>
 
                         <div id="template-suggestion" class="mt-3 hidden text-xs text-gray-600 dark:text-gray-400"></div>
                         <div id="template-selected-state" class="mt-2 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
 
-                        <details class="mt-4">
-                            <summary class="cursor-pointer select-none text-sm font-medium text-gray-900 dark:text-gray-100">
-                                {{ __('messages.onboarding.advanced_templates_label') }}
-                            </summary>
-                            <div class="mt-3">
-                                <label class="mb-1 block text-sm font-medium text-gray-900 dark:text-gray-100" for="template">
-                                    {{ __('messages.onboarding.template_placeholder') }}
-                                </label>
-                                <select id="template" name="template" class="app-input" required>
-                                    @foreach ($monitorTemplates as $template)
-                                        <option value="{{ $template['key'] }}" {{ $defaultTemplate === $template['key'] ? 'selected' : '' }}>
-                                            {{ $template['name'] }}
-                                        </option>
+                        @if ($featuredTemplates !== [])
+                            <div class="mt-4">
+                                <div class="mb-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+                                    {{ app()->getLocale() === 'pl' ? 'Szybkie skróty typu monitora (kliknij kartę)' : 'Quick monitor type shortcuts (click card)' }}
+                                </div>
+                                <div id="template-cards" class="hidden grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                    @foreach ($featuredTemplates as $template)
+                                        <button
+                                            type="button"
+                                            data-template-key="{{ $template['key'] }}"
+                                            class="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left transition hover:border-gray-300 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700 dark:hover:bg-gray-900/60"
+                                        >
+                                            <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $template['name'] }}</div>
+                                            <div class="mt-1 text-xs leading-relaxed text-gray-600 dark:text-gray-400">{{ $template['description'] }}</div>
+                                        </button>
                                     @endforeach
-                                </select>
-                                <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
-                                    {{ __('messages.onboarding.template_pick_help') }}
                                 </div>
                             </div>
-                        </details>
+                        @endif
                     </div>
 
                     <div>
@@ -132,6 +128,10 @@
 
             if (!url || !template) {
                 return;
+            }
+
+            if (cardsWrap) {
+                cardsWrap.classList.remove('hidden');
             }
 
             function setActiveCard(key) {

@@ -76,7 +76,7 @@
                     <div class="mb-1 block text-sm font-medium text-gray-900 dark:text-gray-100">
                         {{ app()->getLocale() === 'pl' ? 'Wybierz cel monitoringu (polecane)' : 'Choose monitoring goal (recommended)' }}
                     </div>
-                    <div id="quick-add-template-cards" class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <div id="quick-add-template-cards" class="hidden grid grid-cols-1 gap-2 sm:grid-cols-2">
                         @foreach ($featuredQuickTemplates as $templateItem)
                             <button
                                 type="button"
@@ -184,6 +184,10 @@
                 if (!url || !template) return;
 
                 var userPickedTemplate = false;
+
+                if (cardsWrap) {
+                    cardsWrap.classList.remove('hidden');
+                }
 
                 function setActiveCard(key) {
                     if (!cardsWrap) return;
