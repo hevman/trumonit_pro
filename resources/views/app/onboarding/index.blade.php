@@ -36,6 +36,10 @@
                     <div>
                         @php
                             $defaultTemplate = old('template') ?: 'website_uptime';
+                            $limits = app(\App\Services\TenantQuotaService::class)->limitsForTenant(auth()->user()?->tenant);
+                            $minFrequencyMinutes = max(1, (int) ($limits['min_frequency_minutes'] ?? 1));
+                            $frequencyOptions = array_values(array_filter([1, 2, 5, 10, 15, 30, 60, 1440], fn (int $v) => $v >= $minFrequencyMinutes));
+                            $defaultFrequency = in_array(5, $frequencyOptions, true) ? 5 : ($frequencyOptions[0] ?? 5);
                             $featuredTemplateKeys = ['website_uptime', 'keyword_presence', 'api_health', 'cron_heartbeat'];
                             $templateByKey = collect($monitorTemplates)->keyBy('key');
                             $featuredTemplates = collect($featuredTemplateKeys)
@@ -62,7 +66,7 @@
                         <div id="template-suggestion" class="mt-3 hidden text-xs text-gray-600 dark:text-gray-400"></div>
                         <div id="template-selected-state" class="mt-2 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
                         <div id="template-purpose" class="mt-1 hidden rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-300"></div>
-                        <div class="mt-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-200">
+                        <div id="template-guide-box" class="mt-2 hidden rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-200">
                             <div id="template-guide-for"></div>
                             <div id="template-guide-alert" class="mt-1"></div>
                         </div>
@@ -113,17 +117,23 @@
                             {{ __('messages.quick_add.interval_label') }}
                         </label>
                         <select id="frequency_minutes" name="frequency_minutes" class="app-input">
-                            @php($freq = (int) old('frequency_minutes', 5))
-                            <option value="1" {{ $freq === 1 ? 'selected' : '' }}>1 min</option>
-                            <option value="2" {{ $freq === 2 ? 'selected' : '' }}>2 min</option>
-                            <option value="5" {{ $freq === 5 ? 'selected' : '' }}>5 min</option>
-                            <option value="10" {{ $freq === 10 ? 'selected' : '' }}>10 min</option>
-                            <option value="15" {{ $freq === 15 ? 'selected' : '' }}>15 min</option>
-                            <option value="30" {{ $freq === 30 ? 'selected' : '' }}>30 min</option>
-                            <option value="60" {{ $freq === 60 ? 'selected' : '' }}>60 min</option>
-                            <option value="1440" {{ $freq === 1440 ? 'selected' : '' }}>{{ app()->getLocale() === 'pl' ? 'Dziennie' : 'Daily' }}</option>
+                            @php($picked = (int) old('frequency_minutes', $defaultFrequency))
+                            @foreach ($frequencyOptions as $value)
+                                <option value="{{ $value }}" {{ $picked === $value ? 'selected' : '' }}>
+                                    @if ($value === 1440)
+                                        {{ app()->getLocale() === 'pl' ? 'Dziennie' : 'Daily' }}
+                                    @else
+                                        {{ $value }} min
+                                    @endif
+                                </option>
+                            @endforeach
                         </select>
                         <div class="mt-1 text-xs text-gray-600 dark:text-gray-400">{{ __('messages.quick_add.interval_help') }}</div>
+                        @if ($minFrequencyMinutes > 1)
+                            <div class="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                                {{ app()->getLocale() === 'pl' ? 'Minimum w Twoim planie: ' : 'Plan minimum: ' }}{{ $minFrequencyMinutes }} min
+                            </div>
+                        @endif
                     </div>
 
                     <div class="app-card app-card-success text-sm">
@@ -149,6 +159,7 @@
             var purpose = document.getElementById('template-purpose');
             var cardsWrap = document.getElementById('template-cards');
             var templates = @json($monitorTemplates ?? []);
+            var guideBox = document.getElementById('template-guide-box');
             var guideFor = document.getElementById('template-guide-for');
             var guideAlert = document.getElementById('template-guide-alert');
             var frequency = document.getElementById('frequency_minutes');
@@ -210,7 +221,7 @@
             }
 
             function updateGuide() {
-                if (!guideFor || !guideAlert) {
+                if (!guideFor || !guideAlert || !guideBox) {
                     return;
                 }
 
@@ -249,6 +260,7 @@
 
                 guideFor.textContent = {{ json_encode(app()->getLocale() === 'pl' ? 'Co monitor robi: ' : 'What it does: ') }} + forText;
                 guideAlert.textContent = {{ json_encode(app()->getLocale() === 'pl' ? 'Kiedy alarmuje: ' : 'When it alerts: ') }} + alertText;
+                guideBox.classList.remove('hidden');
             }
 
             function maybeApplyTemplateDefaultsToFrequency() {

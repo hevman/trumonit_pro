@@ -13,7 +13,8 @@ class TenantQuotaService
      *   max_monitored_urls: int,
      *   tenant_rpm: int,
      *   storage_quota_bytes: int,
-     *   retention_days: int
+     *   retention_days: int,
+     *   min_frequency_minutes: int
      * }
      */
     public function limitsForTenant(?Tenant $tenant): array
@@ -33,11 +34,13 @@ class TenantQuotaService
         $globalMaxUrls = $this->normalizeLimit((int) config('wids.limits.max_monitored_urls_per_tenant', 0));
         $globalTenantRpm = $this->normalizeLimit((int) config('wids.rate_limits.tenant_requests_per_minute', 0));
         $globalStorageQuotaMb = $this->normalizeLimit((int) config('wids.limits.storage_quota_mb', 0));
+        $globalMinFrequencyMinutes = max(1, min(43_200, (int) config('wids.limits.min_frequency_minutes', 1)));
         $globalRetentionDays = $this->normalizeDays((int) config('wids.retention.days', 30));
 
         $maxUrls = $this->normalizeLimit((int) ($tierConfig['max_monitored_urls'] ?? $globalMaxUrls));
         $tenantRpm = $this->normalizeLimit((int) ($tierConfig['tenant_rpm'] ?? $globalTenantRpm));
         $storageQuotaMb = $this->normalizeLimit((int) ($tierConfig['storage_quota_mb'] ?? $globalStorageQuotaMb));
+        $minFrequencyMinutes = max(1, min(43_200, (int) ($tierConfig['min_frequency_minutes'] ?? $globalMinFrequencyMinutes)));
         $retentionDays = $this->normalizeDays((int) ($tierConfig['retention_days'] ?? $globalRetentionDays));
 
         if ($globalMaxUrls > 0 && ($maxUrls <= 0 || $globalMaxUrls < $maxUrls)) {
@@ -48,12 +51,17 @@ class TenantQuotaService
             $storageQuotaMb = $globalStorageQuotaMb;
         }
 
+        if ($globalMinFrequencyMinutes > $minFrequencyMinutes) {
+            $minFrequencyMinutes = $globalMinFrequencyMinutes;
+        }
+
         return [
             'tier' => $tier,
             'max_monitored_urls' => $maxUrls,
             'tenant_rpm' => $tenantRpm,
             'storage_quota_bytes' => $this->mbToBytes($storageQuotaMb),
             'retention_days' => $retentionDays,
+            'min_frequency_minutes' => $minFrequencyMinutes,
         ];
     }
 

@@ -7,6 +7,10 @@
     @php
         $templates = app(\App\Services\MonitorTemplateService::class)->frontendTemplates();
         $defaultTemplate = 'website_uptime';
+        $limits = app(\App\Services\TenantQuotaService::class)->limitsForTenant($user?->tenant);
+        $minFrequencyMinutes = max(1, (int) ($limits['min_frequency_minutes'] ?? 1));
+        $frequencyOptions = array_values(array_filter([1, 2, 5, 10, 15, 30, 60, 1440], fn (int $v) => $v >= $minFrequencyMinutes));
+        $defaultFrequency = in_array(5, $frequencyOptions, true) ? 5 : ($frequencyOptions[0] ?? 5);
         $templateByKey = collect($templates)->keyBy('key');
         $featuredQuickTemplateKeys = ['website_uptime', 'api_health', 'login_journey', 'cron_heartbeat'];
         $featuredQuickTemplates = collect($featuredQuickTemplateKeys)
@@ -112,16 +116,23 @@
                         {{ __('messages.quick_add.interval_label') }}
                     </label>
                     <select id="quick-add-frequency" name="frequency_minutes" class="app-input">
-                        <option value="1">1 min</option>
-                        <option value="2">2 min</option>
-                        <option value="5" selected>5 min</option>
-                        <option value="10">10 min</option>
-                        <option value="15">15 min</option>
-                        <option value="30">30 min</option>
-                        <option value="60">60 min</option>
-                        <option value="1440">Daily</option>
+                        @php($picked = (int) old('frequency_minutes', $defaultFrequency))
+                        @foreach ($frequencyOptions as $value)
+                            <option value="{{ $value }}" {{ $picked === $value ? 'selected' : '' }}>
+                                @if ($value === 1440)
+                                    {{ app()->getLocale() === 'pl' ? 'Dziennie' : 'Daily' }}
+                                @else
+                                    {{ $value }} min
+                                @endif
+                            </option>
+                        @endforeach
                     </select>
                     <div class="mt-1 text-xs text-gray-600 dark:text-gray-400">{{ __('messages.quick_add.interval_help') }}</div>
+                    @if ($minFrequencyMinutes > 1)
+                        <div class="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                            {{ app()->getLocale() === 'pl' ? 'Minimum w Twoim planie: ' : 'Plan minimum: ' }}{{ $minFrequencyMinutes }} min
+                        </div>
+                    @endif
                 </div>
             </div>
             <div class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-200">

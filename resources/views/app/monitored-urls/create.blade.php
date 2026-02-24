@@ -134,7 +134,11 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1" for="frequency_minutes">{{ __('messages.monitored_urls.frequency_minutes') }}</label>
-                            <input id="frequency_minutes" name="frequency_minutes" type="number" value="{{ old('frequency_minutes', 1440) }}" class="app-input" />
+                            @php($minFrequencyMinutes = (int) ($quota['min_frequency_minutes'] ?? 1))
+                            <input id="frequency_minutes" name="frequency_minutes" type="number" min="{{ $minFrequencyMinutes }}" value="{{ old('frequency_minutes', 1440) }}" class="app-input" />
+                            @if ($minFrequencyMinutes > 1)
+                                <div class="app-help">{{ app()->getLocale() === 'pl' ? 'Minimum w Twoim planie:' : 'Plan minimum:' }} {{ $minFrequencyMinutes }} min.</div>
+                            @endif
                         </div>
                     </div>
 

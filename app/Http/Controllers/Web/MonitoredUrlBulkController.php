@@ -178,6 +178,9 @@ class MonitoredUrlBulkController extends Controller
             ]);
         }
 
+        $limits = app(TenantQuotaService::class)->limitsForTenant($request->user()?->tenant);
+        $minFrequencyMinutes = max(1, (int) ($limits['min_frequency_minutes'] ?? 1));
+
         $validated = [];
         $errors = [];
 
@@ -192,7 +195,7 @@ class MonitoredUrlBulkController extends Controller
                 'display_name' => ['nullable', 'string', 'max:255'],
                 'tags' => ['nullable', 'array', 'max:20'],
                 'tags.*' => ['string', 'max:32'],
-                'frequency_minutes' => ['nullable', 'integer', 'min:1', 'max:43200'],
+                'frequency_minutes' => ['nullable', 'integer', 'min:'.$minFrequencyMinutes, 'max:43200'],
                 'timeout_seconds' => ['nullable', 'integer', 'min:1', 'max:120'],
                 'follow_redirects' => ['nullable', 'boolean'],
                 'expected_status_min' => ['nullable', 'integer', 'min:100', 'max:599'],
@@ -434,6 +437,9 @@ class MonitoredUrlBulkController extends Controller
         $tenantId = $request->user()?->tenant_id;
         abort_if($tenantId === null, 400, 'User has no tenant.');
 
+        $limits = app(TenantQuotaService::class)->limitsForTenant($request->user()?->tenant);
+        $minFrequencyMinutes = max(1, (int) ($limits['min_frequency_minutes'] ?? 1));
+
         $data = $request->validate([
             'ids' => ['required', 'array', 'min:1', 'max:500'],
             'ids.*' => ['integer', 'min:1'],
@@ -447,7 +453,7 @@ class MonitoredUrlBulkController extends Controller
                 'set_tags',
                 'remove_tags',
             ])],
-            'frequency_minutes' => ['nullable', 'integer', 'min:1', 'max:43200'],
+            'frequency_minutes' => ['nullable', 'integer', 'min:'.$minFrequencyMinutes, 'max:43200'],
             'mute_minutes' => ['nullable', 'integer', 'min:5', 'max:10080'],
             'tags' => ['nullable', 'string', 'max:500'],
         ]);
@@ -509,7 +515,7 @@ class MonitoredUrlBulkController extends Controller
                     ]);
                 }
 
-                $frequencyMinutes = min(43200, max(1, $frequencyMinutes));
+                $frequencyMinutes = min(43200, max($minFrequencyMinutes, $frequencyMinutes));
 
                 foreach ($monitoredUrls as $monitoredUrl) {
                     /** @var MonitoredUrl $monitoredUrl */

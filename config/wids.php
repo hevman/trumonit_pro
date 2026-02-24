@@ -47,6 +47,8 @@ return [
     'limits' => [
         'max_monitored_urls_per_tenant' => (int) env('WIDS_LIMIT_MAX_URLS_PER_TENANT', 0),
         'storage_quota_mb' => (int) env('WIDS_LIMIT_STORAGE_QUOTA_MB', 0),
+        // Global lower bound for scan frequency (minutes). Tier config can be higher.
+        'min_frequency_minutes' => (int) env('WIDS_LIMIT_MIN_FREQUENCY_MINUTES', 1),
     ],
 
     'alerts' => [
@@ -62,24 +64,28 @@ return [
             'tenant_rpm' => 60,
             'storage_quota_mb' => 256,
             'retention_days' => 7,
+            'min_frequency_minutes' => 5,
         ],
         'lite' => [
             'max_monitored_urls' => 100,
             'tenant_rpm' => 120,
             'storage_quota_mb' => 2048,
             'retention_days' => 30,
+            'min_frequency_minutes' => 1,
         ],
         'pro' => [
             'max_monitored_urls' => 300,
             'tenant_rpm' => 600,
             'storage_quota_mb' => 10240,
             'retention_days' => 90,
+            'min_frequency_minutes' => 1,
         ],
         'enterprise' => [
             'max_monitored_urls' => 1000,
             'tenant_rpm' => 0,
             'storage_quota_mb' => 0,
             'retention_days' => 365,
+            'min_frequency_minutes' => 1,
         ],
     ],
 

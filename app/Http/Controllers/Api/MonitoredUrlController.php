@@ -51,6 +51,7 @@ class MonitoredUrlController extends Controller
 
         $limits = app(TenantQuotaService::class)->limitsForTenant($request->user()?->tenant);
         $limit = (int) ($limits['max_monitored_urls'] ?? 0);
+        $minFrequencyMinutes = max(1, (int) ($limits['min_frequency_minutes'] ?? 1));
 
         if ($limit > 0) {
             $count = MonitoredUrl::query()->where('tenant_id', $tenantId)->count();
@@ -67,7 +68,7 @@ class MonitoredUrlController extends Controller
             'display_name' => ['nullable', 'string', 'max:255'],
             'tags' => ['nullable', 'array', 'max:20'],
             'tags.*' => ['string', 'max:32'],
-            'frequency_minutes' => ['nullable', 'integer', 'min:1', 'max:43200'],
+            'frequency_minutes' => ['nullable', 'integer', 'min:'.$minFrequencyMinutes, 'max:43200'],
             'timeout_seconds' => ['nullable', 'integer', 'min:1', 'max:120'],
             'follow_redirects' => ['nullable', 'boolean'],
             'expected_status_min' => ['nullable', 'integer', 'min:100', 'max:599'],
@@ -207,11 +208,14 @@ class MonitoredUrlController extends Controller
             return response()->json(['message' => 'User has no tenant.'], 400);
         }
 
+        $limits = app(TenantQuotaService::class)->limitsForTenant($request->user()?->tenant);
+        $minFrequencyMinutes = max(1, (int) ($limits['min_frequency_minutes'] ?? 1));
+
         $data = $request->validate([
             'display_name' => ['nullable', 'string', 'max:255'],
             'tags' => ['nullable', 'array', 'max:20'],
             'tags.*' => ['string', 'max:32'],
-            'frequency_minutes' => ['nullable', 'integer', 'min:1', 'max:43200'],
+            'frequency_minutes' => ['nullable', 'integer', 'min:'.$minFrequencyMinutes, 'max:43200'],
             'timeout_seconds' => ['nullable', 'integer', 'min:1', 'max:120'],
             'follow_redirects' => ['nullable', 'boolean'],
             'expected_status_min' => ['nullable', 'integer', 'min:100', 'max:599'],
