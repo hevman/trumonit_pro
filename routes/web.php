@@ -16,6 +16,7 @@ use App\Http\Controllers\Web\StatusPageController;
 use App\Http\Controllers\Web\SavedViewController;
 use App\Http\Controllers\Web\SeoRiskController;
 use App\Http\Controllers\Web\SnapshotController;
+use App\Http\Controllers\Ops\BusinessAccountsController;
 use App\Http\Controllers\Ops\BusinessSummaryController;
 use App\Http\Controllers\Ops\MetricsController;
 use App\Http\Controllers\Public\FaqController;
@@ -392,6 +393,9 @@ Route::get('/ops/metrics', MetricsController::class)
 Route::get('/ops/business-summary', BusinessSummaryController::class)
     ->middleware('throttle:ops-endpoints')
     ->name('ops.business-summary');
+Route::get('/ops/business-accounts', BusinessAccountsController::class)
+    ->middleware('throttle:ops-endpoints')
+    ->name('ops.business-accounts');
 
 Route::get('/status/{slug}', [StatusPagePublicController::class, 'show'])
     ->where('slug', '[A-Za-z0-9\\-]{1,80}')
