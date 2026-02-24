@@ -1,4 +1,5 @@
 import './bootstrap';
+import './monitor-template-hints';
 
 import Alpine from 'alpinejs';
 
