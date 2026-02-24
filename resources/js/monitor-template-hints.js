@@ -215,9 +215,31 @@ function initRoot(root) {
         selectedState.textContent = opt ? `${t.selectedPrefix}${opt.text}` : '';
     }
 
+    function getSelectedTemplateData() {
+        const key = normalizeKey(templateSelect.value);
+        if (key !== '' && byKey[key]) {
+            return byKey[key];
+        }
+
+        const selectedOption = templateSelect.options[templateSelect.selectedIndex] || null;
+        if (!(selectedOption instanceof HTMLOptionElement)) {
+            return null;
+        }
+
+        const description = (selectedOption.getAttribute('data-template-description') || '').trim();
+        const scanMode = (selectedOption.getAttribute('data-template-scan-mode') || '').trim().toLowerCase();
+
+        return {
+            description,
+            defaults: {
+                scan_mode: scanMode,
+            },
+        };
+    }
+
     function updatePurpose() {
         if (!(purpose instanceof HTMLElement)) return;
-        const selected = byKey[templateSelect.value] || null;
+        const selected = getSelectedTemplateData();
         const description = selected && typeof selected.description === 'string' ? selected.description.trim() : '';
         if (description === '') {
             purpose.textContent = '';
@@ -233,7 +255,7 @@ function initRoot(root) {
             return;
         }
 
-        const selected = byKey[templateSelect.value] || null;
+        const selected = getSelectedTemplateData();
         let forText = selected && typeof selected.description === 'string' ? selected.description.trim() : '';
         if (forText === '') forText = t.fallbackFor;
 
@@ -255,7 +277,7 @@ function initRoot(root) {
     function maybeApplyTemplateDefaultsToFrequency() {
         if (!(frequency instanceof HTMLSelectElement) || userPickedFrequency) return;
 
-        const selected = byKey[templateSelect.value] || null;
+        const selected = getSelectedTemplateData();
         const defaults = selected && selected.defaults && typeof selected.defaults === 'object' ? selected.defaults : null;
         if (!defaults) return;
 
@@ -333,6 +355,11 @@ function initRoot(root) {
         clearSuggestion();
         syncAll();
     });
+    templateSelect.addEventListener('input', () => {
+        userPickedTemplate = true;
+        clearSuggestion();
+        syncAll();
+    });
 
     if (cardsWrap instanceof HTMLElement) {
         cardsWrap.addEventListener('click', (event) => {
@@ -359,4 +386,3 @@ document.addEventListener('DOMContentLoaded', function () {
         if (root instanceof HTMLElement) initRoot(root);
     });
 });
-

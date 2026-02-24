@@ -111,7 +111,13 @@
                             </label>
                             <select id="template" name="template" class="app-input" required>
                                 @foreach ($monitorTemplates as $template)
-                                    <option value="{{ $template['key'] }}" {{ $defaultTemplate === $template['key'] ? 'selected' : '' }}>
+                                    @php($templateScanMode = is_array($template['defaults'] ?? null) ? strtolower(trim((string) ($template['defaults']['scan_mode'] ?? ''))) : '')
+                                    <option
+                                        value="{{ $template['key'] }}"
+                                        data-template-description="{{ $template['description'] }}"
+                                        data-template-scan-mode="{{ $templateScanMode }}"
+                                        {{ $defaultTemplate === $template['key'] ? 'selected' : '' }}
+                                    >
                                         {{ $template['name'] }}
                                     </option>
                                 @endforeach
