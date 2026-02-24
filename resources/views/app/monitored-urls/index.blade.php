@@ -8,18 +8,29 @@
                 $isOwner = auth()->user()?->role !== 'member';
             @endphp
             @if ($isOwner)
-                <div class="flex items-center gap-2">
-                    <a href="{{ route('maintenance-windows.index') }}" class="app-button-secondary">
-                        {{ __('Maintenance windows') }}
-                    </a>
-                    <a href="{{ route('monitored-urls.bulk') }}" class="app-button-secondary">
-                        {{ __('messages.actions.import_export') }}
-                    </a>
+                <div class="flex flex-wrap items-center gap-2">
                     <button type="button" class="app-button-primary" x-on:click="$dispatch('open-modal', 'quick-add-monitor')">
                         {{ __('messages.dashboard.action_create_monitor') }}
                     </button>
-                    <a href="{{ route('onboarding.show') }}" class="app-button-secondary">{{ __('messages.quick_add.open_wizard') }}</a>
-                    <a href="{{ route('monitored-urls.create') }}" class="app-button-secondary">{{ __('messages.dashboard.onboarding_advanced') }}</a>
+                    <a href="{{ route('monitored-urls.bulk') }}" class="app-button-secondary">
+                        {{ __('messages.actions.import_export') }}
+                    </a>
+                    <details class="relative">
+                        <summary class="app-button-secondary cursor-pointer list-none">
+                            {{ app()->getLocale() === 'pl' ? 'Więcej opcji' : 'More options' }}
+                        </summary>
+                        <div class="absolute right-0 z-20 mt-2 w-60 rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-gray-700 dark:bg-gray-900">
+                            <a href="{{ route('maintenance-windows.index') }}" class="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800">
+                                {{ __('Maintenance windows') }}
+                            </a>
+                            <a href="{{ route('onboarding.show') }}" class="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800">
+                                {{ __('messages.quick_add.open_wizard') }}
+                            </a>
+                            <a href="{{ route('monitored-urls.create') }}" class="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800">
+                                {{ __('messages.dashboard.onboarding_advanced') }}
+                            </a>
+                        </div>
+                    </details>
                 </div>
             @endif
         </div>
@@ -139,111 +150,120 @@
                     ->all();
             @endphp
 
-            <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
-                <section class="app-card app-card-lg">
-                    <div class="flex items-center justify-between gap-3">
-                        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ __('messages.monitored_urls.uptime_trend_24h') }}</h3>
-                        <span class="app-chip">
-                            {{ __('messages.monitored_urls.checks_sampled') }}: {{ (int) ($uptimeTrend['total_samples'] ?? 0) }}
-                        </span>
-                    </div>
+            <details class="app-card">
+                <summary class="cursor-pointer text-sm font-semibold text-gray-900 dark:text-gray-100">
+                    {{ app()->getLocale() === 'pl' ? 'Analityka floty (24h)' : 'Fleet analytics (24h)' }}
+                </summary>
+                <div class="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-2">
+                    <section class="app-card app-card-lg">
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ __('messages.monitored_urls.uptime_trend_24h') }}</h3>
+                            <span class="app-chip">
+                                {{ __('messages.monitored_urls.checks_sampled') }}: {{ (int) ($uptimeTrend['total_samples'] ?? 0) }}
+                            </span>
+                        </div>
 
-                    <x-analytics.bar-chart
-                        :values="$uptimeTrend['values'] ?? []"
-                        :labels="$uptimeTrend['labels'] ?? []"
-                        :drilldown-urls="$uptimeTrendDrilldownUrls"
-                        :has-data="(bool) ($uptimeTrend['has_data'] ?? false)"
-                        :max-value="100"
-                        :series-name="__('messages.monitored_urls.series_uptime_percent')"
-                        :legend="__('messages.monitored_urls.legend_uptime_hourly')"
-                        unit="%"
-                        tone="emerald"
-                        height-class="h-40"
-                        :label-step="4"
-                        :empty-text="__('messages.monitored_urls.no_uptime_data_24h')"
-                    />
-                </section>
+                        <x-analytics.bar-chart
+                            :values="$uptimeTrend['values'] ?? []"
+                            :labels="$uptimeTrend['labels'] ?? []"
+                            :drilldown-urls="$uptimeTrendDrilldownUrls"
+                            :has-data="(bool) ($uptimeTrend['has_data'] ?? false)"
+                            :max-value="100"
+                            :series-name="__('messages.monitored_urls.series_uptime_percent')"
+                            :legend="__('messages.monitored_urls.legend_uptime_hourly')"
+                            unit="%"
+                            tone="emerald"
+                            height-class="h-40"
+                            :label-step="4"
+                            :empty-text="__('messages.monitored_urls.no_uptime_data_24h')"
+                        />
+                    </section>
 
-                <section class="app-card app-card-lg">
-                    <div class="flex items-center justify-between gap-3">
-                        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ __('messages.monitored_urls.response_p95_trend_24h') }}</h3>
-                        <span class="app-chip">
-                            @if (($responseP95Trend['latest_p95_ms'] ?? null) !== null)
-                                {{ __('messages.monitored_urls.latest_p95') }}: {{ (int) $responseP95Trend['latest_p95_ms'] }} ms
-                            @else
-                                {{ __('messages.monitored_urls.latest_p95') }}: -
-                            @endif
-                        </span>
-                    </div>
+                    <section class="app-card app-card-lg">
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ __('messages.monitored_urls.response_p95_trend_24h') }}</h3>
+                            <span class="app-chip">
+                                @if (($responseP95Trend['latest_p95_ms'] ?? null) !== null)
+                                    {{ __('messages.monitored_urls.latest_p95') }}: {{ (int) $responseP95Trend['latest_p95_ms'] }} ms
+                                @else
+                                    {{ __('messages.monitored_urls.latest_p95') }}: -
+                                @endif
+                            </span>
+                        </div>
 
-                    <x-analytics.bar-chart
-                        :values="$responseP95Trend['values'] ?? []"
-                        :labels="$responseP95Trend['labels'] ?? []"
-                        :drilldown-urls="$responseP95TrendDrilldownUrls"
-                        :has-data="(bool) ($responseP95Trend['has_data'] ?? false)"
-                        :max-value="max(($responseP95Trend['values'] ?? []) ?: [0])"
-                        :series-name="__('messages.monitored_urls.series_response_p95')"
-                        :legend="__('messages.monitored_urls.legend_response_p95_hourly')"
-                        unit="ms"
-                        tone="amber"
-                        height-class="h-40"
-                        :label-step="4"
-                        :empty-text="__('messages.monitored_urls.no_response_data_24h')"
-                    />
-                </section>
-            </div>
+                        <x-analytics.bar-chart
+                            :values="$responseP95Trend['values'] ?? []"
+                            :labels="$responseP95Trend['labels'] ?? []"
+                            :drilldown-urls="$responseP95TrendDrilldownUrls"
+                            :has-data="(bool) ($responseP95Trend['has_data'] ?? false)"
+                            :max-value="max(($responseP95Trend['values'] ?? []) ?: [0])"
+                            :series-name="__('messages.monitored_urls.series_response_p95')"
+                            :legend="__('messages.monitored_urls.legend_response_p95_hourly')"
+                            unit="ms"
+                            tone="amber"
+                            height-class="h-40"
+                            :label-step="4"
+                            :empty-text="__('messages.monitored_urls.no_response_data_24h')"
+                        />
+                    </section>
+                </div>
+            </details>
 
             <div class="app-card">
-                <div class="space-y-3 mb-3">
-                    <div class="flex flex-wrap gap-2 items-center">
-                        <div class="text-xs text-gray-600 dark:text-gray-400">{{ __('messages.saved_views.title') }}:</div>
-                        @if ($isOwner)
-                            <a href="{{ route('saved-views.index', ['scope' => 'monitored_urls']) }}" class="app-link text-xs underline">{{ __('messages.actions.manage') }}</a>
-                        @endif
-                        @forelse ($savedViews as $savedView)
-                            @php
-                                $savedFilters = is_array($savedView->filters) ? $savedView->filters : [];
-                            @endphp
-                            <div class="inline-flex items-center gap-1">
-                                <a href="{{ route('monitored-urls.index', $savedFilters) }}" class="app-chip hover:bg-gray-200 dark:hover:bg-gray-700">
-                                    {{ $savedView->name }}
-                                </a>
-                                @if ($isOwner)
-                                    <form method="POST" action="{{ route('saved-views.destroy', $savedView) }}" data-confirm-submit="{{ __('messages.saved_views.delete_confirm') }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="text-xs text-gray-500 hover:text-red-700 px-1" type="submit">x</button>
-                                    </form>
-                                @endif
-                            </div>
-                        @empty
-                            <span class="text-xs text-gray-500">{{ __('messages.saved_views.none') }}</span>
-                        @endforelse
-                    </div>
-
-                    @if ($isOwner)
-                        <form method="POST" action="{{ route('saved-views.store') }}" class="flex flex-wrap gap-2 items-end">
-                            @csrf
-                            <input type="hidden" name="scope" value="monitored_urls" />
-                            @foreach ($activeFilters as $key => $value)
-                                <input type="hidden" name="filters[{{ $key }}]" value="{{ $value }}" />
-                            @endforeach
-
-                            <div class="w-full sm:w-72">
-                                <label class="app-label">{{ __('messages.saved_views.save_as') }}</label>
-                                <input name="name" value="" class="app-input" placeholder="e.g. Production monitors" />
-                            </div>
-                            <div>
-                                <button class="app-button-primary" type="submit" {{ $activeFilters === [] ? 'disabled' : '' }}>
-                                    {{ __('messages.saved_views.save') }}
-                                </button>
-                            </div>
-                            @if ($activeFilters === [])
-                                <div class="text-xs text-gray-500">{{ __('messages.saved_views.empty_hint') }}</div>
+                <details class="mb-4">
+                    <summary class="cursor-pointer text-xs uppercase tracking-wide text-gray-600 dark:text-gray-400">
+                        {{ __('messages.saved_views.title') }}
+                    </summary>
+                    <div class="mt-3 space-y-3">
+                        <div class="flex flex-wrap gap-2 items-center">
+                            @if ($isOwner)
+                                <a href="{{ route('saved-views.index', ['scope' => 'monitored_urls']) }}" class="app-link text-xs underline">{{ __('messages.actions.manage') }}</a>
                             @endif
-                        </form>
-                    @endif
-                </div>
+                            @forelse ($savedViews as $savedView)
+                                @php
+                                    $savedFilters = is_array($savedView->filters) ? $savedView->filters : [];
+                                @endphp
+                                <div class="inline-flex items-center gap-1">
+                                    <a href="{{ route('monitored-urls.index', $savedFilters) }}" class="app-chip hover:bg-gray-200 dark:hover:bg-gray-700">
+                                        {{ $savedView->name }}
+                                    </a>
+                                    @if ($isOwner)
+                                        <form method="POST" action="{{ route('saved-views.destroy', $savedView) }}" data-confirm-submit="{{ __('messages.saved_views.delete_confirm') }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="text-xs text-gray-500 hover:text-red-700 px-1" type="submit">x</button>
+                                        </form>
+                                    @endif
+                                </div>
+                            @empty
+                                <span class="text-xs text-gray-500">{{ __('messages.saved_views.none') }}</span>
+                            @endforelse
+                        </div>
+
+                        @if ($isOwner)
+                            <form method="POST" action="{{ route('saved-views.store') }}" class="flex flex-wrap gap-2 items-end">
+                                @csrf
+                                <input type="hidden" name="scope" value="monitored_urls" />
+                                @foreach ($activeFilters as $key => $value)
+                                    <input type="hidden" name="filters[{{ $key }}]" value="{{ $value }}" />
+                                @endforeach
+
+                                <div class="w-full sm:w-72">
+                                    <label class="app-label">{{ __('messages.saved_views.save_as') }}</label>
+                                    <input name="name" value="" class="app-input" placeholder="e.g. Production monitors" />
+                                </div>
+                                <div>
+                                    <button class="app-button-primary" type="submit" {{ $activeFilters === [] ? 'disabled' : '' }}>
+                                        {{ __('messages.saved_views.save') }}
+                                    </button>
+                                </div>
+                                @if ($activeFilters === [])
+                                    <div class="text-xs text-gray-500">{{ __('messages.saved_views.empty_hint') }}</div>
+                                @endif
+                            </form>
+                        @endif
+                    </div>
+                </details>
 
                 @php
                     $lastScannedFromValue = null;
@@ -268,9 +288,12 @@
                     }
                 @endphp
                 <form method="GET" action="{{ route('monitored-urls.index') }}" class="flex flex-wrap gap-3 items-end" x-data="{ advancedOpen: @js($monitoredAdvancedOpen) }">
+                    @if (is_string($filters['state'] ?? null) && trim((string) $filters['state']) !== '')
+                        <input type="hidden" name="state" value="{{ (string) $filters['state'] }}" />
+                    @endif
                     <div class="w-full flex items-center justify-between">
                         <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                            {{ __('messages.actions.advanced_filters') }}
+                            {{ app()->getLocale() === 'pl' ? 'Filtry monitorów' : 'Monitor filters' }}
                         </div>
                         <button type="button" class="app-button-secondary" @click="advancedOpen = !advancedOpen" :aria-expanded="advancedOpen.toString()">
                             <span x-show="!advancedOpen">{{ __('messages.actions.show_advanced') }}</span>
@@ -291,17 +314,6 @@
                             @foreach ($tags as $tag)
                                 <option value="{{ $tag }}" {{ ($filters['tag'] ?? '') === $tag ? 'selected' : '' }}>{{ $tag }}</option>
                             @endforeach
-                        </select>
-                    </div>
-
-                    <div class="w-full sm:w-44">
-                        <label class="app-label">{{ __('messages.monitored_urls.state') }}</label>
-                        <select name="state" class="app-input">
-                            <option value="">{{ __('messages.actions.all') }}</option>
-                            <option value="up" {{ ($filters['state'] ?? '') === 'up' ? 'selected' : '' }}>{{ __('messages.monitored_urls.state_up') }}</option>
-                            <option value="down" {{ ($filters['state'] ?? '') === 'down' ? 'selected' : '' }}>{{ __('messages.monitored_urls.state_down') }}</option>
-                            <option value="paused" {{ ($filters['state'] ?? '') === 'paused' ? 'selected' : '' }}>{{ __('messages.monitored_urls.state_paused') }}</option>
-                            <option value="muted" {{ ($filters['state'] ?? '') === 'muted' ? 'selected' : '' }}>{{ __('messages.monitored_urls.state_muted') }}</option>
                         </select>
                     </div>
 
@@ -378,7 +390,15 @@
             </div>
 
             @if ($isOwner)
-                <div class="app-card">
+                <div id="bulk-panel" class="app-card hidden">
+                    <div class="mb-3 flex items-center justify-between gap-3">
+                        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                            {{ app()->getLocale() === 'pl' ? 'Akcje masowe' : 'Bulk actions' }}
+                        </h3>
+                        <span id="bulk-selected-count" class="app-chip">
+                            {{ app()->getLocale() === 'pl' ? '0 zaznaczonych' : '0 selected' }}
+                        </span>
+                    </div>
                     <form id="bulk-form" method="POST" action="{{ route('monitored-urls.bulk.actions') }}" class="flex flex-wrap gap-3 items-end" data-confirm-submit="{{ __('messages.monitored_urls.bulk_apply_confirm') }}">
                         @csrf
 
@@ -421,6 +441,11 @@
                 </div>
             @endif
 
+            @if ($isOwner)
+                <div class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                    {{ app()->getLocale() === 'pl' ? 'Zaznacz monitory w tabeli, aby włączyć akcje masowe.' : 'Select monitors in the table to enable bulk actions.' }}
+                </div>
+            @endif
             <div class="app-table overflow-x-auto">
                 <table class="min-w-full text-sm">
                     <thead class="bg-gray-50 text-gray-600 dark:bg-gray-900/70 dark:text-gray-300">
@@ -579,14 +604,56 @@
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 var selectAll = document.getElementById('bulk-select-all');
-                if (!selectAll) return;
+                var bulkPanel = document.getElementById('bulk-panel');
+                var selectedCountNode = document.getElementById('bulk-selected-count');
+                var selectedLabel = @json(app()->getLocale() === 'pl' ? 'zaznaczonych' : 'selected');
 
-                selectAll.addEventListener('change', function () {
-                    var checkboxes = document.querySelectorAll('input.bulk-select');
-                    for (var i = 0; i < checkboxes.length; i++) {
-                        checkboxes[i].checked = selectAll.checked;
+                var getCheckboxes = function () {
+                    return document.querySelectorAll('input.bulk-select');
+                };
+
+                var syncBulkUi = function () {
+                    var checkboxes = getCheckboxes();
+                    var total = checkboxes.length;
+                    var selected = 0;
+
+                    for (var i = 0; i < total; i++) {
+                        if (checkboxes[i].checked) {
+                            selected++;
+                        }
                     }
-                });
+
+                    if (bulkPanel) {
+                        bulkPanel.classList.toggle('hidden', selected === 0);
+                    }
+
+                    if (selectedCountNode) {
+                        selectedCountNode.textContent = selected + ' ' + selectedLabel;
+                    }
+
+                    if (selectAll) {
+                        selectAll.checked = total > 0 && selected === total;
+                        selectAll.indeterminate = selected > 0 && selected < total;
+                    }
+                };
+
+                if (selectAll) {
+                    selectAll.addEventListener('change', function () {
+                        var checkboxes = getCheckboxes();
+                        for (var i = 0; i < checkboxes.length; i++) {
+                            checkboxes[i].checked = selectAll.checked;
+                        }
+
+                        syncBulkUi();
+                    });
+                }
+
+                var checkboxes = getCheckboxes();
+                for (var i = 0; i < checkboxes.length; i++) {
+                    checkboxes[i].addEventListener('change', syncBulkUi);
+                }
+
+                syncBulkUi();
             });
         </script>
     @endif
