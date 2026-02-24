@@ -20,7 +20,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class SeoRiskController extends Controller
@@ -375,14 +374,6 @@ class SeoRiskController extends Controller
         $data = $request->validate([
             'monitored_url_id' => ['required', 'integer', 'exists:monitored_urls,id'],
             'name' => ['required', 'string', 'max:120'],
-            'domain' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('seo_properties', 'domain')
-                    ->where(fn ($query) => $query->where('tenant_id', $tenantId))
-                    ->ignore($propertyId),
-            ],
             'use_gsc' => ['nullable', 'boolean'],
             'use_ga4' => ['nullable', 'boolean'],
             'gsc_site_url' => ['nullable', 'string', 'max:500'],
@@ -394,18 +385,36 @@ class SeoRiskController extends Controller
             'baseline_days' => ['required', 'integer', 'min:'.$minBaseline, 'max:'.$maxBaseline],
         ]);
 
-        $monitorBelongsToTenant = MonitoredUrl::query()
+        $monitor = MonitoredUrl::query()
             ->where('id', (int) $data['monitored_url_id'])
             ->where('tenant_id', $tenantId)
-            ->exists();
+            ->first(['id', 'url']);
 
-        if (! $monitorBelongsToTenant) {
+        if (! $monitor) {
             throw ValidationException::withMessages([
                 'monitored_url_id' => ['Selected monitor does not belong to your tenant.'],
             ]);
         }
 
-        $data['domain'] = strtolower(trim((string) $data['domain']));
+        $domain = $this->extractDomainFromUrl((string) $monitor->url);
+        if ($domain === '') {
+            throw ValidationException::withMessages([
+                'monitored_url_id' => ['Selected monitor has invalid URL.'],
+            ]);
+        }
+
+        $domainAlreadyUsed = SeoProperty::query()
+            ->where('tenant_id', $tenantId)
+            ->where('domain', $domain)
+            ->when($propertyId, fn ($query) => $query->where('id', '!=', $propertyId))
+            ->exists();
+
+        if ($domainAlreadyUsed) {
+            throw ValidationException::withMessages([
+                'monitored_url_id' => ['A property for this monitor domain already exists.'],
+            ]);
+        }
+
         $useGsc = (bool) ($data['use_gsc'] ?? false);
         $useGa4 = (bool) ($data['use_ga4'] ?? false);
         $gscSiteUrl = trim((string) ($data['gsc_site_url'] ?? ''));
@@ -471,7 +480,7 @@ class SeoRiskController extends Controller
         return [
             'monitored_url_id' => (int) $data['monitored_url_id'],
             'name' => trim((string) $data['name']),
-            'domain' => $data['domain'],
+            'domain' => $domain,
             'gsc_site_url' => $useGsc ? $gscSiteUrl : '',
             'ga4_property_id' => $useGa4 ? $ga4PropertyId : '',
             'metadata' => [
@@ -573,6 +582,16 @@ class SeoRiskController extends Controller
         }
 
         return $options;
+    }
+
+    private function extractDomainFromUrl(string $url): string
+    {
+        $host = strtolower(trim((string) parse_url($url, PHP_URL_HOST)));
+        if ($host === '') {
+            return '';
+        }
+
+        return str_starts_with($host, 'www.') ? (string) substr($host, 4) : $host;
     }
 
     private function normalizeProvider(string $provider): string

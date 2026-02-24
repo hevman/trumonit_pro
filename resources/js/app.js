@@ -51,6 +51,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const gscSelects = document.querySelectorAll('select[data-seo-risk-gsc-select]');
     const ga4Selects = document.querySelectorAll('select[data-seo-risk-ga4-select]');
+    const gscStatusNodes = document.querySelectorAll('[data-seo-risk-gsc-status]');
+    const ga4StatusNodes = document.querySelectorAll('[data-seo-risk-ga4-status]');
+    const isPolish = (document.documentElement.lang || '').toLowerCase().startsWith('pl');
 
     const populateSelect = (select, items) => {
         if (!(select instanceof HTMLSelectElement)) {
@@ -93,6 +96,22 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
+    const updateStatus = (nodes, text, isError) => {
+        nodes.forEach((node) => {
+            if (!(node instanceof HTMLElement)) {
+                return;
+            }
+
+            node.textContent = text;
+            node.classList.remove('text-red-600', 'dark:text-red-300');
+            node.classList.add('text-gray-500', 'dark:text-gray-400');
+            if (isError) {
+                node.classList.remove('text-gray-500', 'dark:text-gray-400');
+                node.classList.add('text-red-600', 'dark:text-red-300');
+            }
+        });
+    };
+
     if (optionsUrl !== '') {
         fetch(optionsUrl, {
             method: 'GET',
@@ -111,12 +130,69 @@ document.addEventListener('DOMContentLoaded', function () {
             .then((payload) => {
                 const gscItems = Array.isArray(payload?.gsc?.items) ? payload.gsc.items : [];
                 const ga4Items = Array.isArray(payload?.ga4?.items) ? payload.ga4.items : [];
+                const gscConnected = payload?.gsc?.connected === true;
+                const ga4Connected = payload?.ga4?.connected === true;
+                const gscError = typeof payload?.gsc?.error === 'string' ? payload.gsc.error.trim() : '';
+                const ga4Error = typeof payload?.ga4?.error === 'string' ? payload.ga4.error.trim() : '';
 
                 gscSelects.forEach((select) => populateSelect(select, gscItems));
                 ga4Selects.forEach((select) => populateSelect(select, ga4Items));
+
+                if (gscError !== '') {
+                    updateStatus(
+                        gscStatusNodes,
+                        isPolish ? 'Nie udało się pobrać listy usług GSC. Odłącz i podłącz integrację ponownie.' : 'Could not load GSC sites list. Reconnect the integration.',
+                        true
+                    );
+                } else if (!gscConnected) {
+                    updateStatus(
+                        gscStatusNodes,
+                        isPolish ? 'Aby wybrać usługę GSC, najpierw podłącz Google Search Console.' : 'Connect Google Search Console first to select a site.',
+                        false
+                    );
+                } else if (gscItems.length === 0) {
+                    updateStatus(
+                        gscStatusNodes,
+                        isPolish ? 'Brak dostępnych usług GSC dla podłączonego konta Google.' : 'No GSC sites available for the connected Google account.',
+                        false
+                    );
+                } else {
+                    updateStatus(gscStatusNodes, '', false);
+                }
+
+                if (ga4Error !== '') {
+                    updateStatus(
+                        ga4StatusNodes,
+                        isPolish ? 'Nie udało się pobrać listy usług GA4. Odłącz i podłącz integrację ponownie.' : 'Could not load GA4 properties list. Reconnect the integration.',
+                        true
+                    );
+                } else if (!ga4Connected) {
+                    updateStatus(
+                        ga4StatusNodes,
+                        isPolish ? 'Aby wybrać usługę GA4, najpierw podłącz Google Analytics 4.' : 'Connect Google Analytics 4 first to select a property.',
+                        false
+                    );
+                } else if (ga4Items.length === 0) {
+                    updateStatus(
+                        ga4StatusNodes,
+                        isPolish ? 'Brak dostępnych usług GA4 dla podłączonego konta Google.' : 'No GA4 properties available for the connected Google account.',
+                        false
+                    );
+                } else {
+                    updateStatus(ga4StatusNodes, '', false);
+                }
             })
             .catch(() => {
-                // Keep selects with placeholder when options cannot be loaded.
+                updateStatus(
+                    gscStatusNodes,
+                    isPolish ? 'Nie udało się pobrać listy usług GSC.' : 'Could not load GSC sites list.',
+                    true
+                );
+                updateStatus(
+                    ga4StatusNodes,
+                    isPolish ? 'Nie udało się pobrać listy usług GA4.' : 'Could not load GA4 properties list.',
+                    true
+                );
             });
     }
 
@@ -132,17 +208,17 @@ document.addEventListener('DOMContentLoaded', function () {
         const applySuggestedValues = () => {
             const selected = monitorSelect.options[monitorSelect.selectedIndex];
             if (!selected) {
+                domainInput.value = '';
                 return;
             }
 
             const domain = (selected.getAttribute('data-monitor-domain') || '').trim().toLowerCase();
             if (domain === '') {
+                domainInput.value = '';
                 return;
             }
 
-            if (domainInput.value.trim() === '') {
-                domainInput.value = domain;
-            }
+            domainInput.value = domain;
 
             if (gscSelect.value.trim() !== '') {
                 return;
@@ -156,5 +232,6 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         monitorSelect.addEventListener('change', applySuggestedValues);
+        applySuggestedValues();
     });
 });

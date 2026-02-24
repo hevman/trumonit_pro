@@ -37,7 +37,7 @@
                         <li>{{ app()->getLocale() === 'pl' ? 'Uruchom synchronizację, a alerty pojawią się jako incydenty SEO z listą działań.' : 'Run sync and receive SEO incidents with a recovery checklist.' }}</li>
                     </ol>
                     <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                        {{ app()->getLocale() === 'pl' ? 'Wskazówka: po wyborze monitora formularz automatycznie podpowie domenę i format GSC (sc-domain:twojadomena).' : 'Tip: after selecting a monitor, the form auto-suggests domain and GSC format (sc-domain:yourdomain).' }}
+                        {{ app()->getLocale() === 'pl' ? 'Wskazówka: domena SEO jest pobierana z wybranego monitora URL, a źródła GSC/GA4 wybierasz tylko z listy konta Google.' : 'Tip: SEO domain is taken from selected monitor URL, and GSC/GA4 sources can be selected only from your Google account list.' }}
                     </p>
                 @else
                     <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
@@ -242,23 +242,36 @@
 
                         return str_starts_with($host, 'www.') ? substr($host, 4) : $host;
                     };
+                    $hasMonitors = $monitoredUrls->isNotEmpty();
+                    $createFormDisabled = $isPropertyLimitReached || ! $hasMonitors;
                 @endphp
+                @if (! $hasMonitors)
+                    <div class="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200">
+                        {{ app()->getLocale() === 'pl' ? 'Najpierw dodaj co najmniej jeden monitor URL. Bez monitora nie da się utworzyć właściwości SEO.' : 'Add at least one monitored URL first. SEO property cannot be created without monitor mapping.' }}
+                        <a href="{{ route('monitored-urls.index') }}" class="ml-2 underline">
+                            {{ app()->getLocale() === 'pl' ? 'Przejdź do monitorów' : 'Open monitored URLs' }}
+                        </a>
+                    </div>
+                @endif
                 <form method="POST" action="{{ route('seo-risk.properties.store') }}" class="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-3" data-seo-risk-autofill="true" data-seo-risk-options-url="{{ route('seo-risk.google.options') }}">
                     @csrf
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.property_name') }}</label>
-                        <input type="text" name="name" class="app-input" @disabled($isPropertyLimitReached) required />
+                        <input type="text" name="name" class="app-input" @disabled($createFormDisabled) required />
                     </div>
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.domain') }}</label>
-                        <input type="text" name="domain" class="app-input" placeholder="example.com" data-seo-risk-domain @disabled($isPropertyLimitReached) required />
+                        <input type="text" class="app-input" placeholder="example.com" data-seo-risk-domain value="{{ (string) old('domain') }}" readonly @disabled($createFormDisabled) />
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            {{ app()->getLocale() === 'pl' ? 'Pole ustawiane automatycznie z wybranego monitora URL.' : 'This field is auto-filled from selected monitor URL.' }}
+                        </p>
                     </div>
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.monitor_mapping') }}</label>
-                        <select name="monitored_url_id" class="app-input" data-seo-risk-monitor @disabled($isPropertyLimitReached) required>
+                        <select name="monitored_url_id" class="app-input" data-seo-risk-monitor @disabled($createFormDisabled) required>
                             <option value="">{{ __('messages.seo_risk.choose_monitor') }}</option>
                             @foreach ($monitoredUrls as $monitor)
-                                <option value="{{ $monitor->id }}" data-monitor-domain="{{ $extractDomain((string) $monitor->url) }}">{{ $monitor->display_name ?: $monitor->url }}</option>
+                                <option value="{{ $monitor->id }}" data-monitor-domain="{{ $extractDomain((string) $monitor->url) }}" @selected((string) old('monitored_url_id') === (string) $monitor->id)>{{ $monitor->display_name ?: $monitor->url }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -269,12 +282,12 @@
                         <div class="mt-2 flex flex-wrap items-center gap-4">
                             <input type="hidden" name="use_gsc" value="0">
                             <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                                <input type="checkbox" name="use_gsc" value="1" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800" @disabled($isPropertyLimitReached) @checked((bool) old('use_gsc', true))>
+                                <input type="checkbox" name="use_gsc" value="1" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800" @disabled($createFormDisabled) @checked((bool) old('use_gsc', true))>
                                 <span>Google Search Console</span>
                             </label>
                             <input type="hidden" name="use_ga4" value="0">
                             <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                                <input type="checkbox" name="use_ga4" value="1" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800" @disabled($isPropertyLimitReached) @checked((bool) old('use_ga4', true))>
+                                <input type="checkbox" name="use_ga4" value="1" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800" @disabled($createFormDisabled) @checked((bool) old('use_ga4', true))>
                                 <span>Google Analytics 4</span>
                             </label>
                         </div>
@@ -284,45 +297,47 @@
                     </div>
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.gsc_site_url') }}</label>
-                        <select name="gsc_site_url" class="app-input" data-seo-risk-gsc-select data-current-value="{{ (string) old('gsc_site_url') }}" @disabled($isPropertyLimitReached)>
+                        <select name="gsc_site_url" class="app-input" data-seo-risk-gsc-select data-current-value="{{ (string) old('gsc_site_url') }}" @disabled($createFormDisabled)>
                             <option value="">{{ app()->getLocale() === 'pl' ? 'Wybierz z podłączonego konta GSC' : 'Select from connected GSC account' }}</option>
                         </select>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" data-seo-risk-gsc-status></p>
                     </div>
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.ga4_property_id') }}</label>
-                        <select name="ga4_property_id" class="app-input" data-seo-risk-ga4-select data-current-value="{{ (string) old('ga4_property_id') }}" @disabled($isPropertyLimitReached)>
+                        <select name="ga4_property_id" class="app-input" data-seo-risk-ga4-select data-current-value="{{ (string) old('ga4_property_id') }}" @disabled($createFormDisabled)>
                             <option value="">{{ app()->getLocale() === 'pl' ? 'Wybierz z podłączonego konta GA4' : 'Select from connected GA4 account' }}</option>
                         </select>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" data-seo-risk-ga4-status></p>
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                             {{ app()->getLocale() === 'pl' ? 'Identyfikator właściwości GA4 znajdziesz w Google Analytics (Administracja -> Ustawienia usługi).' : 'Find GA4 Property ID in Google Analytics (Admin -> Property settings).' }}
                         </p>
                     </div>
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.baseline_days') }}</label>
-                        <input type="number" min="3" max="30" name="baseline_days" class="app-input" value="{{ (int) config('wids.seo_risk.default_baseline_days', 7) }}" @disabled($isPropertyLimitReached) required />
+                        <input type="number" min="3" max="30" name="baseline_days" class="app-input" value="{{ (int) config('wids.seo_risk.default_baseline_days', 7) }}" @disabled($createFormDisabled) required />
                     </div>
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.alert_clicks_drop') }}</label>
-                        <input type="number" min="5" max="90" name="alert_clicks_drop_percent" class="app-input" value="{{ (int) config('wids.seo_risk.default_thresholds.clicks_drop_percent', 30) }}" @disabled($isPropertyLimitReached) required />
+                        <input type="number" min="5" max="90" name="alert_clicks_drop_percent" class="app-input" value="{{ (int) config('wids.seo_risk.default_thresholds.clicks_drop_percent', 30) }}" @disabled($createFormDisabled) required />
                     </div>
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.alert_impressions_drop') }}</label>
-                        <input type="number" min="5" max="90" name="alert_impressions_drop_percent" class="app-input" value="{{ (int) config('wids.seo_risk.default_thresholds.impressions_drop_percent', 30) }}" @disabled($isPropertyLimitReached) required />
+                        <input type="number" min="5" max="90" name="alert_impressions_drop_percent" class="app-input" value="{{ (int) config('wids.seo_risk.default_thresholds.impressions_drop_percent', 30) }}" @disabled($createFormDisabled) required />
                     </div>
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.alert_sessions_drop') }}</label>
-                        <input type="number" min="5" max="90" name="alert_sessions_drop_percent" class="app-input" value="{{ (int) config('wids.seo_risk.default_thresholds.sessions_drop_percent', 25) }}" @disabled($isPropertyLimitReached) required />
+                        <input type="number" min="5" max="90" name="alert_sessions_drop_percent" class="app-input" value="{{ (int) config('wids.seo_risk.default_thresholds.sessions_drop_percent', 25) }}" @disabled($createFormDisabled) required />
                     </div>
                     <div class="lg:col-span-3 flex items-center gap-2">
                         <input type="hidden" name="is_enabled" value="0">
                         <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                            <input type="checkbox" name="is_enabled" value="1" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800" @disabled($isPropertyLimitReached) checked>
+                            <input type="checkbox" name="is_enabled" value="1" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800" @disabled($createFormDisabled) checked>
                             <span>{{ __('messages.seo_risk.property_enabled') }}</span>
                         </label>
                         <span class="text-xs text-gray-500 dark:text-gray-400">
                             {{ app()->getLocale() === 'pl' ? 'Ruch organiczny i sygnały SEO będą analizowane codziennie po synchronizacji.' : 'Organic traffic and SEO signals are analyzed daily after sync.' }}
                         </span>
-                        <button type="submit" class="app-button-primary" @disabled($isPropertyLimitReached)>{{ __('messages.actions.create') }}</button>
+                        <button type="submit" class="app-button-primary" @disabled($createFormDisabled)>{{ __('messages.actions.create') }}</button>
                     </div>
                 </form>
             </section>
@@ -342,7 +357,7 @@
                                 $dataSources = $property->seoDataSources();
                             @endphp
                             @if ($canManage)
-                                <form method="POST" action="{{ route('seo-risk.properties.update', ['seo_property' => $property->id]) }}">
+                                <form method="POST" action="{{ route('seo-risk.properties.update', ['seo_property' => $property->id]) }}" data-seo-risk-autofill="true" data-seo-risk-options-url="{{ route('seo-risk.google.options') }}">
                                     @csrf
                                     @method('PATCH')
                                     <div class="grid grid-cols-1 gap-3 lg:grid-cols-4">
@@ -352,13 +367,13 @@
                                     </div>
                                     <div>
                                         <label class="app-label">{{ __('messages.seo_risk.domain') }}</label>
-                                        <input type="text" name="domain" class="app-input" value="{{ $property->domain }}" required />
+                                        <input type="text" class="app-input" data-seo-risk-domain value="{{ $property->domain }}" readonly />
                                     </div>
                                     <div>
                                         <label class="app-label">{{ __('messages.seo_risk.monitor_mapping') }}</label>
-                                        <select name="monitored_url_id" class="app-input" required>
+                                        <select name="monitored_url_id" class="app-input" data-seo-risk-monitor required>
                                             @foreach ($monitoredUrls as $monitor)
-                                                <option value="{{ $monitor->id }}" @selected((int) $property->monitored_url_id === (int) $monitor->id)>{{ $monitor->display_name ?: $monitor->url }}</option>
+                                                <option value="{{ $monitor->id }}" data-monitor-domain="{{ $extractDomain((string) $monitor->url) }}" @selected((int) $property->monitored_url_id === (int) $monitor->id)>{{ $monitor->display_name ?: $monitor->url }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -388,12 +403,14 @@
                                         <select name="gsc_site_url" class="app-input" data-seo-risk-gsc-select data-current-value="{{ (string) $property->gsc_site_url }}">
                                             <option value="">{{ app()->getLocale() === 'pl' ? 'Wybierz z podłączonego konta GSC' : 'Select from connected GSC account' }}</option>
                                         </select>
+                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" data-seo-risk-gsc-status></p>
                                     </div>
                                     <div>
                                         <label class="app-label">{{ __('messages.seo_risk.ga4_property_id') }}</label>
                                         <select name="ga4_property_id" class="app-input" data-seo-risk-ga4-select data-current-value="{{ (string) $property->ga4_property_id }}">
                                             <option value="">{{ app()->getLocale() === 'pl' ? 'Wybierz z podłączonego konta GA4' : 'Select from connected GA4 account' }}</option>
                                         </select>
+                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" data-seo-risk-ga4-status></p>
                                     </div>
                                     <div>
                                         <label class="app-label">{{ __('messages.seo_risk.alert_clicks_drop') }}</label>
