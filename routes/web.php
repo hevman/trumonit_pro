@@ -487,6 +487,7 @@ Route::middleware(['auth', 'session.governance'])->group(function () {
         Route::post('/seo-risk/integrations/{provider}/connect', [SeoRiskController::class, 'connectIntegration'])->name('seo-risk.integrations.connect');
         Route::post('/seo-risk/integrations/{provider}/disconnect', [SeoRiskController::class, 'disconnectIntegration'])->name('seo-risk.integrations.disconnect');
         Route::get('/seo-risk/google/callback', [SeoRiskController::class, 'googleCallback'])->name('seo-risk.google.callback');
+        Route::get('/seo-risk/google/options', [SeoRiskController::class, 'googleOptions'])->name('seo-risk.google.options');
         Route::post('/seo-risk/sync', [SeoRiskController::class, 'syncNow'])->name('seo-risk.sync');
         Route::post('/seo-risk/properties', [SeoRiskController::class, 'storeProperty'])->name('seo-risk.properties.store');
         Route::patch('/seo-risk/properties/{seo_property}', [SeoRiskController::class, 'updateProperty'])

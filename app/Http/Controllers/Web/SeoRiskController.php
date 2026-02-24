@@ -11,8 +11,11 @@ use App\Models\SeoIntegration;
 use App\Models\SeoProperty;
 use App\Models\Tenant;
 use App\Services\AuditLogService;
+use App\Services\SeoRisk\GoogleAnalyticsService;
+use App\Services\SeoRisk\GoogleSearchConsoleService;
 use App\Services\SeoRisk\GoogleTokenService;
 use App\Services\SeoRisk\SeoRiskPlanService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -301,6 +304,81 @@ class SeoRiskController extends Controller
         SyncSeoRiskTenantJob::dispatch((int) $tenant->id, $metricDate);
 
         return redirect()->route('seo-risk.index')->with('status', 'SEO sync queued for yesterday data.');
+    }
+
+    public function googleOptions(
+        Request $request,
+        GoogleSearchConsoleService $gscService,
+        GoogleAnalyticsService $ga4Service,
+    ): JsonResponse {
+        $tenant = $request->user()?->tenant;
+        abort_if(! $tenant, 400, 'User has no tenant.');
+
+        $options = [
+            'gsc' => [
+                'connected' => false,
+                'items' => [],
+                'error' => null,
+            ],
+            'ga4' => [
+                'connected' => false,
+                'items' => [],
+                'error' => null,
+            ],
+        ];
+
+        $gscIntegration = SeoIntegration::query()
+            ->where('tenant_id', (int) $tenant->id)
+            ->where('provider', 'gsc')
+            ->where('is_enabled', true)
+            ->first();
+
+        if ($gscIntegration) {
+            $options['gsc']['connected'] = true;
+            try {
+                $sites = $gscService->listSites($gscIntegration);
+                $options['gsc']['items'] = array_map(
+                    static fn (array $site): array => [
+                        'value' => (string) ($site['site_url'] ?? ''),
+                        'label' => trim(implode(' | ', array_filter([
+                            (string) ($site['site_url'] ?? ''),
+                            (string) ($site['permission_level'] ?? ''),
+                        ]))),
+                    ],
+                    $sites
+                );
+            } catch (\Throwable $e) {
+                $options['gsc']['error'] = $e->getMessage();
+            }
+        }
+
+        $ga4Integration = SeoIntegration::query()
+            ->where('tenant_id', (int) $tenant->id)
+            ->where('provider', 'ga4')
+            ->where('is_enabled', true)
+            ->first();
+
+        if ($ga4Integration) {
+            $options['ga4']['connected'] = true;
+            try {
+                $properties = $ga4Service->listProperties($ga4Integration);
+                $options['ga4']['items'] = array_map(
+                    static fn (array $property): array => [
+                        'value' => (string) ($property['property_id'] ?? ''),
+                        'label' => trim(implode(' | ', array_filter([
+                            (string) ($property['display_name'] ?? ''),
+                            (string) ($property['account_name'] ?? ''),
+                            (string) ($property['property_id'] ?? ''),
+                        ]))),
+                    ],
+                    $properties
+                );
+            } catch (\Throwable $e) {
+                $options['ga4']['error'] = $e->getMessage();
+            }
+        }
+
+        return response()->json($options);
     }
 
     /**

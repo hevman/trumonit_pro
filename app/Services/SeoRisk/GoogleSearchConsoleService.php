@@ -145,4 +145,50 @@ class GoogleSearchConsoleService
             'raw' => $payload,
         ];
     }
+
+    /**
+     * @return list<array{site_url: string, permission_level: string}>
+     */
+    public function listSites(SeoIntegration $integration): array
+    {
+        $accessToken = $this->tokenService->accessTokenForIntegration($integration);
+        $endpoint = 'https://searchconsole.googleapis.com/webmasters/v3/sites';
+
+        $response = Http::timeout(25)
+            ->withToken($accessToken)
+            ->get($endpoint);
+
+        if (! $response->successful()) {
+            throw new RuntimeException('GSC sites request failed (status='.$response->status().').');
+        }
+
+        $payload = $response->json();
+        if (! is_array($payload)) {
+            throw new RuntimeException('GSC sites response payload is invalid.');
+        }
+
+        $entriesRaw = $payload['siteEntry'] ?? [];
+        $entries = is_array($entriesRaw) ? $entriesRaw : [];
+
+        $sites = [];
+        foreach ($entries as $entry) {
+            if (! is_array($entry)) {
+                continue;
+            }
+
+            $siteUrl = trim((string) ($entry['siteUrl'] ?? ''));
+            if ($siteUrl === '') {
+                continue;
+            }
+
+            $sites[] = [
+                'site_url' => $siteUrl,
+                'permission_level' => trim((string) ($entry['permissionLevel'] ?? '')),
+            ];
+        }
+
+        usort($sites, static fn (array $a, array $b): int => strcmp($a['site_url'], $b['site_url']));
+
+        return $sites;
+    }
 }

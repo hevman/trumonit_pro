@@ -243,7 +243,7 @@
                         return str_starts_with($host, 'www.') ? substr($host, 4) : $host;
                     };
                 @endphp
-                <form method="POST" action="{{ route('seo-risk.properties.store') }}" class="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-3" data-seo-risk-autofill="true">
+                <form method="POST" action="{{ route('seo-risk.properties.store') }}" class="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-3" data-seo-risk-autofill="true" data-seo-risk-options-url="{{ route('seo-risk.google.options') }}">
                     @csrf
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.property_name') }}</label>
@@ -284,11 +284,11 @@
                     </div>
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.gsc_site_url') }}</label>
-                        <input type="text" name="gsc_site_url" class="app-input" placeholder="sc-domain:example.com" value="{{ old('gsc_site_url') }}" data-seo-risk-gsc @disabled($isPropertyLimitReached) />
+                        <input type="text" name="gsc_site_url" class="app-input" placeholder="sc-domain:example.com" value="{{ old('gsc_site_url') }}" data-seo-risk-gsc list="seo-risk-gsc-sites" @disabled($isPropertyLimitReached) />
                     </div>
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.ga4_property_id') }}</label>
-                        <input type="text" name="ga4_property_id" class="app-input" placeholder="123456789" value="{{ old('ga4_property_id') }}" @disabled($isPropertyLimitReached) />
+                        <input type="text" name="ga4_property_id" class="app-input" placeholder="123456789" value="{{ old('ga4_property_id') }}" list="seo-risk-ga4-properties" @disabled($isPropertyLimitReached) />
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                             {{ app()->getLocale() === 'pl' ? 'Identyfikator właściwości GA4 znajdziesz w Google Analytics (Administracja -> Ustawienia usługi).' : 'Find GA4 Property ID in Google Analytics (Admin -> Property settings).' }}
                         </p>
@@ -381,11 +381,11 @@
                                     </div>
                                     <div>
                                         <label class="app-label">{{ __('messages.seo_risk.gsc_site_url') }}</label>
-                                        <input type="text" name="gsc_site_url" class="app-input" value="{{ $property->gsc_site_url }}" />
+                                        <input type="text" name="gsc_site_url" class="app-input" value="{{ $property->gsc_site_url }}" list="seo-risk-gsc-sites" />
                                     </div>
                                     <div>
                                         <label class="app-label">{{ __('messages.seo_risk.ga4_property_id') }}</label>
-                                        <input type="text" name="ga4_property_id" class="app-input" value="{{ $property->ga4_property_id }}" />
+                                        <input type="text" name="ga4_property_id" class="app-input" value="{{ $property->ga4_property_id }}" list="seo-risk-ga4-properties" />
                                     </div>
                                     <div>
                                         <label class="app-label">{{ __('messages.seo_risk.alert_clicks_drop') }}</label>
@@ -480,6 +480,8 @@
                     @endforelse
                 </div>
             </section>
+            <datalist id="seo-risk-gsc-sites"></datalist>
+            <datalist id="seo-risk-ga4-properties"></datalist>
         </div>
     </div>
 </x-app-layout>
