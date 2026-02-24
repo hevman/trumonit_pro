@@ -82,34 +82,12 @@
                                 ->all();
                         @endphp
 
-                        <label class="mb-1 block text-sm font-medium text-gray-900 dark:text-gray-100" for="template">
-                            {{ __('messages.onboarding.template_label') }}
-                        </label>
-                        <select id="template" name="template" class="app-input" required>
-                            @foreach ($monitorTemplates as $template)
-                                <option value="{{ $template['key'] }}" {{ $defaultTemplate === $template['key'] ? 'selected' : '' }}>
-                                    {{ $template['name'] }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
-                            {{ __('messages.onboarding.template_pick_help') }}
-                        </div>
-
-                        <div id="template-suggestion" class="mt-3 hidden text-xs text-gray-600 dark:text-gray-400"></div>
-                        <div id="template-selected-state" class="mt-2 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
-                        <div id="template-purpose" class="mt-1 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-300 {{ $initialPurposeText === '' ? 'hidden' : '' }}">{{ $initialPurposeText }}</div>
-                        <div id="template-guide-box" class="mt-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-200">
-                            <div id="template-guide-for">{{ app()->getLocale() === 'pl' ? 'Co monitor robi: ' : 'What it does: ' }}{{ $initialGuideFor }}</div>
-                            <div id="template-guide-alert" class="mt-1">{{ app()->getLocale() === 'pl' ? 'Kiedy alarmuje: ' : 'When it alerts: ' }}{{ $initialGuideAlert }}</div>
-                        </div>
-
                         @if ($featuredTemplates !== [])
-                            <div class="mt-4">
+                            <div>
                                 <div class="mb-1 text-sm font-medium text-gray-900 dark:text-gray-100">
-                                    {{ app()->getLocale() === 'pl' ? 'Szybkie skroty typu monitora (kliknij karte)' : 'Quick monitor type shortcuts (click card)' }}
+                                    {{ app()->getLocale() === 'pl' ? 'Wybierz cel monitoringu (polecane)' : 'Pick monitoring goal (recommended)' }}
                                 </div>
-                                <div id="template-cards" class="hidden grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                <div id="template-cards" class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                     @foreach ($featuredTemplates as $template)
                                         <button
                                             type="button"
@@ -121,8 +99,36 @@
                                         </button>
                                     @endforeach
                                 </div>
+                                <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                                    {{ app()->getLocale() === 'pl' ? 'Karty to szybki wybor. Jesli potrzebujesz innego typu, uzyj pelnej listy ponizej.' : 'Cards are a quick pick. If you need another type, use the full list below.' }}
+                                </div>
                             </div>
                         @endif
+
+                        <div class="mt-4">
+                            <label class="mb-1 block text-sm font-medium text-gray-900 dark:text-gray-100" for="template">
+                                {{ app()->getLocale() === 'pl' ? 'Pelna lista typow monitora' : 'Full monitor type list' }}
+                            </label>
+                            <select id="template" name="template" class="app-input" required>
+                                @foreach ($monitorTemplates as $template)
+                                    <option value="{{ $template['key'] }}" {{ $defaultTemplate === $template['key'] ? 'selected' : '' }}>
+                                        {{ $template['name'] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                                {{ __('messages.onboarding.template_pick_help') }}
+                            </div>
+                        </div>
+
+                        <div id="template-suggestion" class="mt-3 hidden text-xs text-gray-600 dark:text-gray-400"></div>
+                        <div id="template-selected-state" class="mt-2 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
+                        <div id="template-purpose" class="mt-1 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-300 {{ $initialPurposeText === '' ? 'hidden' : '' }}">{{ $initialPurposeText }}</div>
+                        <div id="template-guide-box" class="mt-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-200">
+                            <div id="template-guide-for">{{ app()->getLocale() === 'pl' ? 'Co monitor robi: ' : 'What it does: ' }}{{ $initialGuideFor }}</div>
+                            <div id="template-guide-alert" class="mt-1">{{ app()->getLocale() === 'pl' ? 'Kiedy alarmuje: ' : 'When it alerts: ' }}{{ $initialGuideAlert }}</div>
+                        </div>
+
                         <script type="application/json" data-monitor-template-hints-templates>@json($monitorTemplates ?? [])</script>
                     </div>
 
