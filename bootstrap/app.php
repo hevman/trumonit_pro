@@ -53,6 +53,13 @@ return Application::configure(basePath: dirname(__DIR__))
             $schedule->command($partitionCommand)->dailyAt($partitionTime)->withoutOverlapping();
         }
 
+        if ((bool) config('wids.seo_risk.enabled', true)) {
+            $seoSyncTime = trim((string) config('wids.seo_risk.sync_schedule_time', '06:10'));
+            $seoSyncTime = preg_match('/^\d{2}:\d{2}$/', $seoSyncTime) === 1 ? $seoSyncTime : '06:10';
+
+            $schedule->command('wids:seo-risk-sync')->dailyAt($seoSyncTime)->withoutOverlapping();
+        }
+
         $schedule->command('wids:cleanup')->dailyAt('02:30')->withoutOverlapping();
 
         if ((bool) config('wids.reports.weekly_digest.enabled', true)) {
@@ -70,8 +77,12 @@ return Application::configure(basePath: dirname(__DIR__))
             ->withoutOverlapping();
     })
     ->withMiddleware(function (Middleware $middleware): void {
-        // Respect reverse-proxy HTTPS headers so secure cookies / URLs work correctly in production.
-        $middleware->trustProxies(at: '*');
+        // Trust only explicitly configured reverse-proxy hops.
+        $trustedProxies = array_values(array_filter(array_map(
+            static fn (string $proxy): string => trim($proxy),
+            explode(',', (string) env('TRUSTED_PROXIES', '127.0.0.1,::1'))
+        )));
+        $middleware->trustProxies(at: $trustedProxies !== [] ? $trustedProxies : null);
 
         $middleware->alias([
             'role.owner' => \App\Http\Middleware\EnsureOwnerRole::class,

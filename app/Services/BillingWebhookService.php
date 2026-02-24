@@ -9,10 +9,16 @@ class BillingWebhookService
     public function verifySignature(string $provider, string $rawPayload, ?string $signature): bool
     {
         $provider = $this->normalizeProvider($provider);
+
+        // Manual provider does not use inbound webhooks.
+        if ($provider === 'manual') {
+            return false;
+        }
+
         $secret = trim((string) config('wids.billing.providers.'.$provider.'.webhook_secret', ''));
 
         if ($secret === '') {
-            return $provider === 'manual';
+            return false;
         }
 
         $signature = trim((string) $signature);

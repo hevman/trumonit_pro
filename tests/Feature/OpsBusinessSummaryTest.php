@@ -122,4 +122,22 @@ class OpsBusinessSummaryTest extends TestCase
 
         $this->get('/ops/business-summary')->assertStatus(503);
     }
+
+    public function test_business_summary_respects_ip_allowlist(): void
+    {
+        config()->set('ops.business.enabled', true);
+        config()->set('ops.business.require_token', false);
+        config()->set('ops.business.token', null);
+        config()->set('ops.allowed_ips', ['10.10.10.10']);
+
+        $this
+            ->withServerVariables(['REMOTE_ADDR' => '127.0.0.1'])
+            ->get('/ops/business-summary')
+            ->assertForbidden();
+
+        $this
+            ->withServerVariables(['REMOTE_ADDR' => '10.10.10.10'])
+            ->get('/ops/business-summary')
+            ->assertOk();
+    }
 }

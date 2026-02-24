@@ -62,6 +62,10 @@ class BillingPlanService
         return DB::transaction(function () use ($tenant, $actorUserId, $targetPlanTier, $currentPlanTier, $request): BillingCheckoutSession {
             $provider = app(BillingPaymentService::class)->providerKey();
 
+            if ($provider === 'manual' && app()->environment('production')) {
+                throw new \InvalidArgumentException('Manual billing provider is disabled in production.');
+            }
+
             $session = BillingCheckoutSession::query()->create([
                 'tenant_id' => $tenant->id,
                 'created_by_user_id' => $actorUserId > 0 ? $actorUserId : null,
@@ -120,6 +124,10 @@ class BillingPlanService
 
     public function applyPlanTierFromSession(BillingCheckoutSession $session, ?int $actorUserId = null, ?Request $request = null): void
     {
+        if ($session->status !== 'completed') {
+            return;
+        }
+
         $tenant = $session->tenant()->first();
         if (! $tenant) {
             return;

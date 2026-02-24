@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'allowed_ips' => array_values(array_filter(array_map(
+        static fn (string $ip): string => trim($ip),
+        explode(',', (string) env('OPS_ALLOWED_IPS', ''))
+    ))),
+
     'metrics' => [
         'enabled' => env('OPS_METRICS_ENABLED', false),
         'require_token' => env('OPS_METRICS_REQUIRE_TOKEN', true),
@@ -17,6 +22,10 @@ return [
             static fn (string $status): string => strtolower(trim($status)),
             explode(',', (string) env('OPS_BUSINESS_PAID_SUBSCRIPTION_STATUSES', 'active,trialing,manual_active,past_due'))
         ))),
+    ],
+
+    'rate_limits' => [
+        'endpoints_per_minute' => (int) env('OPS_ENDPOINTS_RPM', 30),
     ],
 
     'drill' => [

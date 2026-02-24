@@ -122,5 +122,12 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinute(30)->by('saml-auth|'.$tenantSlug.'|'.$request->ip());
         });
+
+        RateLimiter::for('ops-endpoints', function (Request $request) {
+            $rpm = max(1, (int) config('ops.rate_limits.endpoints_per_minute', 30));
+            $tokenHash = hash('sha256', (string) ($request->bearerToken() ?? ''));
+
+            return Limit::perMinute($rpm)->by('ops-endpoints|'.$request->ip().'|'.$tokenHash);
+        });
     }
 }

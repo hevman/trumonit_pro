@@ -27,6 +27,10 @@ class BillingPaymentService
         $provider = $this->providerKey();
 
         if ($provider === 'manual') {
+            if (app()->environment('production')) {
+                throw new RuntimeException('Manual billing provider is disabled in production.');
+            }
+
             return [
                 'provider' => $provider,
                 'status' => 'completed',

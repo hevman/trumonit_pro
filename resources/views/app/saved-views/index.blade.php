@@ -79,7 +79,7 @@
                                 <td class="px-4 py-2">
                                     <div class="flex items-center gap-3">
                                         <a href="{{ $targetRoute }}" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100">{{ __('Open') }}</a>
-                                        <form method="POST" action="{{ route('saved-views.destroy', $savedView) }}" onsubmit="return confirm('{{ __('messages.saved_views.delete_confirm') }}');">
+                                        <form method="POST" action="{{ route('saved-views.destroy', $savedView) }}" data-confirm-submit="{{ __('messages.saved_views.delete_confirm') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button class="text-red-700 hover:text-red-900" type="submit">{{ __('messages.actions.delete') }}</button>

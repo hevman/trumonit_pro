@@ -37,6 +37,10 @@ return [
 
     'trucookie' => [
         'banner_base_url' => env('TRUCOOKIE_BANNER_BASE_URL', 'https://trucookie.pro/banner.js'),
+        'banner_allowed_hosts' => array_values(array_filter(array_map(
+            static fn (string $host): string => strtolower(trim($host)),
+            explode(',', (string) env('TRUCOOKIE_BANNER_ALLOWED_HOSTS', 'trucookie.pro,www.trucookie.pro'))
+        ))),
         'site_id' => env('TRUCOOKIE_SITE_ID', '55df5334-edd6-40e4-8935-d740e00e8c4a'),
     ],
 

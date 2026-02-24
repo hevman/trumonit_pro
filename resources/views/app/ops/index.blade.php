@@ -436,7 +436,7 @@
                                                 @if ($selectedCurrentWorkers !== null)
                                                     <input type="hidden" name="ops_current_workers" value="{{ $selectedCurrentWorkers }}" />
                                                 @endif
-                                                <button type="submit" class="app-button-secondary text-xs" onclick="return confirm('{{ __('Rollback env file from selected backup?') }}')">{{ __('Rollback') }}</button>
+                                                <button type="submit" class="app-button-secondary text-xs" data-confirm-click="{{ __('Rollback env file from selected backup?') }}">{{ __('Rollback') }}</button>
                                             </form>
                                         </td>
                                     </tr>

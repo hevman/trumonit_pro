@@ -18,6 +18,7 @@ class MetricsController
         if (! (bool) config('ops.metrics.enabled', false)) {
             abort(404);
         }
+        $this->assertIpAllowed($request);
 
         $requireToken = (bool) config('ops.metrics.require_token', true);
         $token = trim((string) config('ops.metrics.token', ''));
@@ -55,6 +56,11 @@ class MetricsController
         $window5m = $now->copy()->subMinutes(5);
         $window1h = $now->copy()->subHour();
         $window24h = $now->copy()->subDay();
+        $seoCoreUpdatesFeedSyncStatus = (string) Cache::get('ops:seo_risk:core_updates:last_status', 'unknown');
+        $seoCoreUpdatesFeedSyncOk = $seoCoreUpdatesFeedSyncStatus === 'ok' ? 1 : 0;
+        $seoCoreUpdatesFeedErrorTotal = max(0, (int) Cache::get('ops:seo_risk:core_updates:error_total', 0));
+        $seoCoreUpdatesFeedLastSuccessAt = max(0, (int) Cache::get('ops:seo_risk:core_updates:last_success_at', 0));
+        $seoCoreUpdatesFeedLastErrorAt = max(0, (int) Cache::get('ops:seo_risk:core_updates:last_error_at', 0));
 
         $monitorsTotal = MonitoredUrl::query()->count();
         $monitorsActive = MonitoredUrl::query()->where('is_active', true)->count();
@@ -654,6 +660,22 @@ class MetricsController
             $lines[] = 'TruMonit_queue_workers_max_configured '.(int) ($queueAutoscalingPlan['max_workers'] ?? 0);
         }
 
+        $lines[] = '# HELP TruMonit_seo_core_updates_feed_sync_ok Core update feed sync status (1=ok, 0=failed/unknown).';
+        $lines[] = '# TYPE TruMonit_seo_core_updates_feed_sync_ok gauge';
+        $lines[] = 'TruMonit_seo_core_updates_feed_sync_ok '.$seoCoreUpdatesFeedSyncOk;
+
+        $lines[] = '# HELP TruMonit_seo_core_updates_feed_errors_total Core update feed sync failures total.';
+        $lines[] = '# TYPE TruMonit_seo_core_updates_feed_errors_total gauge';
+        $lines[] = 'TruMonit_seo_core_updates_feed_errors_total '.$seoCoreUpdatesFeedErrorTotal;
+
+        $lines[] = '# HELP TruMonit_seo_core_updates_feed_last_success_at_seconds Unix timestamp of the last successful core update feed sync.';
+        $lines[] = '# TYPE TruMonit_seo_core_updates_feed_last_success_at_seconds gauge';
+        $lines[] = 'TruMonit_seo_core_updates_feed_last_success_at_seconds '.$seoCoreUpdatesFeedLastSuccessAt;
+
+        $lines[] = '# HELP TruMonit_seo_core_updates_feed_last_error_at_seconds Unix timestamp of the last failed core update feed sync.';
+        $lines[] = '# TYPE TruMonit_seo_core_updates_feed_last_error_at_seconds gauge';
+        $lines[] = 'TruMonit_seo_core_updates_feed_last_error_at_seconds '.$seoCoreUpdatesFeedLastErrorAt;
+
         $lines[] = '# HELP TruMonit_metrics_generated_at_seconds Unix timestamp when metrics were generated.';
         $lines[] = '# TYPE TruMonit_metrics_generated_at_seconds gauge';
         $lines[] = 'TruMonit_metrics_generated_at_seconds '.$now->getTimestamp();
@@ -696,5 +718,28 @@ class MetricsController
     private function normalizeMetricsCacheTtl(int $ttlSeconds): int
     {
         return min(60, max(0, $ttlSeconds));
+    }
+
+    private function assertIpAllowed(Request $request): void
+    {
+        $configured = config('ops.allowed_ips', []);
+        if (! is_array($configured) || $configured === []) {
+            return;
+        }
+
+        $allowed = array_values(array_filter(array_map(
+            static fn ($ip): string => trim((string) $ip),
+            $configured
+        )));
+
+        if ($allowed === []) {
+            return;
+        }
+
+        $clientIp = trim((string) $request->ip());
+
+        if ($clientIp === '' || ! in_array($clientIp, $allowed, true)) {
+            abort(403);
+        }
     }
 }

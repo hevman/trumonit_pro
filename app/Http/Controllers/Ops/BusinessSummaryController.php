@@ -17,6 +17,7 @@ class BusinessSummaryController
         if (! (bool) config('ops.business.enabled', false)) {
             abort(404);
         }
+        $this->assertIpAllowed($request);
 
         $requireToken = (bool) config('ops.business.require_token', true);
         $token = trim((string) config('ops.business.token', ''));
@@ -128,5 +129,28 @@ class BusinessSummaryController
     private function normalizeCacheTtl(int $ttlSeconds): int
     {
         return min(300, max(0, $ttlSeconds));
+    }
+
+    private function assertIpAllowed(Request $request): void
+    {
+        $configured = config('ops.allowed_ips', []);
+        if (! is_array($configured) || $configured === []) {
+            return;
+        }
+
+        $allowed = array_values(array_filter(array_map(
+            static fn ($ip): string => trim((string) $ip),
+            $configured
+        )));
+
+        if ($allowed === []) {
+            return;
+        }
+
+        $clientIp = trim((string) $request->ip());
+
+        if ($clientIp === '' || ! in_array($clientIp, $allowed, true)) {
+            abort(403);
+        }
     }
 }

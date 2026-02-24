@@ -18,6 +18,10 @@ class BillingWebhookController extends Controller
         }
 
         $provider = strtolower(trim($provider));
+        if ($provider === '' || $provider === 'manual') {
+            abort(404);
+        }
+
         $rawPayload = (string) $request->getContent();
         $payload = json_decode($rawPayload, true);
 
@@ -127,12 +131,66 @@ class BillingWebhookController extends Controller
                 return;
             }
 
-            if ($checkoutSession->status !== 'completed') {
-                $metadata = is_array($checkoutSession->metadata) ? $checkoutSession->metadata : [];
-                $metadata['completed_via_webhook'] = true;
-                $metadata['billing_webhook_event_id'] = $event->id;
+            if ($checkoutSession->status === 'completed') {
+                $event->forceFill([
+                    'status' => 'ignored',
+                    'processed_at' => now(),
+                    'error_message' => 'Checkout session is already completed.',
+                ])->save();
 
-                if ($provider === 'stripe' && $stripeObject !== []) {
+                return;
+            }
+
+            if ($checkoutSession->status !== 'pending') {
+                $event->forceFill([
+                    'status' => 'ignored',
+                    'processed_at' => now(),
+                    'error_message' => 'Checkout session is not in pending state.',
+                ])->save();
+
+                return;
+            }
+
+            $metadata = is_array($checkoutSession->metadata) ? $checkoutSession->metadata : [];
+            $metadata['completed_via_webhook'] = true;
+            $metadata['billing_webhook_event_id'] = $event->id;
+
+            if ($provider === 'stripe') {
+                $savedExternalSessionId = trim((string) ($checkoutSession->external_session_id ?? ''));
+                $isLocalOrTesting = app()->environment(['local', 'testing']);
+
+                // For live traffic require real Stripe checkout session id in payload.
+                if (! $isLocalOrTesting && $stripeCheckoutSessionId === null) {
+                    $event->forceFill([
+                        'status' => 'ignored',
+                        'processed_at' => now(),
+                        'error_message' => 'Stripe checkout session id is missing in webhook payload.',
+                    ])->save();
+
+                    return;
+                }
+
+                if (! $isLocalOrTesting && $stripeObject === []) {
+                    $event->forceFill([
+                        'status' => 'ignored',
+                        'processed_at' => now(),
+                        'error_message' => 'Stripe checkout session payload is incomplete.',
+                    ])->save();
+
+                    return;
+                }
+
+                if ($savedExternalSessionId !== '' && $stripeCheckoutSessionId !== null && ! hash_equals($savedExternalSessionId, $stripeCheckoutSessionId)) {
+                    $event->forceFill([
+                        'status' => 'ignored',
+                        'processed_at' => now(),
+                        'error_message' => 'Stripe checkout session id mismatch.',
+                    ])->save();
+
+                    return;
+                }
+
+                if ($stripeObject !== []) {
                     $paymentStatus = $this->extractString($stripeObject['payment_status'] ?? null, 32);
                     $sessionStatus = $this->extractString($stripeObject['status'] ?? null, 32);
 
@@ -153,13 +211,13 @@ class BillingWebhookController extends Controller
                         return;
                     }
                 }
-
-                $checkoutSession->forceFill([
-                    'status' => 'completed',
-                    'completed_at' => now(),
-                    'metadata' => $metadata,
-                ])->save();
             }
+
+            $checkoutSession->forceFill([
+                'status' => 'completed',
+                'completed_at' => now(),
+                'metadata' => $metadata,
+            ])->save();
 
             app(BillingPlanService::class)->applyPlanTierFromSession($checkoutSession);
 

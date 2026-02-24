@@ -255,8 +255,8 @@ return [
                 ],
                 'unit_amounts' => [
                     'free' => 0,
-                    'lite' => 2900,
-                    'pro' => 7900,
+                    'lite' => 3900,
+                    'pro' => 14900,
                     // Enterprise default fallback amount for local/testing (USD cents).
                     'enterprise' => 28900,
                 ],
@@ -594,6 +594,82 @@ return [
                     ],
                 ],
             ],
+        ],
+    ],
+
+    'seo_risk' => [
+        'enabled' => env('WIDS_SEO_RISK_ENABLED', true),
+        'sync_queue' => env('WIDS_SEO_RISK_SYNC_QUEUE', 'wids'),
+        'sync_schedule_time' => env('WIDS_SEO_RISK_SYNC_SCHEDULE_TIME', '06:10'),
+        'google_oauth_redirect_path' => env('WIDS_SEO_RISK_GOOGLE_REDIRECT_PATH', '/seo-risk/google/callback'),
+        'google_oauth_authorize_url' => env('WIDS_SEO_RISK_GOOGLE_AUTHORIZE_URL', 'https://accounts.google.com/o/oauth2/v2/auth'),
+        'google_oauth_token_url' => env('WIDS_SEO_RISK_GOOGLE_TOKEN_URL', 'https://oauth2.googleapis.com/token'),
+        'google_oauth_default_client_id' => env('WIDS_SEO_RISK_GOOGLE_CLIENT_ID'),
+        'google_oauth_default_client_secret' => env('WIDS_SEO_RISK_GOOGLE_CLIENT_SECRET'),
+        'default_baseline_days' => (int) env('WIDS_SEO_RISK_DEFAULT_BASELINE_DAYS', 7),
+        'min_baseline_days' => (int) env('WIDS_SEO_RISK_MIN_BASELINE_DAYS', 3),
+        'max_baseline_days' => (int) env('WIDS_SEO_RISK_MAX_BASELINE_DAYS', 30),
+        'default_thresholds' => [
+            'clicks_drop_percent' => (int) env('WIDS_SEO_RISK_DEFAULT_CLICKS_DROP_PERCENT', 30),
+            'impressions_drop_percent' => (int) env('WIDS_SEO_RISK_DEFAULT_IMPRESSIONS_DROP_PERCENT', 30),
+            'sessions_drop_percent' => (int) env('WIDS_SEO_RISK_DEFAULT_SESSIONS_DROP_PERCENT', 25),
+        ],
+        'core_updates' => [
+            'enabled' => env('WIDS_SEO_RISK_CORE_UPDATES_ENABLED', true),
+            'provider' => env('WIDS_SEO_RISK_CORE_UPDATES_PROVIDER', 'google_search_updates'),
+            'feed_url' => env('WIDS_SEO_RISK_CORE_UPDATES_FEED_URL', 'https://status.search.google.com/en/feed.atom'),
+            'feed_timeout_seconds' => (int) env('WIDS_SEO_RISK_CORE_UPDATES_FEED_TIMEOUT_SECONDS', 12),
+            'default_active_days' => (int) env('WIDS_SEO_RISK_CORE_UPDATES_DEFAULT_ACTIVE_DAYS', 14),
+            'context_window_days' => (int) env('WIDS_SEO_RISK_CORE_UPDATES_CONTEXT_WINDOW_DAYS', 10),
+            'default_impact_score' => (int) env('WIDS_SEO_RISK_CORE_UPDATES_DEFAULT_IMPACT_SCORE', 75),
+            'title_keywords' => env('WIDS_SEO_RISK_CORE_UPDATES_TITLE_KEYWORDS', 'core update,broad core,google update'),
+        ],
+        'backlinks' => [
+            'enabled' => env('WIDS_SEO_RISK_BACKLINKS_ENABLED', false),
+            'provider' => env('WIDS_SEO_RISK_BACKLINKS_PROVIDER', 'generic'),
+            'api_url' => env('WIDS_SEO_RISK_BACKLINKS_API_URL', ''),
+            'api_timeout_seconds' => (int) env('WIDS_SEO_RISK_BACKLINKS_TIMEOUT_SECONDS', 15),
+            'api_key' => env('WIDS_SEO_RISK_BACKLINKS_API_KEY', ''),
+            'api_key_header' => env('WIDS_SEO_RISK_BACKLINKS_API_KEY_HEADER', 'Authorization'),
+            'api_key_prefix' => env('WIDS_SEO_RISK_BACKLINKS_API_KEY_PREFIX', 'Bearer '),
+            'minimum_lost_domains' => (int) env('WIDS_SEO_RISK_BACKLINKS_MIN_LOST_DOMAINS', 5),
+            'minimum_lost_domains_percent' => (float) env('WIDS_SEO_RISK_BACKLINKS_MIN_LOST_PERCENT', 3),
+            'history_spike_multiplier' => (float) env('WIDS_SEO_RISK_BACKLINKS_HISTORY_SPIKE_MULTIPLIER', 2.0),
+        ],
+        'index_monitor' => [
+            'enabled' => env('WIDS_SEO_RISK_INDEX_MONITOR_ENABLED', true),
+            'min_drop_percent' => (int) env('WIDS_SEO_RISK_INDEX_MIN_DROP_PERCENT', 15),
+            'min_drop_absolute' => (int) env('WIDS_SEO_RISK_INDEX_MIN_DROP_ABSOLUTE', 25),
+        ],
+        'action_cards' => [
+            'critical_severity_threshold' => (int) env('WIDS_SEO_RISK_ACTION_CARDS_CRITICAL_THRESHOLD', 80),
+        ],
+        'plan_tiers' => [
+            'free' => [
+                'max_properties' => 1,
+                'auto_sync' => false,
+                'backlinks_enabled' => false,
+            ],
+            'lite' => [
+                'max_properties' => 3,
+                'auto_sync' => true,
+                'backlinks_enabled' => false,
+            ],
+            'pro' => [
+                'max_properties' => 10,
+                'auto_sync' => true,
+                'backlinks_enabled' => true,
+            ],
+            'enterprise' => [
+                'max_properties' => 30,
+                'auto_sync' => true,
+                'backlinks_enabled' => true,
+            ],
+        ],
+        'google_scopes' => [
+            'gsc' => 'https://www.googleapis.com/auth/webmasters.readonly',
+            'ga4' => 'https://www.googleapis.com/auth/analytics.readonly',
+            'profile' => 'openid email profile',
         ],
     ],
 

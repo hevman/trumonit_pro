@@ -14,12 +14,10 @@
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
             @vite(['resources/css/app.css', 'resources/js/app.js'])
         @else
-            <script src="https://cdn.tailwindcss.com"></script>
-            <script>
-                tailwind.config = Object.assign({}, tailwind.config || {}, { darkMode: 'class' });
-            </script>
-            @include('partials.tailwind-fallback-components')
-            <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+            @include('partials.local-css-fallback')
+            @if (file_exists(public_path('js/alpine.min.js')))
+                <script defer src="{{ asset('js/alpine.min.js') }}?v={{ filemtime(public_path('js/alpine.min.js')) }}"></script>
+            @endif
         @endif
 </head>
     <body class="antialiased leading-relaxed bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100" x-data="{ sidebarOpen: false }">

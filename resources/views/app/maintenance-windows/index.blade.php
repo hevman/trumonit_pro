@@ -123,7 +123,7 @@
                                 <td class="px-4 py-2 text-gray-700 dark:text-gray-300">{{ $w->note ?? '-' }}</td>
                                 <td class="px-4 py-2">
                                     @if ($isOwner)
-                                        <form method="POST" action="{{ route('maintenance-windows.destroy', $w) }}" onsubmit="return confirm('{{ __('Delete this maintenance window?') }}');">
+                                        <form method="POST" action="{{ route('maintenance-windows.destroy', $w) }}" data-confirm-submit="{{ __('Delete this maintenance window?') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button class="text-red-700 hover:text-red-900" type="submit">{{ __('messages.actions.delete') }}</button>

@@ -14,11 +14,7 @@
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
             @vite(['resources/css/app.css', 'resources/js/app.js'])
         @else
-            <script src="https://cdn.tailwindcss.com"></script>
-            <script>
-                tailwind.config = Object.assign({}, tailwind.config || {}, { darkMode: 'class' });
-            </script>
-            @include('partials.tailwind-fallback-components')
+            @include('partials.local-css-fallback')
         @endif
     </head>
     <body class="bg-gray-50 text-gray-900 antialiased leading-relaxed dark:bg-gray-950 dark:text-gray-100">

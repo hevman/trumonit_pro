@@ -4,8 +4,8 @@
         ? 'Cennik monitoringu stron i API | TruMonit'
         : 'Website and API Monitoring Pricing | TruMonit';
     $seoDescription = $isPl
-        ? 'Porownaj plany TruMonit: limity monitorow, czestotliwosc skanow, status page i integracje alertowe.'
-        : 'Compare TruMonit plans: monitor limits, scan frequency, status pages, and alerting integrations.';
+        ? 'Porównaj plany TruMonit: limity monitorów, częstotliwość sprawdzeń, moduł SEO (GSC+GA4), strony statusowe i integracje alertów.'
+        : 'Compare TruMonit plans: monitor limits, scan frequency, SEO Risk (GSC+GA4), status pages, and alerting integrations.';
     $homeUrl = route('localized.public.home', ['locale' => app()->getLocale()]);
     $pricingUrl = route('localized.public.pricing', ['locale' => app()->getLocale()]);
     $faqIndexUrl = route('localized.public.faq.index', ['locale' => app()->getLocale()]);
@@ -22,8 +22,8 @@
         'name' => $isPl ? 'Plany TruMonit' : 'TruMonit plans',
         'itemListElement' => [
             ['@type' => 'Offer', 'name' => __('messages.welcome.price_free_name'), 'price' => '0', 'priceCurrency' => 'USD'],
-            ['@type' => 'Offer', 'name' => __('messages.welcome.price_lite_name'), 'price' => '29', 'priceCurrency' => 'USD'],
-            ['@type' => 'Offer', 'name' => __('messages.welcome.price_pro_name'), 'price' => '79', 'priceCurrency' => 'USD'],
+            ['@type' => 'Offer', 'name' => __('messages.welcome.price_lite_name'), 'price' => '39', 'priceCurrency' => 'USD'],
+            ['@type' => 'Offer', 'name' => __('messages.welcome.price_pro_name'), 'price' => '149', 'priceCurrency' => 'USD'],
             ['@type' => 'Offer', 'name' => __('messages.welcome.price_enterprise_name'), 'price' => '289', 'priceCurrency' => 'USD'],
         ],
     ];
@@ -52,10 +52,10 @@
             ],
             [
                 'label' => 'Kanały alertów',
-                'free' => 'Email',
-                'lite' => 'Email + webhook',
-                'pro' => 'Email + Slack/Teams/webhook',
-                'enterprise' => 'Email + Slack/Teams/Discord/webhook + reguły routingu',
+                'free' => 'E-mail',
+                'lite' => 'E-mail + webhook',
+                'pro' => 'E-mail + Slack/Teams/webhook',
+                'enterprise' => 'E-mail + Slack/Teams/Discord/webhook + reguły routingu',
             ],
             [
                 'label' => 'Retencja danych',
@@ -65,7 +65,7 @@
                 'enterprise' => '365 dni',
             ],
             [
-                'label' => 'Sondy prywatne (self-hosted)',
+                'label' => 'Sondy prywatne (na własnej infrastrukturze)',
                 'free' => 'Nie',
                 'lite' => 'Nie',
                 'pro' => 'Tak (do 30)',
@@ -76,6 +76,41 @@
                 'free' => 'Nie',
                 'lite' => 'Nie',
                 'pro' => 'Nie',
+                'enterprise' => 'Tak',
+            ],
+            [
+                'label' => 'Moduł SEO (GSC + GA4)',
+                'free' => 'Tak',
+                'lite' => 'Tak',
+                'pro' => 'Tak',
+                'enterprise' => 'Tak',
+            ],
+            [
+                'label' => 'Limit właściwości SEO',
+                'free' => '1',
+                'lite' => '3',
+                'pro' => '10',
+                'enterprise' => '30',
+            ],
+            [
+                'label' => 'Automatyczna synchronizacja SEO',
+                'free' => 'Nie',
+                'lite' => 'Tak',
+                'pro' => 'Tak',
+                'enterprise' => 'Tak',
+            ],
+            [
+                'label' => 'Sygnały aktualizacji Google Core',
+                'free' => 'Tak',
+                'lite' => 'Tak',
+                'pro' => 'Tak',
+                'enterprise' => 'Tak',
+            ],
+            [
+                'label' => 'Sygnał ryzyka utraty linków',
+                'free' => 'Nie',
+                'lite' => 'Nie',
+                'pro' => 'Tak',
                 'enterprise' => 'Tak',
             ],
         ]
@@ -129,6 +164,41 @@
                 'pro' => 'X',
                 'enterprise' => 'Yes',
             ],
+            [
+                'label' => 'SEO Risk (GSC + GA4)',
+                'free' => 'Yes',
+                'lite' => 'Yes',
+                'pro' => 'Yes',
+                'enterprise' => 'Yes',
+            ],
+            [
+                'label' => 'SEO properties limit',
+                'free' => '1',
+                'lite' => '3',
+                'pro' => '10',
+                'enterprise' => '30',
+            ],
+            [
+                'label' => 'Auto SEO sync',
+                'free' => 'No',
+                'lite' => 'Yes',
+                'pro' => 'Yes',
+                'enterprise' => 'Yes',
+            ],
+            [
+                'label' => 'Core Update signal',
+                'free' => 'Yes',
+                'lite' => 'Yes',
+                'pro' => 'Yes',
+                'enterprise' => 'Yes',
+            ],
+            [
+                'label' => 'Backlink risk signal',
+                'free' => 'No',
+                'lite' => 'No',
+                'pro' => 'Yes',
+                'enterprise' => 'Yes',
+            ],
         ];
 @endphp
 <!DOCTYPE html>
@@ -151,7 +221,7 @@
     <meta name="twitter:title" content="{{ $seoTitle }}">
     <meta name="twitter:description" content="{{ $seoDescription }}">
     <meta name="twitter:image" content="{{ asset('android-chrome-512x512.png') }}">
-    <script type="application/ld+json">{!! json_encode($offersSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+    <script type="application/ld+json">{!! json_encode($offersSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
     @include('partials.theme-head')
     @include('partials.favicons')
     @include('partials.trucookie-banner')
@@ -159,10 +229,7 @@
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @else
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script>
-            tailwind.config = Object.assign({}, tailwind.config || {}, { darkMode: 'class' });
-        </script>
+        @include('partials.local-css-fallback')
     @endif
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
@@ -211,6 +278,7 @@
                     <h2 class="font-semibold">{{ __('messages.welcome.price_free_name') }}</h2>
                     <p class="mt-1 text-2xl font-semibold">{{ __('messages.welcome.price_free_value') }}</p>
                     <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ __('messages.welcome.price_free_text') }}</p>
+                    <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">{{ $isPl ? 'Moduł SEO w pakiecie' : 'SEO Risk included' }}</p>
                     <a href="{{ route('register') }}" class="mt-4 inline-flex rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
                         {{ $isPl ? 'Zacznij za darmo' : 'Start free' }}
                     </a>
@@ -219,6 +287,7 @@
                     <h2 class="font-semibold">{{ __('messages.welcome.price_lite_name') }}</h2>
                     <p class="mt-1 text-2xl font-semibold">{{ __('messages.welcome.price_lite_value') }}</p>
                     <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ __('messages.welcome.price_lite_text') }}</p>
+                    <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">{{ $isPl ? 'Moduł SEO w pakiecie' : 'SEO Risk included' }}</p>
                     <a href="{{ route('register') }}" class="mt-4 inline-flex rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
                         {{ $isPl ? 'Wybierz Lite' : 'Choose Lite' }}
                     </a>
@@ -228,6 +297,7 @@
                     <h2 class="mt-2 font-semibold">{{ __('messages.welcome.price_pro_name') }}</h2>
                     <p class="mt-1 text-2xl font-semibold">{{ __('messages.welcome.price_pro_value') }}</p>
                     <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ __('messages.welcome.price_pro_text') }}</p>
+                    <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">{{ $isPl ? 'Moduł SEO w pakiecie' : 'SEO Risk included' }}</p>
                     <a href="{{ route('register') }}" class="mt-4 inline-flex rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-black dark:bg-indigo-500 dark:hover:bg-indigo-400">
                         {{ $isPl ? 'Wybierz Pro' : 'Choose Pro' }}
                     </a>
@@ -236,6 +306,7 @@
                     <h2 class="font-semibold">{{ __('messages.welcome.price_enterprise_name') }}</h2>
                     <p class="mt-1 text-2xl font-semibold">{{ __('messages.welcome.price_enterprise_value') }}</p>
                     <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ __('messages.welcome.price_enterprise_text') }}</p>
+                    <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">{{ $isPl ? 'Moduł SEO w pakiecie' : 'SEO Risk included' }}</p>
                     <a href="{{ route('register') }}" class="mt-4 inline-flex rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
                         {{ $isPl ? 'Wybierz Enterprise' : 'Choose Enterprise' }}
                     </a>
@@ -243,6 +314,9 @@
             </section>
 
             <section class="mt-8 rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 overflow-x-auto">
+                <div class="border-b border-slate-200 px-4 py-3 text-sm text-slate-600 dark:border-slate-800 dark:text-slate-300">
+                    {{ $isPl ? 'Każdy plan obejmuje moduł SEO (GSC + GA4). Sygnał ryzyka utraty linków jest dostępny od planu Pro.' : 'Every plan includes SEO Risk (GSC + GA4). Backlink risk signal is available from Pro.' }}
+                </div>
                 <table class="min-w-full text-sm">
                     <thead class="bg-slate-50 text-slate-700 dark:bg-slate-950/60 dark:text-slate-200">
                         <tr>
@@ -266,7 +340,7 @@
                     </tbody>
                 </table>
                 <p class="px-4 pb-4 pt-2 text-xs text-slate-500 dark:text-slate-400">
-                    {{ $isPl ? 'Limity dotyczą aktywnych monitorów w workspace. Potrzebujesz większej skali? Napisz do nas.' : 'Limits apply to active monitors per workspace. Need bigger scale? Contact us.' }}
+                    {{ $isPl ? 'Limity dotyczą aktywnych monitorów w przestrzeni roboczej. Potrzebujesz większej skali? Napisz do nas.' : 'Limits apply to active monitors per workspace. Need bigger scale? Contact us.' }}
                 </p>
             </section>
 
@@ -293,7 +367,7 @@
                 <div class="flex flex-wrap items-center justify-between gap-4 text-sm text-slate-500 dark:text-slate-400">
                     <span>&copy; {{ date('Y') }} {{ config('app.name', 'TruMonit') }}</span>
                     <div class="flex items-center gap-3">
-                        <a class="hover:underline" href="{{ $homeUrl }}">{{ $isPl ? 'Strona glowna' : 'Home' }}</a>
+                        <a class="hover:underline" href="{{ $homeUrl }}">{{ $isPl ? 'Strona główna' : 'Home' }}</a>
                         <span class="opacity-40">&middot;</span>
                         <a class="hover:underline" href="{{ $pricingUrl }}">{{ __('messages.welcome.nav_pricing') }}</a>
                         <span class="opacity-40">&middot;</span>
@@ -313,3 +387,4 @@
     </div>
 </body>
 </html>
+

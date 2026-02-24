@@ -21,7 +21,7 @@
                         {{ __('messages.actions.edit') }}
                     </a>
 
-                    <form method="POST" action="{{ route('status-pages.destroy', $statusPage) }}" onsubmit="return confirm('{{ __('Delete this status page?') }}')">
+                    <form method="POST" action="{{ route('status-pages.destroy', $statusPage) }}" data-confirm-submit="{{ __('Delete this status page?') }}">
                         @csrf
                         @method('DELETE')
                         <button class="text-sm text-red-700 hover:text-red-900" type="submit">

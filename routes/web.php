@@ -14,6 +14,7 @@ use App\Http\Controllers\Web\SamlSettingsController;
 use App\Http\Controllers\Web\SsoSettingsController;
 use App\Http\Controllers\Web\StatusPageController;
 use App\Http\Controllers\Web\SavedViewController;
+use App\Http\Controllers\Web\SeoRiskController;
 use App\Http\Controllers\Web\SnapshotController;
 use App\Http\Controllers\Ops\BusinessSummaryController;
 use App\Http\Controllers\Ops\MetricsController;
@@ -385,8 +386,12 @@ Route::get('/sitemap.xml', function () {
     return response($xml, 200)->header('Content-Type', 'application/xml; charset=UTF-8');
 })->name('public.sitemap');
 
-Route::get('/ops/metrics', MetricsController::class)->name('ops.metrics');
-Route::get('/ops/business-summary', BusinessSummaryController::class)->name('ops.business-summary');
+Route::get('/ops/metrics', MetricsController::class)
+    ->middleware('throttle:ops-endpoints')
+    ->name('ops.metrics');
+Route::get('/ops/business-summary', BusinessSummaryController::class)
+    ->middleware('throttle:ops-endpoints')
+    ->name('ops.business-summary');
 
 Route::get('/status/{slug}', [StatusPagePublicController::class, 'show'])
     ->where('slug', '[A-Za-z0-9\\-]{1,80}')
@@ -412,6 +417,8 @@ Route::middleware(['auth', 'session.governance'])->group(function () {
     Route::resource('status-pages', StatusPageController::class)
         ->only(['index', 'show'])
         ->whereNumber('status_page');
+
+    Route::get('/seo-risk', [SeoRiskController::class, 'index'])->name('seo-risk.index');
 
     Route::get('/maintenance-windows', [MaintenanceWindowController::class, 'index'])->name('maintenance-windows.index');
 
@@ -473,6 +480,17 @@ Route::middleware(['auth', 'session.governance'])->group(function () {
             ->where('format', 'json|csv')
             ->name('billing.weekly-digest-reports.download');
         Route::post('/billing/plan-change', [BillingController::class, 'changePlan'])->name('billing.plan.change');
+        Route::post('/seo-risk/integrations/{provider}/connect', [SeoRiskController::class, 'connectIntegration'])->name('seo-risk.integrations.connect');
+        Route::post('/seo-risk/integrations/{provider}/disconnect', [SeoRiskController::class, 'disconnectIntegration'])->name('seo-risk.integrations.disconnect');
+        Route::get('/seo-risk/google/callback', [SeoRiskController::class, 'googleCallback'])->name('seo-risk.google.callback');
+        Route::post('/seo-risk/sync', [SeoRiskController::class, 'syncNow'])->name('seo-risk.sync');
+        Route::post('/seo-risk/properties', [SeoRiskController::class, 'storeProperty'])->name('seo-risk.properties.store');
+        Route::patch('/seo-risk/properties/{seo_property}', [SeoRiskController::class, 'updateProperty'])
+            ->whereNumber('seo_property')
+            ->name('seo-risk.properties.update');
+        Route::delete('/seo-risk/properties/{seo_property}', [SeoRiskController::class, 'destroyProperty'])
+            ->whereNumber('seo_property')
+            ->name('seo-risk.properties.destroy');
         Route::get('/ops', [OpsCenterController::class, 'index'])->name('ops-center.index');
         Route::post('/ops/drill/run', [OpsCenterController::class, 'runDrill'])->name('ops-center.drill.run');
         Route::post('/ops/tune/apply', [OpsCenterController::class, 'applyTune'])->name('ops-center.tune.apply');

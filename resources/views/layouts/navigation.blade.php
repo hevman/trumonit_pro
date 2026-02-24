@@ -7,6 +7,7 @@
         request()->routeIs('notification-channels.*') => __('messages.nav.notifications'),
         request()->routeIs('sso.*') => __('messages.nav.sso'),
         request()->routeIs('billing.*') => __('messages.nav.billing'),
+        request()->routeIs('seo-risk.*') => __('messages.nav.seo_risk'),
         request()->routeIs('profile.*') => __('Profile'),
         default => __('messages.nav.dashboard'),
     };
@@ -62,9 +63,12 @@
 
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
+                        <button
+                            type="submit"
+                            class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 transition hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800 dark:focus:bg-gray-800"
+                        >
                             {{ __('Log Out') }}
-                        </x-dropdown-link>
+                        </button>
                     </form>
                 </x-slot>
             </x-dropdown>

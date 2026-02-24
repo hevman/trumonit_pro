@@ -44,7 +44,7 @@
     <meta name="twitter:title" content="{{ $seoTitle }}">
     <meta name="twitter:description" content="{{ $seoDescription }}">
     <meta name="twitter:image" content="{{ asset('android-chrome-512x512.png') }}">
-    <script type="application/ld+json">{!! json_encode($howToSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+    <script type="application/ld+json">{!! json_encode($howToSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
     @include('partials.theme-head')
     @include('partials.favicons')
     @include('partials.trucookie-banner')
@@ -52,10 +52,7 @@
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @else
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script>
-            tailwind.config = Object.assign({}, tailwind.config || {}, { darkMode: 'class' });
-        </script>
+        @include('partials.local-css-fallback')
     @endif
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">

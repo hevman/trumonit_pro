@@ -65,6 +65,12 @@
             {{ __('messages.nav.status_pages') }}
         </a>
 
+        <a href="{{ route('seo-risk.index') }}"
+           class="flex items-center gap-2 rounded-lg px-3 py-2 transition-colors {{ request()->routeIs('seo-risk.*') ? 'bg-gray-900 font-medium text-white dark:bg-indigo-500 dark:text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
+            <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3v2m0 0a7 7 0 017 7h2a9 9 0 00-9-9zM4 12a7 7 0 017-7V3a9 9 0 00-9 9h2zm14 0a7 7 0 01-7 7v2a9 9 0 009-9h-2zM4 12H2a9 9 0 009 9v-2a7 7 0 01-7-7zm7-3a3 3 0 100 6 3 3 0 000-6z" /></svg>
+            {{ __('messages.nav.seo_risk') }}
+        </a>
+
         @if ($isOwner)
             <div class="my-3 border-t border-gray-200 dark:border-gray-800"></div>
 
@@ -85,6 +91,7 @@
                 <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
                 {{ __('messages.nav.billing') }}
             </a>
+
         @endif
 
         <div class="mt-3 border-t border-gray-200 pt-3 dark:border-gray-800">

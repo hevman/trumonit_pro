@@ -267,7 +267,7 @@ class MarketingContentRepository
                     $locale
                 ),
                 'summary' => $summary,
-                'body' => trim((string) ($raw['body'] ?? '')),
+                'body' => $this->sanitizePublicHtml(trim((string) ($raw['body'] ?? ''))),
                 'problem' => trim((string) ($raw['problem'] ?? $summary)),
                 'approach' => $this->normalizeStringList($raw['approach'] ?? []),
                 'proof' => $this->normalizeStringList($raw['proof'] ?? []),
@@ -364,6 +364,7 @@ class MarketingContentRepository
                 $locale
             );
             $answer = $this->appendFaqLeadSection($slug, $locale, $answer, $relatedSolutions);
+            $answer = $this->sanitizePublicHtml($answer);
 
             $articles[] = [
                 'slug' => $slug,
@@ -855,6 +856,16 @@ class MarketingContentRepository
         return $result;
     }
 
+    /**
+     * Keep FAQ rendering resilient even when lead-section enrichment is disabled.
+     *
+     * @param array<int, string> $relatedSolutions
+     */
+    private function appendFaqLeadSection(string $slug, string $locale, string $answer, array $relatedSolutions): string
+    {
+        return $answer;
+    }
+
     private function truncateAtWordBoundary(string $text, int $maxLen): string
     {
         if (mb_strlen($text) <= $maxLen) {
@@ -887,6 +898,148 @@ class MarketingContentRepository
     private function humanizeSlug(string $slug): string
     {
         return mb_convert_case(str_replace('-', ' ', trim($slug)), MB_CASE_TITLE, 'UTF-8');
+    }
+
+    private function sanitizePublicHtml(string $html): string
+    {
+        $html = trim($html);
+        if ($html === '') {
+            return '';
+        }
+
+        $wrapped = '<!DOCTYPE html><html><body>'.$html.'</body></html>';
+        $previous = libxml_use_internal_errors(true);
+
+        try {
+            $dom = new \DOMDocument('1.0', 'UTF-8');
+            $dom->loadHTML(
+                mb_convert_encoding($wrapped, 'HTML-ENTITIES', 'UTF-8'),
+                LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+            );
+
+            $body = $dom->getElementsByTagName('body')->item(0);
+            if (! $body instanceof \DOMElement) {
+                return strip_tags($html);
+            }
+
+            $this->sanitizeHtmlNode($body);
+
+            $output = '';
+            foreach (iterator_to_array($body->childNodes) as $child) {
+                if ($child instanceof \DOMNode) {
+                    $output .= $dom->saveHTML($child);
+                }
+            }
+
+            return trim($output);
+        } catch (\Throwable) {
+            return strip_tags($html, '<p><a><strong><em><ul><ol><li><br><code><pre><h2><h3><blockquote>');
+        } finally {
+            libxml_clear_errors();
+            libxml_use_internal_errors($previous);
+        }
+    }
+
+    private function sanitizeHtmlNode(\DOMNode $node): void
+    {
+        if ($node instanceof \DOMElement) {
+            $tag = strtolower($node->tagName);
+
+            $stripEntirely = ['script', 'style', 'iframe', 'object', 'embed', 'link', 'meta'];
+            if (in_array($tag, $stripEntirely, true)) {
+                $node->parentNode?->removeChild($node);
+
+                return;
+            }
+
+            $allowedTags = ['p', 'a', 'strong', 'em', 'ul', 'ol', 'li', 'br', 'code', 'pre', 'h2', 'h3', 'blockquote'];
+
+            if (! in_array($tag, $allowedTags, true)) {
+                $parent = $node->parentNode;
+                if (! $parent instanceof \DOMNode) {
+                    return;
+                }
+
+                while ($node->firstChild instanceof \DOMNode) {
+                    $parent->insertBefore($node->firstChild, $node);
+                }
+                $parent->removeChild($node);
+
+                return;
+            }
+
+            $allowedAttributes = [
+                'a' => ['href', 'title', 'target', 'rel'],
+            ];
+
+            if ($node->hasAttributes()) {
+                $toRemove = [];
+                foreach (iterator_to_array($node->attributes) as $attribute) {
+                    if (! $attribute instanceof \DOMAttr) {
+                        continue;
+                    }
+
+                    $name = strtolower($attribute->name);
+                    $value = trim((string) $attribute->value);
+                    $tagAllowedAttributes = $allowedAttributes[$tag] ?? [];
+
+                    if (str_starts_with($name, 'on')) {
+                        $toRemove[] = $name;
+                        continue;
+                    }
+
+                    if (! in_array($name, $tagAllowedAttributes, true)) {
+                        $toRemove[] = $name;
+                        continue;
+                    }
+
+                    if ($tag === 'a' && $name === 'href' && ! $this->isSafeHref($value)) {
+                        $toRemove[] = $name;
+                        continue;
+                    }
+
+                    if ($tag === 'a' && $name === 'target' && ! in_array(strtolower($value), ['_self', '_blank'], true)) {
+                        $toRemove[] = $name;
+                    }
+                }
+
+                foreach ($toRemove as $attributeName) {
+                    $node->removeAttribute($attributeName);
+                }
+
+                if ($tag === 'a' && strtolower((string) $node->getAttribute('target')) === '_blank') {
+                    $rel = trim((string) $node->getAttribute('rel'));
+                    $parts = preg_split('/\s+/', strtolower($rel), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+                    $parts = array_values(array_unique(array_merge($parts, ['noopener', 'noreferrer'])));
+                    $node->setAttribute('rel', implode(' ', $parts));
+                }
+            }
+        }
+
+        foreach (iterator_to_array($node->childNodes) as $child) {
+            if ($child instanceof \DOMNode) {
+                $this->sanitizeHtmlNode($child);
+            }
+        }
+    }
+
+    private function isSafeHref(string $href): bool
+    {
+        $href = trim($href);
+        if ($href === '') {
+            return false;
+        }
+
+        if (str_starts_with($href, '/') || str_starts_with($href, '#') || str_starts_with($href, '?')) {
+            return true;
+        }
+
+        $scheme = parse_url($href, PHP_URL_SCHEME);
+        if (! is_string($scheme) || $scheme === '') {
+            return true;
+        }
+
+        return in_array(strtolower($scheme), ['http', 'https', 'mailto', 'tel'], true);
     }
 
     /**

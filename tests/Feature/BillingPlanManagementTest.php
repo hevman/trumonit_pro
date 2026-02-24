@@ -154,6 +154,21 @@ class BillingPlanManagementTest extends TestCase
         ]);
     }
 
+    public function test_billing_webhook_route_rejects_manual_provider(): void
+    {
+        config()->set('wids.billing.payment.webhook_route_enabled', true);
+
+        $payload = [
+            'id' => 'evt_manual_provider',
+            'type' => 'billing.plan_change.completed',
+            'data' => [
+                'local_session_id' => 123,
+            ],
+        ];
+
+        $this->postJson('/api/v1/billing/webhooks/manual', $payload)->assertNotFound();
+    }
+
     public function test_completed_checkout_webhook_applies_plan_change(): void
     {
         config()->set('wids.billing.payment.provider', 'stripe');

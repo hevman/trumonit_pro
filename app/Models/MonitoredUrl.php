@@ -99,4 +99,9 @@ class MonitoredUrl extends Model
             ->withPivot(['position', 'label'])
             ->orderByPivot('position');
     }
+
+    public function seoProperties(): HasMany
+    {
+        return $this->hasMany(SeoProperty::class);
+    }
 }

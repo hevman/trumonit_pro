@@ -243,7 +243,7 @@
                                     {{ $savedView->name }}
                                 </a>
                                 @if ($isOwner)
-                                    <form method="POST" action="{{ route('saved-views.destroy', $savedView) }}" onsubmit="return confirm('{{ __('messages.saved_views.delete_confirm') }}');">
+                                    <form method="POST" action="{{ route('saved-views.destroy', $savedView) }}" data-confirm-submit="{{ __('messages.saved_views.delete_confirm') }}">
                                         @csrf
                                         @method('DELETE')
                                         <button class="text-xs text-gray-500 hover:text-red-700 px-1" type="submit">x</button>

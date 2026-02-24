@@ -209,7 +209,7 @@
                                     {{ $savedView->name }}
                                 </a>
                                 @if ($isOwner)
-                                    <form method="POST" action="{{ route('saved-views.destroy', $savedView) }}" onsubmit="return confirm('{{ __('messages.saved_views.delete_confirm') }}');">
+                                    <form method="POST" action="{{ route('saved-views.destroy', $savedView) }}" data-confirm-submit="{{ __('messages.saved_views.delete_confirm') }}">
                                         @csrf
                                         @method('DELETE')
                                         <button class="text-xs text-gray-500 hover:text-red-700 px-1" type="submit">x</button>
@@ -379,7 +379,7 @@
 
             @if ($isOwner)
                 <div class="app-card">
-                    <form id="bulk-form" method="POST" action="{{ route('monitored-urls.bulk.actions') }}" class="flex flex-wrap gap-3 items-end">
+                    <form id="bulk-form" method="POST" action="{{ route('monitored-urls.bulk.actions') }}" class="flex flex-wrap gap-3 items-end" data-confirm-submit="{{ __('messages.monitored_urls.bulk_apply_confirm') }}">
                         @csrf
 
                         <div class="w-full sm:w-64">
@@ -412,7 +412,7 @@
                         </div>
 
                         <div>
-                            <button class="app-button-primary" type="submit" onclick="return confirm('{{ __('messages.monitored_urls.bulk_apply_confirm') }}');">
+                            <button class="app-button-primary" type="submit">
                                 {{ __('messages.actions.apply') }}
                             </button>
                         </div>
@@ -549,7 +549,7 @@
                                                 @csrf
                                                 <button class="app-link" type="submit">{{ __('messages.actions.scan_now') }}</button>
                                             </form>
-                                            <form method="POST" action="{{ route('monitored-urls.destroy', $url) }}" onsubmit="return confirm('{{ __('Delete this monitor?') }}');">
+                                            <form method="POST" action="{{ route('monitored-urls.destroy', $url) }}" data-confirm-submit="{{ __('Delete this monitor?') }}">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button class="text-red-700 dark:text-red-300 hover:text-red-900 dark:hover:text-red-200" type="submit">{{ __('messages.actions.delete') }}</button>

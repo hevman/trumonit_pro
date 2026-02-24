@@ -39,7 +39,7 @@
         <meta name="twitter:image" content="{{ $ogImage }}">
 
         <title>{{ $statusTitle }}</title>
-        <script type="application/ld+json">{!! json_encode($statusSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+        <script type="application/ld+json">{!! json_encode($statusSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
         @include('partials.theme-head')
         @include('partials.favicons')
         @include('partials.trucookie-banner')
@@ -47,11 +47,7 @@
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
             @vite(['resources/css/app.css', 'resources/js/app.js'])
         @else
-            <script src="https://cdn.tailwindcss.com"></script>
-            <script>
-                tailwind.config = Object.assign({}, tailwind.config || {}, { darkMode: 'class' });
-            </script>
-            @include('partials.tailwind-fallback-components')
+            @include('partials.local-css-fallback')
         @endif
     </head>
     <body class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100">

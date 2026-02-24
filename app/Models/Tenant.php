@@ -101,4 +101,29 @@ class Tenant extends Model
     {
         return $this->hasMany(TenantScimGroup::class);
     }
+
+    public function seoIntegrations(): HasMany
+    {
+        return $this->hasMany(SeoIntegration::class);
+    }
+
+    public function seoProperties(): HasMany
+    {
+        return $this->hasMany(SeoProperty::class);
+    }
+
+    public function seoDailyMetrics(): HasMany
+    {
+        return $this->hasMany(SeoDailyMetric::class);
+    }
+
+    public function seoBacklinkMetrics(): HasMany
+    {
+        return $this->hasMany(SeoBacklinkMetric::class);
+    }
+
+    public function seoIndexMetrics(): HasMany
+    {
+        return $this->hasMany(SeoIndexMetric::class);
+    }
 }

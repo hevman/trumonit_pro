@@ -323,6 +323,21 @@
                 </div>
             </div>
 
+            @if (is_array($incident->details) && is_array($incident->details['playbook'] ?? null) && count($incident->details['playbook']) > 0)
+                <div class="app-card">
+                    <div class="font-medium">
+                        {{ is_string($incident->details['playbook_title'] ?? null) ? $incident->details['playbook_title'] : 'Playbook' }}
+                    </div>
+                    <ol class="mt-3 list-decimal pl-5 space-y-2 text-sm text-gray-800 dark:text-gray-200">
+                        @foreach ($incident->details['playbook'] as $step)
+                            @if (is_string($step) && trim($step) !== '')
+                                <li>{{ $step }}</li>
+                            @endif
+                        @endforeach
+                    </ol>
+                </div>
+            @endif
+
             <div class="app-card">
                 <div class="font-medium">{{ __('messages.incidents.details') }}</div>
                 <pre class="mt-3 text-xs font-mono whitespace-pre-wrap break-words bg-gray-50 border rounded p-3 overflow-auto">{{ json_encode($incident->details, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>

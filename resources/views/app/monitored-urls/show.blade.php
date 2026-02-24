@@ -111,7 +111,9 @@
                     </div>
 
                     @if ($isOwner)
-                        @php($isMuted = $monitoredUrl->muted_until && $monitoredUrl->muted_until->isFuture())
+                        @php
+                            $isMuted = $monitoredUrl->muted_until && $monitoredUrl->muted_until->isFuture();
+                        @endphp
                         <div class="mt-3 pt-3 border-t">
                             <div class="text-xs text-gray-600 dark:text-gray-400 mb-2">{{ __('Alerts') }}</div>
 

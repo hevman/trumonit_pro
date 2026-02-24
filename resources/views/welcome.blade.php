@@ -1,12 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 @php
     $isPl = app()->getLocale() === 'pl';
     $seoTitle = $isPl
         ? 'TruMonit - Monitoring uptime, SSL i endpointów API'
         : 'TruMonit - Uptime, SSL, and API Endpoint Monitoring';
     $seoDescription = $isPl
-        ? 'TruMonit zapewnia monitoring 24/7 stron i API, alerty w czasie rzeczywistym oraz status page dla klientów i zespołów.'
-        : 'TruMonit delivers 24/7 website and API monitoring, real-time alerts, and status pages for teams and clients.';
+        ? 'TruMonit zapewnia monitoring 24/7 stron i API, alerty w czasie rzeczywistym, moduł SEO (GSC + GA4) oraz strony statusowe dla klientów i zespołów.'
+        : 'TruMonit delivers 24/7 website and API monitoring, real-time alerts, SEO Risk (GSC+GA4), and status pages for teams and clients.';
     $homeUrl = route('localized.public.home', ['locale' => app()->getLocale()]);
     $pricingUrl = route('localized.public.pricing', ['locale' => app()->getLocale()]);
     $faqIndexUrl = route('localized.public.faq.index', ['locale' => app()->getLocale()]);
@@ -59,8 +59,8 @@
     <meta name="twitter:title" content="{{ $seoTitle }}">
     <meta name="twitter:description" content="{{ $seoDescription }}">
     <meta name="twitter:image" content="{{ $ogImage }}">
-    <script type="application/ld+json">{!! json_encode($organizationSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
-    <script type="application/ld+json">{!! json_encode($softwareSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+    <script type="application/ld+json">{!! json_encode($organizationSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+    <script type="application/ld+json">{!! json_encode($softwareSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
     @include('partials.theme-head')
     @include('partials.favicons')
     @include('partials.trucookie-banner')
@@ -68,10 +68,7 @@
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @else
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script>
-            tailwind.config = Object.assign({}, tailwind.config || {}, { darkMode: 'class' });
-        </script>
+        @include('partials.local-css-fallback')
     @endif
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
@@ -182,7 +179,7 @@
                     {{ $isPl ? 'Jak mierzymy SLA i czas detekcji' : 'How We Measure SLA and Detection Time' }}
                 </h2>
                 <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                    {{ $isPl ? 'Wyniki opieramy na pomiarach outside-in z wielu probe, deduplikacji incydentów i metrykach opóźnień kolejki. W panelu operacyjnym utrzymujemy raporty z ćwiczeń i kalibracji progów alertów.' : 'We base results on outside-in checks across multiple probes, incident deduplication, and queue lag metrics. Ops panel keeps drill artifacts and alert-threshold calibration history.' }}
+                    {{ $isPl ? 'Wyniki opieramy na pomiarach z zewnątrz z wielu punktów kontrolnych, deduplikacji incydentów i metrykach opóźnień kolejki. W panelu operacyjnym utrzymujemy raporty z ćwiczeń i kalibracji progów alertów.' : 'We base results on outside-in checks across multiple probes, incident deduplication, and queue lag metrics. Ops panel keeps drill artifacts and alert-threshold calibration history.' }}
                 </p>
                 <ul class="mt-4 grid gap-2 text-sm text-slate-600 dark:text-slate-300 md:grid-cols-2">
                     <li>• {{ $isPl ? 'SLA i uptime liczone na podstawie snapshotów monitorów oraz statusów publicznych.' : 'SLA and uptime are calculated from monitor snapshots and public statuses.' }}</li>
@@ -228,32 +225,40 @@
                 </div>
             </section>
 
-            <section id="pricing" class="mt-14">
-                <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight">{{ __('messages.welcome.pricing_title') }}</h2>
-                <p class="mt-2 text-slate-600 dark:text-slate-300">{{ __('messages.welcome.pricing_subtitle') }}</p>
+            <section id="seo-risk" class="mt-14 rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 dark:border-slate-800 dark:bg-slate-900">
+                <div class="flex flex-wrap items-end justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight">
+                            {{ $isPl ? 'Moduł SEO (GSC + GA4): ochrona ruchu i przychodu z Google' : 'SEO Risk: protect traffic and revenue from Google' }}
+                        </h2>
+                        <p class="mt-2 text-slate-600 dark:text-slate-300">
+                            {{ $isPl ? 'Połącz GSC i GA4, a TruMonit wykryje spadki organiczne, deindeksację i sygnały aktualizacji Google Core jako incydenty z gotową checklistą działań. Sygnał ryzyka utraty linków jest dostępny od planu Pro.' : 'Connect GSC and GA4 to detect organic drops, deindexing, and Core Update signals as incidents with ready-to-use recovery checklists. Backlink risk signal is available from Pro.' }}
+                        </p>
+                    </div>
+                    <a href="{{ $pricingUrl }}" class="inline-flex rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
+                        {{ $isPl ? 'Zobacz plany i limity' : 'See plans and limits' }}
+                    </a>
+                </div>
 
-                <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                    <article class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-                        <h3 class="font-semibold">{{ __('messages.welcome.price_free_name') }}</h3>
-                        <p class="mt-1 text-2xl font-semibold">{{ __('messages.welcome.price_free_value') }}</p>
-                        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ __('messages.welcome.price_free_text') }}</p>
-                    </article>
-                    <article class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-                        <h3 class="font-semibold">{{ __('messages.welcome.price_lite_name') }}</h3>
-                        <p class="mt-1 text-2xl font-semibold">{{ __('messages.welcome.price_lite_value') }}</p>
-                        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ __('messages.welcome.price_lite_text') }}</p>
-                    </article>
-                    <article class="rounded-2xl border-2 border-indigo-500 bg-white p-5 shadow-lg shadow-indigo-200/40 dark:bg-slate-900 dark:shadow-none">
-                        <div class="inline-flex rounded-full bg-indigo-100 px-2 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">{{ __('messages.welcome.price_recommended') }}</div>
-                        <h3 class="mt-2 font-semibold">{{ __('messages.welcome.price_pro_name') }}</h3>
-                        <p class="mt-1 text-2xl font-semibold">{{ __('messages.welcome.price_pro_value') }}</p>
-                        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ __('messages.welcome.price_pro_text') }}</p>
-                    </article>
-                    <article class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-                        <h3 class="font-semibold">{{ __('messages.welcome.price_enterprise_name') }}</h3>
-                        <p class="mt-1 text-2xl font-semibold">{{ __('messages.welcome.price_enterprise_value') }}</p>
-                        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ __('messages.welcome.price_enterprise_text') }}</p>
-                    </article>
+                <div class="mt-5 grid gap-3 md:grid-cols-3">
+                    <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm dark:border-slate-700 dark:bg-slate-950/60">
+                        <div class="font-semibold">{{ $isPl ? 'Spadki organiczne' : 'Organic drop alerts' }}</div>
+                        <p class="mt-1 text-slate-600 dark:text-slate-300">
+                            {{ $isPl ? 'Alert przy spadku kliknięć, wyświetleń i sesji organicznych vs baseline.' : 'Alerts for drops in clicks, impressions, and organic sessions vs baseline.' }}
+                        </p>
+                    </div>
+                    <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm dark:border-slate-700 dark:bg-slate-950/60">
+                        <div class="font-semibold">{{ $isPl ? 'Sygnały aktualizacji Google Core + sygnał ryzyka utraty linków (Pro+)' : 'Core Update signals + backlink loss risk signal (Pro+)' }}</div>
+                        <p class="mt-1 text-slate-600 dark:text-slate-300">
+                            {{ $isPl ? 'Korelacja spadków z wydarzeniami Google Core Update. Sygnał ryzyka utraty linków jest dostępny w planach Pro i Enterprise.' : 'Correlate traffic drops with Core Update events. Backlink loss signal is available on Pro and Enterprise plans.' }}
+                        </p>
+                    </div>
+                    <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm dark:border-slate-700 dark:bg-slate-950/60">
+                        <div class="font-semibold">{{ $isPl ? 'Do zrobienia teraz' : 'What to do now' }}</div>
+                        <p class="mt-1 text-slate-600 dark:text-slate-300">
+                            {{ $isPl ? 'Każdy incydent SEO zawiera priorytet i checklistę działań naprawczych.' : 'Each SEO incident includes priority and a concise recovery checklist.' }}
+                        </p>
+                    </div>
                 </div>
             </section>
 
@@ -351,3 +356,4 @@
     </div>
 </body>
 </html>
+

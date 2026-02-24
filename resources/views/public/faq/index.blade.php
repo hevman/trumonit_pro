@@ -1,10 +1,10 @@
-@php
+﻿@php
     $isPl = app()->getLocale() === 'pl';
     $seoTitle = $isPl
         ? 'FAQ monitoringu stron i API | TruMonit'
         : 'Website and API Monitoring FAQ | TruMonit';
     $seoDescription = $isPl
-        ? 'FAQ o monitoringu uptime, endpointów API, SSL, status page i redukcji fałszywych alertów.'
+        ? 'FAQ o monitoringu uptime, endpointów API, SSL, stronach statusu i redukcji fałszywych alertów.'
         : 'FAQ about uptime monitoring, API endpoint checks, SSL expiry, status pages, and reducing false alerts.';
     $homeUrl = route('localized.public.home', ['locale' => app()->getLocale()]);
     $pricingUrl = route('localized.public.pricing', ['locale' => app()->getLocale()]);
@@ -50,7 +50,7 @@
     <meta name="twitter:title" content="{{ $seoTitle }}">
     <meta name="twitter:description" content="{{ $seoDescription }}">
     <meta name="twitter:image" content="{{ asset('android-chrome-512x512.png') }}">
-    <script type="application/ld+json">{!! json_encode($faqSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+    <script type="application/ld+json">{!! json_encode($faqSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
     @include('partials.theme-head')
     @include('partials.favicons')
     @include('partials.trucookie-banner')
@@ -58,10 +58,7 @@
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @else
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script>
-            tailwind.config = Object.assign({}, tailwind.config || {}, { darkMode: 'class' });
-        </script>
+        @include('partials.local-css-fallback')
     @endif
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
@@ -186,3 +183,4 @@
     </script>
 </body>
 </html>
+

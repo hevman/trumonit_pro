@@ -119,6 +119,24 @@ class OpsMetricsTest extends TestCase
         $response->assertSee('TruMonit_metrics_generated_at_seconds');
     }
 
+    public function test_metrics_endpoint_respects_ip_allowlist(): void
+    {
+        config()->set('ops.metrics.enabled', true);
+        config()->set('ops.metrics.require_token', false);
+        config()->set('ops.metrics.token', null);
+        config()->set('ops.allowed_ips', ['10.10.10.10']);
+
+        $this
+            ->withServerVariables(['REMOTE_ADDR' => '127.0.0.1'])
+            ->get('/ops/metrics')
+            ->assertForbidden();
+
+        $this
+            ->withServerVariables(['REMOTE_ADDR' => '10.10.10.10'])
+            ->get('/ops/metrics')
+            ->assertOk();
+    }
+
     public function test_metrics_endpoint_can_return_cached_payload(): void
     {
         Carbon::setTestNow(Carbon::parse('2026-02-11 12:00:00', 'UTC'));
