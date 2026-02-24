@@ -310,6 +310,7 @@ class SeoRiskController extends Controller
      *   domain: string,
      *   gsc_site_url: string,
      *   ga4_property_id: string,
+     *   metadata: array{data_sources: array{gsc: bool, ga4: bool}},
      *   is_enabled: bool,
      *   alert_clicks_drop_percent: int,
      *   alert_impressions_drop_percent: int,
@@ -334,8 +335,10 @@ class SeoRiskController extends Controller
                     ->where(fn ($query) => $query->where('tenant_id', $tenantId))
                     ->ignore($propertyId),
             ],
-            'gsc_site_url' => ['required', 'string', 'max:500'],
-            'ga4_property_id' => ['required', 'string', 'max:64'],
+            'use_gsc' => ['nullable', 'boolean'],
+            'use_ga4' => ['nullable', 'boolean'],
+            'gsc_site_url' => ['nullable', 'string', 'max:500'],
+            'ga4_property_id' => ['nullable', 'string', 'max:64'],
             'is_enabled' => ['nullable', 'boolean'],
             'alert_clicks_drop_percent' => ['required', 'integer', 'min:5', 'max:90'],
             'alert_impressions_drop_percent' => ['required', 'integer', 'min:5', 'max:90'],
@@ -355,22 +358,61 @@ class SeoRiskController extends Controller
         }
 
         $data['domain'] = strtolower(trim((string) $data['domain']));
-        $data['gsc_site_url'] = trim((string) $data['gsc_site_url']);
-        $data['ga4_property_id'] = trim((string) $data['ga4_property_id']);
+        $useGsc = (bool) ($data['use_gsc'] ?? false);
+        $useGa4 = (bool) ($data['use_ga4'] ?? false);
+        $gscSiteUrl = trim((string) ($data['gsc_site_url'] ?? ''));
+        $ga4PropertyId = trim((string) ($data['ga4_property_id'] ?? ''));
+
+        $validationErrors = [];
+        if (! $useGsc && ! $useGa4) {
+            $validationErrors['use_gsc'][] = 'Select at least one data source (GSC or GA4).';
+        }
+        if ($useGsc && $gscSiteUrl === '') {
+            $validationErrors['gsc_site_url'][] = 'GSC site URL is required when Google Search Console is enabled.';
+        }
+        if ($useGa4 && $ga4PropertyId === '') {
+            $validationErrors['ga4_property_id'][] = 'GA4 property ID is required when Google Analytics 4 is enabled.';
+        }
+        if ($useGsc && ! $this->isIntegrationEnabledForTenant($tenantId, 'gsc')) {
+            $validationErrors['use_gsc'][] = 'Connect Google Search Console integration before enabling it for this property.';
+        }
+        if ($useGa4 && ! $this->isIntegrationEnabledForTenant($tenantId, 'ga4')) {
+            $validationErrors['use_ga4'][] = 'Connect Google Analytics 4 integration before enabling it for this property.';
+        }
+
+        if ($validationErrors !== []) {
+            throw ValidationException::withMessages($validationErrors);
+        }
+
         $data['is_enabled'] = (bool) ($data['is_enabled'] ?? false);
 
         return [
             'monitored_url_id' => (int) $data['monitored_url_id'],
             'name' => trim((string) $data['name']),
             'domain' => $data['domain'],
-            'gsc_site_url' => $data['gsc_site_url'],
-            'ga4_property_id' => $data['ga4_property_id'],
+            'gsc_site_url' => $useGsc ? $gscSiteUrl : '',
+            'ga4_property_id' => $useGa4 ? $ga4PropertyId : '',
+            'metadata' => [
+                'data_sources' => [
+                    'gsc' => $useGsc,
+                    'ga4' => $useGa4,
+                ],
+            ],
             'is_enabled' => $data['is_enabled'],
             'alert_clicks_drop_percent' => (int) $data['alert_clicks_drop_percent'],
             'alert_impressions_drop_percent' => (int) $data['alert_impressions_drop_percent'],
             'alert_sessions_drop_percent' => (int) $data['alert_sessions_drop_percent'],
             'baseline_days' => (int) $data['baseline_days'],
         ];
+    }
+
+    private function isIntegrationEnabledForTenant(int $tenantId, string $provider): bool
+    {
+        return SeoIntegration::query()
+            ->where('tenant_id', $tenantId)
+            ->where('provider', $provider)
+            ->where('is_enabled', true)
+            ->exists();
     }
 
     private function normalizeProvider(string $provider): string

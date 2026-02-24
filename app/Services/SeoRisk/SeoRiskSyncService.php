@@ -63,6 +63,9 @@ class SeoRiskSyncService
         $coreUpdateEvents = $this->coreUpdateService->eventsAroundDate($metricDate);
 
         foreach ($properties as $property) {
+            $useGsc = $property->usesGsc();
+            $useGa4 = $property->usesGa4();
+
             $gscMetrics = ['clicks' => 0, 'impressions' => 0, 'ctr' => 0.0, 'position' => 0.0, 'raw' => []];
             $ga4Metrics = ['sessions' => 0, 'conversions' => 0, 'raw' => []];
             $indexMetrics = [
@@ -81,13 +84,20 @@ class SeoRiskSyncService
             ];
             $hasAnyDataSource = false;
 
+            if (! $useGsc && ! $useGa4) {
+                $summary['errors'][] = 'property#'.$property->id.' has no enabled SEO data source.';
+                continue;
+            }
+
             try {
-                if ($gscIntegration?->is_enabled) {
+                if ($useGsc && $gscIntegration?->is_enabled) {
                     $gscMetrics = $this->gscService->fetchDailyMetrics($gscIntegration, $property, $metricDate);
                     $hasAnyDataSource = true;
                     if ($indexMonitorEnabled) {
                         $indexMetrics = $this->gscService->fetchIndexCoverageMetrics($gscIntegration, $property);
                     }
+                } elseif ($useGsc) {
+                    $summary['errors'][] = 'property#'.$property->id.' gsc: integration not connected.';
                 }
             } catch (\Throwable $e) {
                 $summary['errors'][] = 'property#'.$property->id.' gsc: '.$e->getMessage();
@@ -96,9 +106,11 @@ class SeoRiskSyncService
             }
 
             try {
-                if ($ga4Integration?->is_enabled) {
+                if ($useGa4 && $ga4Integration?->is_enabled) {
                     $ga4Metrics = $this->ga4Service->fetchOrganicDailyMetrics($ga4Integration, $property, $metricDate);
                     $hasAnyDataSource = true;
+                } elseif ($useGa4) {
+                    $summary['errors'][] = 'property#'.$property->id.' ga4: integration not connected.';
                 }
             } catch (\Throwable $e) {
                 $summary['errors'][] = 'property#'.$property->id.' ga4: '.$e->getMessage();
@@ -128,6 +140,9 @@ class SeoRiskSyncService
                 $indexMetrics,
                 $backlinkMetrics,
                 $coreUpdateEvents,
+                $backlinksEnabled,
+                $useGsc,
+                $useGa4,
                 &$summary
             ): void {
                 $dailyMetric = SeoDailyMetric::query()->updateOrCreate(
@@ -144,14 +159,18 @@ class SeoRiskSyncService
                         'organic_sessions' => (int) ($ga4Metrics['sessions'] ?? 0),
                         'organic_conversions' => (int) ($ga4Metrics['conversions'] ?? 0),
                         'source_payload' => [
-                            'gsc' => $gscMetrics['raw'] ?? [],
-                            'ga4' => $ga4Metrics['raw'] ?? [],
+                            'sources' => [
+                                'gsc' => $useGsc,
+                                'ga4' => $useGa4,
+                            ],
+                            'gsc' => $useGsc ? ($gscMetrics['raw'] ?? []) : null,
+                            'ga4' => $useGa4 ? ($ga4Metrics['raw'] ?? []) : null,
                         ],
                     ]
                 );
 
                 $indexMetric = null;
-                if ((bool) config('wids.seo_risk.index_monitor.enabled', true)) {
+                if ((bool) config('wids.seo_risk.index_monitor.enabled', true) && $useGsc) {
                     $indexMetric = SeoIndexMetric::query()->updateOrCreate(
                         [
                             'tenant_id' => (int) $tenant->id,
@@ -202,6 +221,8 @@ class SeoRiskSyncService
                     $indexMetric,
                     $backlinkMetric,
                     $coreUpdateEvents,
+                    $useGsc,
+                    $useGa4,
                 );
             });
         }
@@ -245,6 +266,8 @@ class SeoRiskSyncService
         ?SeoIndexMetric $indexMetric = null,
         ?SeoBacklinkMetric $backlinkMetric = null,
         array $coreUpdateEvents = [],
+        bool $useGsc = true,
+        bool $useGa4 = true,
     ): int {
         $baselineDays = max(
             (int) config('wids.seo_risk.min_baseline_days', 3),
@@ -284,8 +307,9 @@ class SeoRiskSyncService
             return 0;
         }
 
-        $metricDefinitions = [
-            [
+        $metricDefinitions = [];
+        if ($useGsc) {
+            $metricDefinitions[] = [
                 'key' => 'clicks',
                 'kind' => 'seo_clicks_drop',
                 'current' => (float) $dailyMetric->organic_clicks,
@@ -297,8 +321,8 @@ class SeoRiskSyncService
                     'Check robots.txt, canonical, and noindex changes from last deploy.',
                     'Verify key money pages for status 200 and unchanged title/meta.',
                 ],
-            ],
-            [
+            ];
+            $metricDefinitions[] = [
                 'key' => 'impressions',
                 'kind' => 'seo_impressions_drop',
                 'current' => (float) $dailyMetric->organic_impressions,
@@ -310,8 +334,10 @@ class SeoRiskSyncService
                     'Inspect template-level meta tags and canonical consistency.',
                     'Review recent content removals or URL structure changes.',
                 ],
-            ],
-            [
+            ];
+        }
+        if ($useGa4) {
+            $metricDefinitions[] = [
                 'key' => 'sessions',
                 'kind' => 'seo_sessions_drop',
                 'current' => (float) $dailyMetric->organic_sessions,
@@ -323,8 +349,8 @@ class SeoRiskSyncService
                     'Verify tracking consistency and consent mode behavior.',
                     'Cross-check with GSC clicks to isolate analytics vs visibility issue.',
                 ],
-            ],
-        ];
+            ];
+        }
 
         foreach ($metricDefinitions as $definition) {
             $baselineValue = (float) ($definition['baseline'] ?? 0.0);
@@ -396,6 +422,7 @@ class SeoRiskSyncService
             indexMetric: $indexMetric,
             baselineDays: $baselineDays,
             snapshotId: $snapshotId,
+            useGsc: $useGsc,
         );
 
         return $incidentsCreated;
@@ -407,8 +434,9 @@ class SeoRiskSyncService
         ?SeoIndexMetric $indexMetric,
         int $baselineDays,
         int $snapshotId,
+        bool $useGsc = true,
     ): int {
-        if (! $indexMetric) {
+        if (! $useGsc || ! $indexMetric) {
             return 0;
         }
 

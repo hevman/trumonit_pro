@@ -67,4 +67,36 @@ class SeoProperty extends Model
     {
         return $this->hasMany(SeoIndexMetric::class);
     }
+
+    public function usesGsc(): bool
+    {
+        return $this->seoDataSources()['gsc'];
+    }
+
+    public function usesGa4(): bool
+    {
+        return $this->seoDataSources()['ga4'];
+    }
+
+    /**
+     * @return array{gsc: bool, ga4: bool}
+     */
+    public function seoDataSources(): array
+    {
+        $metadata = is_array($this->metadata) ? $this->metadata : [];
+        $dataSources = $metadata['data_sources'] ?? null;
+
+        if (is_array($dataSources)) {
+            return [
+                'gsc' => (bool) ($dataSources['gsc'] ?? false),
+                'ga4' => (bool) ($dataSources['ga4'] ?? false),
+            ];
+        }
+
+        // Backward compatibility for existing records created before data source flags.
+        return [
+            'gsc' => trim((string) $this->gsc_site_url) !== '',
+            'ga4' => trim((string) $this->ga4_property_id) !== '',
+        ];
+    }
 }

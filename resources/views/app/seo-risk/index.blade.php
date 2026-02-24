@@ -32,7 +32,7 @@
                         {{ app()->getLocale() === 'pl' ? 'Szybki start modułu SEO (3 kroki)' : 'SEO Risk quick start (3 steps)' }}
                     </h3>
                     <ol class="mt-2 list-inside list-decimal space-y-1 text-sm text-gray-700 dark:text-gray-300">
-                        <li>{{ app()->getLocale() === 'pl' ? 'Podłącz Google Search Console i Google Analytics 4.' : 'Connect Google Search Console and Google Analytics 4.' }}</li>
+                        <li>{{ app()->getLocale() === 'pl' ? 'Podłącz Google Search Console, Google Analytics 4 lub oba źródła.' : 'Connect Google Search Console, Google Analytics 4, or both.' }}</li>
                         <li>{{ app()->getLocale() === 'pl' ? 'Dodaj właściwość SEO i wybierz powiązany monitor URL.' : 'Add an SEO property and map it to a monitor URL.' }}</li>
                         <li>{{ app()->getLocale() === 'pl' ? 'Uruchom synchronizację, a alerty pojawią się jako incydenty SEO z listą działań.' : 'Run sync and receive SEO incidents with a recovery checklist.' }}</li>
                     </ol>
@@ -218,6 +218,15 @@
             @if ($canManage)
             <section class="app-card">
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ __('messages.seo_risk.add_property') }}</h3>
+                @if ($errors->any())
+                    <div class="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-300">
+                        <ul class="list-disc list-inside space-y-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 @if ($isPropertyLimitReached)
                     <div class="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200">
                         {{ app()->getLocale() === 'pl' ? 'Osiągnięto limit właściwości SEO dla aktualnego planu. Zmień plan, aby dodać kolejne.' : 'SEO property limit reached for current plan. Upgrade plan to add more properties.' }}
@@ -253,13 +262,33 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="lg:col-span-3 rounded-lg border border-gray-200 px-3 py-2 dark:border-gray-700">
+                        <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                            {{ app()->getLocale() === 'pl' ? 'Źródła danych' : 'Data sources' }}
+                        </div>
+                        <div class="mt-2 flex flex-wrap items-center gap-4">
+                            <input type="hidden" name="use_gsc" value="0">
+                            <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                                <input type="checkbox" name="use_gsc" value="1" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800" @disabled($isPropertyLimitReached) @checked((bool) old('use_gsc', true))>
+                                <span>Google Search Console</span>
+                            </label>
+                            <input type="hidden" name="use_ga4" value="0">
+                            <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                                <input type="checkbox" name="use_ga4" value="1" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800" @disabled($isPropertyLimitReached) @checked((bool) old('use_ga4', true))>
+                                <span>Google Analytics 4</span>
+                            </label>
+                        </div>
+                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                            {{ app()->getLocale() === 'pl' ? 'Wybierz co najmniej jedno źródło. Pola GSC/GA4 poniżej są wymagane tylko dla zaznaczonych opcji.' : 'Select at least one source. GSC/GA4 fields below are required only for selected options.' }}
+                        </p>
+                    </div>
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.gsc_site_url') }}</label>
-                        <input type="text" name="gsc_site_url" class="app-input" placeholder="sc-domain:example.com" data-seo-risk-gsc @disabled($isPropertyLimitReached) required />
+                        <input type="text" name="gsc_site_url" class="app-input" placeholder="sc-domain:example.com" value="{{ old('gsc_site_url') }}" data-seo-risk-gsc @disabled($isPropertyLimitReached) />
                     </div>
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.ga4_property_id') }}</label>
-                        <input type="text" name="ga4_property_id" class="app-input" placeholder="123456789" @disabled($isPropertyLimitReached) required />
+                        <input type="text" name="ga4_property_id" class="app-input" placeholder="123456789" value="{{ old('ga4_property_id') }}" @disabled($isPropertyLimitReached) />
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                             {{ app()->getLocale() === 'pl' ? 'Identyfikator właściwości GA4 znajdziesz w Google Analytics (Administracja -> Ustawienia usługi).' : 'Find GA4 Property ID in Google Analytics (Admin -> Property settings).' }}
                         </p>
@@ -305,6 +334,9 @@
                 <div class="mt-4 space-y-4">
                     @forelse ($properties as $property)
                         <div class="rounded-xl border border-gray-200 p-3 dark:border-gray-700">
+                            @php
+                                $dataSources = $property->seoDataSources();
+                            @endphp
                             @if ($canManage)
                                 <form method="POST" action="{{ route('seo-risk.properties.update', ['seo_property' => $property->id]) }}">
                                     @csrf
@@ -330,13 +362,30 @@
                                         <label class="app-label">{{ __('messages.seo_risk.baseline_days') }}</label>
                                         <input type="number" min="3" max="30" name="baseline_days" class="app-input" value="{{ (int) $property->baseline_days }}" required />
                                     </div>
+                                    <div class="lg:col-span-4 rounded-lg border border-gray-200 px-3 py-2 dark:border-gray-700">
+                                        <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                            {{ app()->getLocale() === 'pl' ? 'Źródła danych' : 'Data sources' }}
+                                        </div>
+                                        <div class="mt-2 flex flex-wrap items-center gap-4">
+                                            <input type="hidden" name="use_gsc" value="0">
+                                            <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                                                <input type="checkbox" name="use_gsc" value="1" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800" @checked((bool) $dataSources['gsc'])>
+                                                <span>Google Search Console</span>
+                                            </label>
+                                            <input type="hidden" name="use_ga4" value="0">
+                                            <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                                                <input type="checkbox" name="use_ga4" value="1" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800" @checked((bool) $dataSources['ga4'])>
+                                                <span>Google Analytics 4</span>
+                                            </label>
+                                        </div>
+                                    </div>
                                     <div>
                                         <label class="app-label">{{ __('messages.seo_risk.gsc_site_url') }}</label>
-                                        <input type="text" name="gsc_site_url" class="app-input" value="{{ $property->gsc_site_url }}" required />
+                                        <input type="text" name="gsc_site_url" class="app-input" value="{{ $property->gsc_site_url }}" />
                                     </div>
                                     <div>
                                         <label class="app-label">{{ __('messages.seo_risk.ga4_property_id') }}</label>
-                                        <input type="text" name="ga4_property_id" class="app-input" value="{{ $property->ga4_property_id }}" required />
+                                        <input type="text" name="ga4_property_id" class="app-input" value="{{ $property->ga4_property_id }}" />
                                     </div>
                                     <div>
                                         <label class="app-label">{{ __('messages.seo_risk.alert_clicks_drop') }}</label>
@@ -386,12 +435,26 @@
                                         <div class="text-gray-900 dark:text-gray-100">{{ (int) $property->baseline_days }}</div>
                                     </div>
                                     <div>
+                                        <div class="app-label">{{ app()->getLocale() === 'pl' ? 'Źródła danych' : 'Data sources' }}</div>
+                                        <div class="text-gray-900 dark:text-gray-100">
+                                            @if ((bool) $dataSources['gsc'] && (bool) $dataSources['ga4'])
+                                                GSC + GA4
+                                            @elseif ((bool) $dataSources['gsc'])
+                                                GSC
+                                            @elseif ((bool) $dataSources['ga4'])
+                                                GA4
+                                            @else
+                                                -
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div>
                                         <div class="app-label">{{ __('messages.seo_risk.gsc_site_url') }}</div>
-                                        <div class="text-gray-900 dark:text-gray-100">{{ $property->gsc_site_url }}</div>
+                                        <div class="text-gray-900 dark:text-gray-100">{{ (bool) $dataSources['gsc'] ? $property->gsc_site_url : '-' }}</div>
                                     </div>
                                     <div>
                                         <div class="app-label">{{ __('messages.seo_risk.ga4_property_id') }}</div>
-                                        <div class="text-gray-900 dark:text-gray-100">{{ $property->ga4_property_id }}</div>
+                                        <div class="text-gray-900 dark:text-gray-100">{{ (bool) $dataSources['ga4'] ? $property->ga4_property_id : '-' }}</div>
                                     </div>
                                     <div>
                                         <div class="app-label">{{ __('messages.seo_risk.alert_clicks_drop') }}</div>
