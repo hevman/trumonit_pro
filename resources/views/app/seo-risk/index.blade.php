@@ -284,11 +284,15 @@
                     </div>
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.gsc_site_url') }}</label>
-                        <input type="text" name="gsc_site_url" class="app-input" placeholder="sc-domain:example.com" value="{{ old('gsc_site_url') }}" data-seo-risk-gsc list="seo-risk-gsc-sites" @disabled($isPropertyLimitReached) />
+                        <select name="gsc_site_url" class="app-input" data-seo-risk-gsc-select data-current-value="{{ (string) old('gsc_site_url') }}" @disabled($isPropertyLimitReached)>
+                            <option value="">{{ app()->getLocale() === 'pl' ? 'Wybierz z podłączonego konta GSC' : 'Select from connected GSC account' }}</option>
+                        </select>
                     </div>
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.ga4_property_id') }}</label>
-                        <input type="text" name="ga4_property_id" class="app-input" placeholder="123456789" value="{{ old('ga4_property_id') }}" list="seo-risk-ga4-properties" @disabled($isPropertyLimitReached) />
+                        <select name="ga4_property_id" class="app-input" data-seo-risk-ga4-select data-current-value="{{ (string) old('ga4_property_id') }}" @disabled($isPropertyLimitReached)>
+                            <option value="">{{ app()->getLocale() === 'pl' ? 'Wybierz z podłączonego konta GA4' : 'Select from connected GA4 account' }}</option>
+                        </select>
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                             {{ app()->getLocale() === 'pl' ? 'Identyfikator właściwości GA4 znajdziesz w Google Analytics (Administracja -> Ustawienia usługi).' : 'Find GA4 Property ID in Google Analytics (Admin -> Property settings).' }}
                         </p>
@@ -381,11 +385,15 @@
                                     </div>
                                     <div>
                                         <label class="app-label">{{ __('messages.seo_risk.gsc_site_url') }}</label>
-                                        <input type="text" name="gsc_site_url" class="app-input" value="{{ $property->gsc_site_url }}" list="seo-risk-gsc-sites" />
+                                        <select name="gsc_site_url" class="app-input" data-seo-risk-gsc-select data-current-value="{{ (string) $property->gsc_site_url }}">
+                                            <option value="">{{ app()->getLocale() === 'pl' ? 'Wybierz z podłączonego konta GSC' : 'Select from connected GSC account' }}</option>
+                                        </select>
                                     </div>
                                     <div>
                                         <label class="app-label">{{ __('messages.seo_risk.ga4_property_id') }}</label>
-                                        <input type="text" name="ga4_property_id" class="app-input" value="{{ $property->ga4_property_id }}" list="seo-risk-ga4-properties" />
+                                        <select name="ga4_property_id" class="app-input" data-seo-risk-ga4-select data-current-value="{{ (string) $property->ga4_property_id }}">
+                                            <option value="">{{ app()->getLocale() === 'pl' ? 'Wybierz z podłączonego konta GA4' : 'Select from connected GA4 account' }}</option>
+                                        </select>
                                     </div>
                                     <div>
                                         <label class="app-label">{{ __('messages.seo_risk.alert_clicks_drop') }}</label>
@@ -480,8 +488,6 @@
                     @endforelse
                 </div>
             </section>
-            <datalist id="seo-risk-gsc-sites"></datalist>
-            <datalist id="seo-risk-ga4-properties"></datalist>
         </div>
     </div>
 </x-app-layout>

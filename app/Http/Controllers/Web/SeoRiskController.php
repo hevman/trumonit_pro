@@ -249,7 +249,12 @@ class SeoRiskController extends Controller
         return redirect()->route('seo-risk.index')->with('status', strtoupper($provider).' disconnected.');
     }
 
-    public function storeProperty(Request $request, SeoRiskPlanService $planService): RedirectResponse
+    public function storeProperty(
+        Request $request,
+        SeoRiskPlanService $planService,
+        GoogleSearchConsoleService $gscService,
+        GoogleAnalyticsService $ga4Service,
+    ): RedirectResponse
     {
         $tenant = $request->user()?->tenant;
         abort_if(! $tenant, 400, 'User has no tenant.');
@@ -262,7 +267,13 @@ class SeoRiskController extends Controller
             ]);
         }
 
-        $data = $this->validatePropertyPayload($request, (int) $tenant->id);
+        $data = $this->validatePropertyPayload(
+            $request,
+            (int) $tenant->id,
+            null,
+            $gscService,
+            $ga4Service,
+        );
 
         SeoProperty::query()->create($data + [
             'tenant_id' => (int) $tenant->id,
@@ -271,13 +282,24 @@ class SeoRiskController extends Controller
         return redirect()->route('seo-risk.index')->with('status', 'SEO property created.');
     }
 
-    public function updateProperty(Request $request, SeoProperty $seoProperty): RedirectResponse
+    public function updateProperty(
+        Request $request,
+        SeoProperty $seoProperty,
+        GoogleSearchConsoleService $gscService,
+        GoogleAnalyticsService $ga4Service,
+    ): RedirectResponse
     {
         $tenant = $request->user()?->tenant;
         abort_if(! $tenant, 400, 'User has no tenant.');
         abort_if((int) $seoProperty->tenant_id !== (int) $tenant->id, 404);
 
-        $data = $this->validatePropertyPayload($request, (int) $tenant->id, (int) $seoProperty->id);
+        $data = $this->validatePropertyPayload(
+            $request,
+            (int) $tenant->id,
+            (int) $seoProperty->id,
+            $gscService,
+            $ga4Service,
+        );
         $seoProperty->fill($data);
         $seoProperty->save();
 
@@ -314,69 +336,11 @@ class SeoRiskController extends Controller
         $tenant = $request->user()?->tenant;
         abort_if(! $tenant, 400, 'User has no tenant.');
 
-        $options = [
-            'gsc' => [
-                'connected' => false,
-                'items' => [],
-                'error' => null,
-            ],
-            'ga4' => [
-                'connected' => false,
-                'items' => [],
-                'error' => null,
-            ],
-        ];
-
-        $gscIntegration = SeoIntegration::query()
-            ->where('tenant_id', (int) $tenant->id)
-            ->where('provider', 'gsc')
-            ->where('is_enabled', true)
-            ->first();
-
-        if ($gscIntegration) {
-            $options['gsc']['connected'] = true;
-            try {
-                $sites = $gscService->listSites($gscIntegration);
-                $options['gsc']['items'] = array_map(
-                    static fn (array $site): array => [
-                        'value' => (string) ($site['site_url'] ?? ''),
-                        'label' => trim(implode(' | ', array_filter([
-                            (string) ($site['site_url'] ?? ''),
-                            (string) ($site['permission_level'] ?? ''),
-                        ]))),
-                    ],
-                    $sites
-                );
-            } catch (\Throwable $e) {
-                $options['gsc']['error'] = $e->getMessage();
-            }
-        }
-
-        $ga4Integration = SeoIntegration::query()
-            ->where('tenant_id', (int) $tenant->id)
-            ->where('provider', 'ga4')
-            ->where('is_enabled', true)
-            ->first();
-
-        if ($ga4Integration) {
-            $options['ga4']['connected'] = true;
-            try {
-                $properties = $ga4Service->listProperties($ga4Integration);
-                $options['ga4']['items'] = array_map(
-                    static fn (array $property): array => [
-                        'value' => (string) ($property['property_id'] ?? ''),
-                        'label' => trim(implode(' | ', array_filter([
-                            (string) ($property['display_name'] ?? ''),
-                            (string) ($property['account_name'] ?? ''),
-                            (string) ($property['property_id'] ?? ''),
-                        ]))),
-                    ],
-                    $properties
-                );
-            } catch (\Throwable $e) {
-                $options['ga4']['error'] = $e->getMessage();
-            }
-        }
+        $options = $this->loadGoogleOptionsForTenant(
+            tenantId: (int) $tenant->id,
+            gscService: $gscService,
+            ga4Service: $ga4Service,
+        );
 
         return response()->json($options);
     }
@@ -396,7 +360,13 @@ class SeoRiskController extends Controller
      *   baseline_days: int
      * }
      */
-    private function validatePropertyPayload(Request $request, int $tenantId, ?int $currentPropertyId = null): array
+    private function validatePropertyPayload(
+        Request $request,
+        int $tenantId,
+        ?int $currentPropertyId = null,
+        ?GoogleSearchConsoleService $gscService = null,
+        ?GoogleAnalyticsService $ga4Service = null,
+    ): array
     {
         $minBaseline = max(3, (int) config('wids.seo_risk.min_baseline_days', 3));
         $maxBaseline = min(90, max($minBaseline, (int) config('wids.seo_risk.max_baseline_days', 30)));
@@ -458,6 +428,40 @@ class SeoRiskController extends Controller
             $validationErrors['use_ga4'][] = 'Connect Google Analytics 4 integration before enabling it for this property.';
         }
 
+        if (($useGsc || $useGa4) && $gscService && $ga4Service) {
+            $options = $this->loadGoogleOptionsForTenant(
+                tenantId: $tenantId,
+                gscService: $gscService,
+                ga4Service: $ga4Service,
+            );
+
+            if ($useGsc) {
+                $allowedGsc = array_values(array_filter(array_map(
+                    static fn (array $item): string => trim((string) ($item['value'] ?? '')),
+                    is_array($options['gsc']['items'] ?? null) ? $options['gsc']['items'] : [],
+                )));
+
+                if (is_string($options['gsc']['error'] ?? null) && trim((string) $options['gsc']['error']) !== '') {
+                    $validationErrors['gsc_site_url'][] = 'Could not load allowed GSC sites list. Reconnect integration and try again.';
+                } elseif (! in_array($gscSiteUrl, $allowedGsc, true)) {
+                    $validationErrors['gsc_site_url'][] = 'Select GSC site URL from the allowed list.';
+                }
+            }
+
+            if ($useGa4) {
+                $allowedGa4 = array_values(array_filter(array_map(
+                    static fn (array $item): string => trim((string) ($item['value'] ?? '')),
+                    is_array($options['ga4']['items'] ?? null) ? $options['ga4']['items'] : [],
+                )));
+
+                if (is_string($options['ga4']['error'] ?? null) && trim((string) $options['ga4']['error']) !== '') {
+                    $validationErrors['ga4_property_id'][] = 'Could not load allowed GA4 properties list. Reconnect integration and try again.';
+                } elseif (! in_array($ga4PropertyId, $allowedGa4, true)) {
+                    $validationErrors['ga4_property_id'][] = 'Select GA4 property ID from the allowed list.';
+                }
+            }
+        }
+
         if ($validationErrors !== []) {
             throw ValidationException::withMessages($validationErrors);
         }
@@ -491,6 +495,84 @@ class SeoRiskController extends Controller
             ->where('provider', $provider)
             ->where('is_enabled', true)
             ->exists();
+    }
+
+    /**
+     * @return array{
+     *   gsc: array{connected: bool, items: array<int, array{value: string, label: string}>, error: ?string},
+     *   ga4: array{connected: bool, items: array<int, array{value: string, label: string}>, error: ?string}
+     * }
+     */
+    private function loadGoogleOptionsForTenant(
+        int $tenantId,
+        GoogleSearchConsoleService $gscService,
+        GoogleAnalyticsService $ga4Service,
+    ): array {
+        $options = [
+            'gsc' => [
+                'connected' => false,
+                'items' => [],
+                'error' => null,
+            ],
+            'ga4' => [
+                'connected' => false,
+                'items' => [],
+                'error' => null,
+            ],
+        ];
+
+        $gscIntegration = SeoIntegration::query()
+            ->where('tenant_id', $tenantId)
+            ->where('provider', 'gsc')
+            ->where('is_enabled', true)
+            ->first();
+
+        if ($gscIntegration) {
+            $options['gsc']['connected'] = true;
+            try {
+                $sites = $gscService->listSites($gscIntegration);
+                $options['gsc']['items'] = array_map(
+                    static fn (array $site): array => [
+                        'value' => (string) ($site['site_url'] ?? ''),
+                        'label' => trim(implode(' | ', array_filter([
+                            (string) ($site['site_url'] ?? ''),
+                            (string) ($site['permission_level'] ?? ''),
+                        ]))),
+                    ],
+                    $sites
+                );
+            } catch (\Throwable $e) {
+                $options['gsc']['error'] = $e->getMessage();
+            }
+        }
+
+        $ga4Integration = SeoIntegration::query()
+            ->where('tenant_id', $tenantId)
+            ->where('provider', 'ga4')
+            ->where('is_enabled', true)
+            ->first();
+
+        if ($ga4Integration) {
+            $options['ga4']['connected'] = true;
+            try {
+                $properties = $ga4Service->listProperties($ga4Integration);
+                $options['ga4']['items'] = array_map(
+                    static fn (array $property): array => [
+                        'value' => (string) ($property['property_id'] ?? ''),
+                        'label' => trim(implode(' | ', array_filter([
+                            (string) ($property['display_name'] ?? ''),
+                            (string) ($property['account_name'] ?? ''),
+                            (string) ($property['property_id'] ?? ''),
+                        ]))),
+                    ],
+                    $properties
+                );
+            } catch (\Throwable $e) {
+                $options['ga4']['error'] = $e->getMessage();
+            }
+        }
+
+        return $options;
     }
 
     private function normalizeProvider(string $provider): string

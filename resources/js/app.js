@@ -49,37 +49,48 @@ document.addEventListener('DOMContentLoaded', function () {
         ? (firstForm.getAttribute('data-seo-risk-options-url') || '').trim()
         : '';
 
-    const gscDatalist = document.getElementById('seo-risk-gsc-sites');
-    const ga4Datalist = document.getElementById('seo-risk-ga4-properties');
+    const gscSelects = document.querySelectorAll('select[data-seo-risk-gsc-select]');
+    const ga4Selects = document.querySelectorAll('select[data-seo-risk-ga4-select]');
 
-    const populateDatalist = (datalist, items) => {
-        if (!(datalist instanceof HTMLDataListElement)) {
+    const populateSelect = (select, items) => {
+        if (!(select instanceof HTMLSelectElement)) {
             return;
         }
 
-        while (datalist.firstChild) {
-            datalist.removeChild(datalist.firstChild);
+        const firstOption = select.options[0];
+        const placeholderLabel = firstOption ? firstOption.textContent || '' : '';
+        const currentValue = (select.getAttribute('data-current-value') || '').trim();
+
+        while (select.options.length > 0) {
+            select.remove(0);
         }
+
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = placeholderLabel;
+        select.appendChild(placeholder);
 
         items.forEach((item) => {
             if (!item || typeof item !== 'object') {
                 return;
             }
 
-            const option = document.createElement('option');
-            const value = typeof item.value === 'string' ? item.value : '';
-            if (value.trim() === '') {
+            const value = typeof item.value === 'string' ? item.value.trim() : '';
+            if (value === '') {
                 return;
             }
 
+            const option = document.createElement('option');
             option.value = value;
-            const label = typeof item.label === 'string' ? item.label : '';
-            if (label.trim() !== '') {
-                option.label = label;
-            }
-
-            datalist.appendChild(option);
+            option.textContent = typeof item.label === 'string' && item.label.trim() !== ''
+                ? item.label
+                : value;
+            select.appendChild(option);
         });
+
+        if (currentValue !== '') {
+            select.value = currentValue;
+        }
     };
 
     if (optionsUrl !== '') {
@@ -101,20 +112,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 const gscItems = Array.isArray(payload?.gsc?.items) ? payload.gsc.items : [];
                 const ga4Items = Array.isArray(payload?.ga4?.items) ? payload.ga4.items : [];
 
-                populateDatalist(gscDatalist, gscItems);
-                populateDatalist(ga4Datalist, ga4Items);
+                gscSelects.forEach((select) => populateSelect(select, gscItems));
+                ga4Selects.forEach((select) => populateSelect(select, ga4Items));
             })
             .catch(() => {
-                // Leave manual entry available if Google suggestions cannot be loaded.
+                // Keep selects with placeholder when options cannot be loaded.
             });
     }
 
     forms.forEach((form) => {
         const monitorSelect = form.querySelector('[data-seo-risk-monitor]');
         const domainInput = form.querySelector('[data-seo-risk-domain]');
-        const gscInput = form.querySelector('[data-seo-risk-gsc]');
+        const gscSelect = form.querySelector('[data-seo-risk-gsc-select]');
 
-        if (!(monitorSelect instanceof HTMLSelectElement) || !(domainInput instanceof HTMLInputElement) || !(gscInput instanceof HTMLInputElement)) {
+        if (!(monitorSelect instanceof HTMLSelectElement) || !(domainInput instanceof HTMLInputElement) || !(gscSelect instanceof HTMLSelectElement)) {
             return;
         }
 
@@ -133,8 +144,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 domainInput.value = domain;
             }
 
-            if (gscInput.value.trim() === '') {
-                gscInput.value = `sc-domain:${domain}`;
+            if (gscSelect.value.trim() !== '') {
+                return;
+            }
+
+            const expectedValue = `sc-domain:${domain}`;
+            const matchingOption = Array.from(gscSelect.options).find((option) => option.value.toLowerCase() === expectedValue.toLowerCase());
+            if (matchingOption) {
+                gscSelect.value = matchingOption.value;
             }
         };
 
