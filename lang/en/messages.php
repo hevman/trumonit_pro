@@ -189,7 +189,7 @@ return [
 
     'quick_add' => [
         'title' => 'Quick add monitor',
-        'subtitle' => 'Add a monitor in under a minute. You can tune advanced settings later.',
+        'subtitle' => 'Add monitor now. In the next step, configure SEO and notifications.',
         'url_label' => 'URL',
         'type_label' => 'Monitor type',
         'interval_label' => 'Check interval',
@@ -311,6 +311,7 @@ return [
         'created_title' => 'Monitor created',
         'created_body_queued' => 'First check queued. You can run it manually too.',
         'created_body_manual' => 'Next: run a check to collect the first result.',
+        'created_setup_seo' => 'Set up SEO for this monitor',
     ],
 
     'incidents' => [

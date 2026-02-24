@@ -96,6 +96,9 @@
                     <a class="app-link" href="{{ route('monitored-urls.create') }}">
                         {{ __('messages.quick_add.open_advanced') }}
                     </a>
+                    <a class="app-link" href="{{ route('seo-risk.index') }}">
+                        {{ __('messages.nav.seo_risk') }}
+                    </a>
                     <a class="app-link" href="{{ route('notification-channels.edit') }}">
                         {{ __('messages.quick_add.open_notifications') }}
                     </a>

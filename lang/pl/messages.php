@@ -190,7 +190,7 @@ return [
 
     'quick_add' => [
         'title' => 'Szybkie dodanie monitora',
-        'subtitle' => 'Dodaj monitor w minutę. Ustawienia zaawansowane dopracujesz później.',
+        'subtitle' => 'Dodaj monitor teraz. W kolejnym kroku skonfigurujesz SEO i powiadomienia.',
         'url_label' => 'URL',
         'type_label' => 'Typ monitora',
         'interval_label' => 'Częstotliwość',
@@ -312,6 +312,7 @@ return [
         'created_title' => 'Monitor utworzony',
         'created_body_queued' => 'Pierwsze sprawdzenie dodane do kolejki. Możesz też uruchomić je ręcznie.',
         'created_body_manual' => 'Następnie: uruchom sprawdzenie, aby zebrać pierwszy wynik.',
+        'created_setup_seo' => 'Skonfiguruj SEO dla tego monitora',
     ],
 
     'incidents' => [

@@ -243,25 +243,44 @@
                         return str_starts_with($host, 'www.') ? substr($host, 4) : $host;
                     };
                     $hasMonitors = $monitoredUrls->isNotEmpty();
-                    $createFormDisabled = $isPropertyLimitReached || ! $hasMonitors;
+                    $preferredMonitorId = (int) request()->integer('monitor_id');
+                    if ($preferredMonitorId > 0 && ! $monitoredUrls->contains(fn ($monitor) => (int) $monitor->id === $preferredMonitorId)) {
+                        $preferredMonitorId = 0;
+                    }
+                    $selectedMonitorId = (string) old('monitored_url_id', $preferredMonitorId > 0 ? (string) $preferredMonitorId : '');
+                    $selectedMonitor = $monitoredUrls->first(fn ($monitor) => (string) $monitor->id === $selectedMonitorId);
+                    $selectedMonitorDomain = $selectedMonitor ? $extractDomain((string) $selectedMonitor->url) : '';
+                    $gscConnected = (bool) ($integrations['gsc']->is_enabled ?? false);
+                    $ga4Connected = (bool) ($integrations['ga4']->is_enabled ?? false);
+                    $hasAnySourceConnected = $gscConnected || $ga4Connected;
+                    $createFormDisabled = $isPropertyLimitReached || ! $hasMonitors || ! $hasAnySourceConnected;
                 @endphp
                 @if (! $hasMonitors)
                     <div class="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200">
-                        {{ app()->getLocale() === 'pl' ? 'Najpierw dodaj co najmniej jeden monitor URL. Bez monitora nie da się utworzyć właściwości SEO.' : 'Add at least one monitored URL first. SEO property cannot be created without monitor mapping.' }}
-                        <a href="{{ route('monitored-urls.index') }}" class="ml-2 underline">
-                            {{ app()->getLocale() === 'pl' ? 'Przejdź do monitorów' : 'Open monitored URLs' }}
-                        </a>
+                        <div>{{ app()->getLocale() === 'pl' ? 'Najpierw dodaj co najmniej jeden monitor URL. Bez monitora nie da się utworzyć właściwości SEO.' : 'Add at least one monitored URL first. SEO property cannot be created without monitor mapping.' }}</div>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <button type="button" class="app-button-primary" x-on:click="$dispatch('open-modal', 'quick-add-monitor')">
+                                {{ __('messages.dashboard.action_create_monitor') }}
+                            </button>
+                            <a href="{{ route('monitored-urls.create') }}" class="app-button-secondary">
+                                {{ app()->getLocale() === 'pl' ? 'Formularz zaawansowany' : 'Advanced form' }}
+                            </a>
+                        </div>
+                    </div>
+                @elseif (! $hasAnySourceConnected)
+                    <div class="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200">
+                        {{ app()->getLocale() === 'pl' ? 'Połącz Google Search Console lub Google Analytics 4. Dopiero wtedy utworzysz właściwość SEO.' : 'Connect Google Search Console or Google Analytics 4 first. Then you can create an SEO property.' }}
                     </div>
                 @endif
-                <form method="POST" action="{{ route('seo-risk.properties.store') }}" class="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-3" data-seo-risk-autofill="true" data-seo-risk-options-url="{{ route('seo-risk.google.options') }}">
+                <form method="POST" action="{{ route('seo-risk.properties.store') }}" class="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-3" data-seo-risk-autofill="true" data-seo-risk-create-form="true" data-seo-risk-options-url="{{ route('seo-risk.google.options') }}">
                     @csrf
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.property_name') }}</label>
-                        <input type="text" name="name" class="app-input" @disabled($createFormDisabled) required />
+                        <input type="text" name="name" class="app-input" value="{{ (string) old('name') }}" data-seo-risk-name @disabled($createFormDisabled) required />
                     </div>
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.domain') }}</label>
-                        <input type="text" class="app-input" placeholder="example.com" data-seo-risk-domain value="{{ (string) old('domain') }}" readonly @disabled($createFormDisabled) />
+                        <input type="text" class="app-input" placeholder="example.com" data-seo-risk-domain value="{{ (string) old('domain', $selectedMonitorDomain) }}" readonly @disabled($createFormDisabled) />
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                             {{ app()->getLocale() === 'pl' ? 'Pole ustawiane automatycznie z wybranego monitora URL.' : 'This field is auto-filled from selected monitor URL.' }}
                         </p>
@@ -271,7 +290,7 @@
                         <select name="monitored_url_id" class="app-input" data-seo-risk-monitor @disabled($createFormDisabled) required>
                             <option value="">{{ __('messages.seo_risk.choose_monitor') }}</option>
                             @foreach ($monitoredUrls as $monitor)
-                                <option value="{{ $monitor->id }}" data-monitor-domain="{{ $extractDomain((string) $monitor->url) }}" @selected((string) old('monitored_url_id') === (string) $monitor->id)>{{ $monitor->display_name ?: $monitor->url }}</option>
+                                <option value="{{ $monitor->id }}" data-monitor-domain="{{ $extractDomain((string) $monitor->url) }}" data-monitor-label="{{ $monitor->display_name ?: $monitor->url }}" @selected($selectedMonitorId === (string) $monitor->id)>{{ $monitor->display_name ?: $monitor->url }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -292,8 +311,9 @@
                             </label>
                         </div>
                         <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                            {{ app()->getLocale() === 'pl' ? 'Wybierz co najmniej jedno źródło. Pola GSC/GA4 poniżej są wymagane tylko dla zaznaczonych opcji.' : 'Select at least one source. GSC/GA4 fields below are required only for selected options.' }}
+                            {{ app()->getLocale() === 'pl' ? 'Wybierz co najmniej jedno źródło. Możesz wybierać tylko z listy podłączonych kont Google.' : 'Select at least one source. You can choose only from connected Google account lists.' }}
                         </p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" data-seo-risk-form-hint></p>
                     </div>
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.gsc_site_url') }}</label>
@@ -308,9 +328,6 @@
                             <option value="">{{ app()->getLocale() === 'pl' ? 'Wybierz z podłączonego konta GA4' : 'Select from connected GA4 account' }}</option>
                         </select>
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" data-seo-risk-ga4-status></p>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                            {{ app()->getLocale() === 'pl' ? 'Identyfikator właściwości GA4 znajdziesz w Google Analytics (Administracja -> Ustawienia usługi).' : 'Find GA4 Property ID in Google Analytics (Admin -> Property settings).' }}
-                        </p>
                     </div>
                     <div>
                         <label class="app-label">{{ __('messages.seo_risk.baseline_days') }}</label>
@@ -337,7 +354,7 @@
                         <span class="text-xs text-gray-500 dark:text-gray-400">
                             {{ app()->getLocale() === 'pl' ? 'Ruch organiczny i sygnały SEO będą analizowane codziennie po synchronizacji.' : 'Organic traffic and SEO signals are analyzed daily after sync.' }}
                         </span>
-                        <button type="submit" class="app-button-primary" @disabled($createFormDisabled)>{{ __('messages.actions.create') }}</button>
+                        <button type="submit" class="app-button-primary" data-seo-risk-submit @disabled($createFormDisabled)>{{ __('messages.actions.create') }}</button>
                     </div>
                 </form>
             </section>

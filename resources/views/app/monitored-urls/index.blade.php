@@ -53,7 +53,28 @@
                     'last_scanned_from' => $filters['last_scanned_from'] ?? null,
                     'last_scanned_to' => $filters['last_scanned_to'] ?? null,
                 ], fn ($value) => $value !== null && $value !== '');
+                $showFirstMonitorGuide = count($activeFilters) === 0 && (int) ($summary['total_results'] ?? 0) === 0;
             @endphp
+
+            @if ($showFirstMonitorGuide && $isOwner)
+                <section class="app-card">
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                        {{ app()->getLocale() === 'pl' ? 'Zacznij od pierwszego monitora (2 kroki)' : 'Start with your first monitor (2 steps)' }}
+                    </h3>
+                    <ol class="mt-2 list-inside list-decimal space-y-1 text-sm text-gray-700 dark:text-gray-300">
+                        <li>{{ app()->getLocale() === 'pl' ? 'Dodaj monitor URL i uruchom pierwszy skan.' : 'Add a URL monitor and run the first check.' }}</li>
+                        <li>{{ app()->getLocale() === 'pl' ? 'Przejdź do modułu SEO i przypisz źródła Google z listy konta.' : 'Open SEO module and map Google sources from account lists.' }}</li>
+                    </ol>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        <button type="button" class="app-button-primary" x-on:click="$dispatch('open-modal', 'quick-add-monitor')">
+                            {{ __('messages.dashboard.action_create_monitor') }}
+                        </button>
+                        <a href="{{ route('seo-risk.index') }}" class="app-button-secondary">
+                            {{ __('messages.nav.seo_risk') }}
+                        </a>
+                    </div>
+                </section>
+            @endif
 
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
                 <section class="app-card">

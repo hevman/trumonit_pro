@@ -55,6 +55,9 @@
                         </div>
                         @if ($isOwner)
                             <div class="flex flex-wrap gap-2">
+                                <a href="{{ route('seo-risk.index', ['monitor_id' => $monitoredUrl->id]) }}" class="app-button-primary">
+                                    {{ __('messages.monitored_urls.created_setup_seo') }}
+                                </a>
                                 @if (! $hasNotificationChannels)
                                     <a href="{{ route('notification-channels.edit') }}" class="app-button-primary">
                                         {{ __('Configure notifications') }}
