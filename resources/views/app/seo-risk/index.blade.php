@@ -129,27 +129,29 @@
 
             <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
                 @foreach (['gsc' => 'Google Search Console', 'ga4' => 'Google Analytics 4'] as $provider => $label)
-                    @php($integration = $integrations[$provider])
+                    @php
+                        $integration = $integrations[$provider] ?? null;
+                    @endphp
                     <section class="app-card">
                         <div class="flex items-center justify-between gap-3">
                             <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $label }}</h3>
-                            <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium {{ $integration->is_enabled ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200' }}">
-                                {{ $integration->is_enabled ? __('messages.seo_risk.connected') : __('messages.seo_risk.not_connected') }}
+                            <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium {{ ($integration?->is_enabled ?? false) ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200' }}">
+                                {{ ($integration?->is_enabled ?? false) ? __('messages.seo_risk.connected') : __('messages.seo_risk.not_connected') }}
                             </span>
                         </div>
 
                         <div class="mt-3 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-200">
                             <p>{{ __('messages.seo_risk.platform_oauth_managed') }}</p>
-                            @if (is_string($integration->external_account_email) && trim($integration->external_account_email) !== '')
+                            @if (is_string($integration?->external_account_email) && trim((string) $integration?->external_account_email) !== '')
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                    {{ __('messages.seo_risk.connected_account') }}: {{ $integration->external_account_email }}
+                                    {{ __('messages.seo_risk.connected_account') }}: {{ $integration?->external_account_email }}
                                 </p>
                             @endif
                         </div>
 
                         @if ($canManage)
                             <div class="mt-3 flex flex-wrap gap-2">
-                                @if ((bool) $integration->is_enabled)
+                                @if ((bool) ($integration?->is_enabled ?? false))
                                     <form method="POST" action="{{ route('seo-risk.integrations.disconnect', ['provider' => $provider]) }}">
                                         @csrf
                                         <button type="submit" class="app-button-danger">
@@ -177,9 +179,9 @@
                             </p>
                         @endif
 
-                        @if (is_string($integration->last_error) && trim($integration->last_error) !== '')
+                        @if (is_string($integration?->last_error) && trim((string) $integration?->last_error) !== '')
                             <div class="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-300">
-                                {{ $integration->last_error }}
+                                {{ $integration?->last_error }}
                             </div>
                         @endif
                     </section>
