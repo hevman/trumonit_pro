@@ -9,9 +9,9 @@
             @endphp
             @if ($isOwner)
                 <div class="flex flex-wrap items-center gap-2">
-                    <button type="button" class="app-button-primary" x-on:click="$dispatch('open-modal', 'quick-add-monitor')">
+                    <a href="{{ route('onboarding.show') }}" class="app-button-primary">
                         {{ __('messages.dashboard.action_create_monitor') }}
-                    </button>
+                    </a>
                     <a href="{{ route('monitored-urls.bulk') }}" class="app-button-secondary">
                         {{ __('messages.actions.import_export') }}
                     </a>
@@ -24,10 +24,7 @@
                                 {{ __('Maintenance windows') }}
                             </a>
                             <a href="{{ route('onboarding.show') }}" class="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800">
-                                {{ __('messages.quick_add.open_wizard') }}
-                            </a>
-                            <a href="{{ route('monitored-urls.create') }}" class="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800">
-                                {{ __('messages.dashboard.onboarding_advanced') }}
+                                {{ app()->getLocale() === 'pl' ? 'Dodaj monitor' : 'Add monitor' }}
                             </a>
                         </div>
                     </details>
@@ -66,9 +63,9 @@
                         <li>{{ app()->getLocale() === 'pl' ? 'Przejdź do modułu SEO i przypisz źródła Google z listy konta.' : 'Open SEO module and map Google sources from account lists.' }}</li>
                     </ol>
                     <div class="mt-3 flex flex-wrap gap-2">
-                        <button type="button" class="app-button-primary" x-on:click="$dispatch('open-modal', 'quick-add-monitor')">
+                        <a href="{{ route('onboarding.show') }}" class="app-button-primary">
                             {{ __('messages.dashboard.action_create_monitor') }}
-                        </button>
+                        </a>
                         <a href="{{ route('seo-risk.index') }}" class="app-button-secondary">
                             {{ __('messages.nav.seo_risk') }}
                         </a>

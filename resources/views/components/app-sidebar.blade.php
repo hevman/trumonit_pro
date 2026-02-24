@@ -29,17 +29,9 @@
     <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4 text-sm" @click="if ($event.target.closest('a')) sidebarOpen = false">
         @if ($isOwner)
             <div class="mb-3 space-y-2">
-                <button type="button" class="app-button-primary w-full justify-center" x-on:click="$dispatch('open-modal', 'quick-add-monitor')">
+                <a href="{{ route('onboarding.show') }}" class="app-button-primary w-full justify-center">
                     {{ __('messages.dashboard.action_create_monitor') }}
-                </button>
-                <div class="flex items-center justify-center gap-3 text-xs">
-                    <a href="{{ route('onboarding.show') }}" class="app-link">
-                        {{ __('messages.quick_add.open_wizard') }}
-                    </a>
-                    <a href="{{ route('monitored-urls.create') }}" class="app-link">
-                        {{ __('messages.dashboard.onboarding_advanced') }}
-                    </a>
-                </div>
+                </a>
             </div>
         @endif
 

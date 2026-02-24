@@ -62,7 +62,5 @@
                 </main>
             </div>
         </div>
-
-        @include('partials.quick-add-monitor-modal')
     </body>
 </html>

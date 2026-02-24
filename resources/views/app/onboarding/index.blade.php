@@ -74,7 +74,7 @@
                         @if ($featuredTemplates !== [])
                             <div class="mt-4">
                                 <div class="mb-1 text-sm font-medium text-gray-900 dark:text-gray-100">
-                                    {{ app()->getLocale() === 'pl' ? 'Szybkie skróty typu monitora (kliknij kartę)' : 'Quick monitor type shortcuts (click card)' }}
+                                    {{ app()->getLocale() === 'pl' ? 'Szybkie skroty typu monitora (kliknij karte)' : 'Quick monitor type shortcuts (click card)' }}
                                 </div>
                                 <div id="template-cards" class="hidden grid grid-cols-1 gap-3 sm:grid-cols-2">
                                     @foreach ($featuredTemplates as $template)

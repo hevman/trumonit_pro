@@ -259,11 +259,8 @@
                     <div class="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200">
                         <div>{{ app()->getLocale() === 'pl' ? 'Najpierw dodaj co najmniej jeden monitor URL. Bez monitora nie da się utworzyć właściwości SEO.' : 'Add at least one monitored URL first. SEO property cannot be created without monitor mapping.' }}</div>
                         <div class="mt-2 flex flex-wrap gap-2">
-                            <button type="button" class="app-button-primary" x-on:click="$dispatch('open-modal', 'quick-add-monitor')">
+                            <a href="{{ route('onboarding.show') }}" class="app-button-primary">
                                 {{ __('messages.dashboard.action_create_monitor') }}
-                            </button>
-                            <a href="{{ route('monitored-urls.create') }}" class="app-button-secondary">
-                                {{ app()->getLocale() === 'pl' ? 'Formularz zaawansowany' : 'Advanced form' }}
                             </a>
                         </div>
                     </div>

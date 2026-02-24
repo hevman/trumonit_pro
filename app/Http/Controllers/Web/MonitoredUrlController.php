@@ -519,24 +519,8 @@ class MonitoredUrlController extends Controller
 
     public function create(Request $request, MonitorTemplateService $monitorTemplateService)
     {
-        $tenantId = $request->user()?->tenant_id;
-        abort_if($tenantId === null, 400, 'User has no tenant.');
-
-        $tenant = $request->user()?->tenant;
-        $limits = app(TenantQuotaService::class)->limitsForTenant($tenant);
-        $currentCount = MonitoredUrl::query()
-            ->where('tenant_id', $tenantId)
-            ->count();
-
-        return view('app.monitored-urls.create', [
-            'monitorTemplates' => $monitorTemplateService->frontendTemplates(),
-            'quota' => [
-                'tier' => $limits['tier'],
-                'max_monitored_urls' => $limits['max_monitored_urls'],
-                'current_monitored_urls' => $currentCount,
-                'min_frequency_minutes' => $limits['min_frequency_minutes'] ?? 1,
-            ],
-        ]);
+        // Adding monitors is intentionally guided via onboarding wizard.
+        return redirect()->route('onboarding.show');
     }
 
     public function store(Request $request)
