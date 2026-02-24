@@ -28,12 +28,12 @@
                     </ol>
                 </div>
 
-                <form method="POST" action="{{ route('monitored-urls.store') }}" class="space-y-6">
+                <form method="POST" action="{{ route('monitored-urls.store') }}" class="space-y-6" data-monitor-template-hints-root data-locale="{{ app()->getLocale() }}">
                     @csrf
                     <input type="hidden" name="from_onboarding" value="1" />
                     <input type="hidden" name="is_active" value="1" />
 
-                    <div data-monitor-template-hints-root data-locale="{{ app()->getLocale() }}">
+                    <div>
                         @php
                             $defaultTemplate = old('template') ?: 'website_uptime';
                             $limits = app(\App\Services\TenantQuotaService::class)->limitsForTenant(auth()->user()?->tenant);
