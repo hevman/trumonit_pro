@@ -58,6 +58,21 @@
                             'for' => $isPolishLocale ? 'Szablon dostosowuje domyślne ustawienia do konkretnego przypadku użycia.' : 'Template applies defaults for a specific use case.',
                             'alert' => $isPolishLocale ? 'Alarmuje zgodnie z regułami wybranego typu monitora.' : 'Alerts according to selected monitor type rules.',
                         ];
+
+                        $jsGuideForPrefix = $isPolishLocale ? 'Co monitor robi: ' : 'What it does: ';
+                        $jsGuideAlertPrefix = $isPolishLocale ? 'Kiedy alarmuje: ' : 'When it alerts: ';
+                        $jsAlertJourney = $isPolishLocale
+                            ? 'Alarmuje, gdy kroki scenariusza nie przejdą lub zabraknie oczekiwanych elementów UI.'
+                            : 'Alerts when journey steps fail or expected UI elements are missing.';
+                        $jsAlertPort = $isPolishLocale
+                            ? 'Alarmuje, gdy wskazany port TCP nie odpowiada lub połączenie jest odrzucane.'
+                            : 'Alerts when TCP port does not respond or connection is refused.';
+                        $jsAlertHeartbeat = $isPolishLocale
+                            ? 'Alarmuje, gdy brak sygnału heartbeat w oczekiwanym oknie czasowym.'
+                            : 'Alerts when heartbeat signal is missing in expected time window.';
+                        $jsAlertHttp = $isPolishLocale
+                            ? 'Alarmuje przy niedostępności URL, timeoutach i nieoczekiwanym kodzie HTTP.'
+                            : 'Alerts on URL downtime, timeouts, and unexpected HTTP status.';
                     @endphp
 
                     @if ($featuredTemplates !== [])
@@ -370,21 +385,13 @@
                 if (!alertText && selected && selected.defaults && typeof selected.defaults === 'object') {
                     var scanMode = String(selected.defaults.scan_mode || '').toLowerCase();
                     if (scanMode === 'journey') {
-                        alertText = @json(app()->getLocale() === 'pl'
-                            ? 'Alarmuje, gdy kroki scenariusza nie przejdą lub zabraknie oczekiwanych elementów UI.'
-                            : 'Alerts when journey steps fail or expected UI elements are missing.');
+                        alertText = @json($jsAlertJourney);
                     } else if (scanMode === 'port') {
-                        alertText = @json(app()->getLocale() === 'pl'
-                            ? 'Alarmuje, gdy wskazany port TCP nie odpowiada lub połączenie jest odrzucane.'
-                            : 'Alerts when TCP port does not respond or connection is refused.');
+                        alertText = @json($jsAlertPort);
                     } else if (scanMode === 'heartbeat') {
-                        alertText = @json(app()->getLocale() === 'pl'
-                            ? 'Alarmuje, gdy brak sygnału heartbeat w oczekiwanym oknie czasowym.'
-                            : 'Alerts when heartbeat signal is missing in expected time window.');
+                        alertText = @json($jsAlertHeartbeat);
                     } else {
-                        alertText = @json(app()->getLocale() === 'pl'
-                            ? 'Alarmuje przy niedostępności URL, timeoutach i nieoczekiwanym kodzie HTTP.'
-                            : 'Alerts on URL downtime, timeouts, and unexpected HTTP status.');
+                        alertText = @json($jsAlertHttp);
                     }
                 }
 
@@ -392,8 +399,8 @@
                     alertText = templateGuideFallback.alert || '';
                 }
 
-                guideFor.textContent = @json(app()->getLocale() === 'pl' ? 'Co monitor robi: ' : 'What it does: ') + forText;
-                guideAlert.textContent = @json(app()->getLocale() === 'pl' ? 'Kiedy alarmuje: ' : 'When it alerts: ') + alertText;
+                guideFor.textContent = @json($jsGuideForPrefix) + forText;
+                guideAlert.textContent = @json($jsGuideAlertPrefix) + alertText;
             }
 
             function applyTemplateDefaults() {
