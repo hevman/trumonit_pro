@@ -63,6 +63,7 @@
                         </div>
 
                         <div id="template-suggestion" class="mt-3 hidden text-xs text-gray-600 dark:text-gray-400"></div>
+                        <div id="template-selected-state" class="mt-2 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
 
                         <details class="mt-4">
                             <summary class="cursor-pointer select-none text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -125,6 +126,7 @@
             var url = document.getElementById('url');
             var template = document.getElementById('template');
             var suggestion = document.getElementById('template-suggestion');
+            var selectedState = document.getElementById('template-selected-state');
             var cardsWrap = document.getElementById('template-cards');
             var userPicked = false;
 
@@ -139,11 +141,26 @@
                     var card = cards[i];
                     var isActive = card.getAttribute('data-template-key') === key;
                     if (isActive) {
-                        card.classList.add('ring-2', 'ring-indigo-500', 'border-indigo-200');
+                        card.classList.add('ring-2', 'ring-indigo-500', 'border-indigo-300', 'bg-indigo-50', 'dark:bg-indigo-500/10');
                     } else {
-                        card.classList.remove('ring-2', 'ring-indigo-500', 'border-indigo-200');
+                        card.classList.remove('ring-2', 'ring-indigo-500', 'border-indigo-300', 'bg-indigo-50', 'dark:bg-indigo-500/10');
                     }
                 }
+            }
+
+            function updateSelectedState() {
+                if (!selectedState) {
+                    return;
+                }
+
+                var selectedOption = template.options[template.selectedIndex];
+                if (!selectedOption) {
+                    selectedState.textContent = '';
+                    return;
+                }
+
+                var prefix = {{ json_encode(app()->getLocale() === 'pl' ? 'Wybrany typ: ' : 'Selected type: ') }};
+                selectedState.textContent = prefix + selectedOption.text;
             }
 
             function guessTemplateKey(raw) {
@@ -221,6 +238,7 @@
                 }
 
                 setActiveCard(template.value);
+                updateSelectedState();
 
                 if (suggestion && matchedLabel && !userPicked) {
                     suggestion.textContent = ({{ json_encode(app()->getLocale() === 'pl' ? 'Sugerowany typ: ' : 'Suggested: ') }} + matchedLabel + '.');
@@ -243,6 +261,7 @@
                     userPicked = true;
                     template.value = key;
                     setActiveCard(key);
+                    updateSelectedState();
                     if (suggestion) {
                         suggestion.classList.add('hidden');
                         suggestion.textContent = '';
@@ -253,6 +272,7 @@
             template.addEventListener('change', function () {
                 userPicked = true;
                 setActiveCard(template.value);
+                updateSelectedState();
                 if (!suggestion) {
                     return;
                 }
@@ -262,6 +282,7 @@
 
             // Initial sync.
             setActiveCard(template.value || {{ json_encode($defaultTemplate) }});
+            updateSelectedState();
         });
     </script>
 </x-app-layout>

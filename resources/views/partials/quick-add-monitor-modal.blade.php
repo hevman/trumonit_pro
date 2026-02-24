@@ -103,6 +103,7 @@
                             </option>
                         @endforeach
                     </select>
+                    <div id="quick-add-template-selected-state" class="mt-2 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
                 </div>
 
                 <div>
@@ -173,6 +174,7 @@
                 var url = document.getElementById('quick-add-url');
                 var template = document.getElementById('quick-add-template');
                 var suggestion = document.getElementById('quick-add-suggestion');
+                var selectedState = document.getElementById('quick-add-template-selected-state');
                 var cardsWrap = document.getElementById('quick-add-template-cards');
                 var guideFor = document.getElementById('quick-add-template-guide-for');
                 var guideAlert = document.getElementById('quick-add-template-guide-alert');
@@ -190,11 +192,23 @@
                         var card = cards[i];
                         var isActive = card.getAttribute('data-template-key') === key;
                         if (isActive) {
-                            card.classList.add('ring-2', 'ring-indigo-500', 'border-indigo-200');
+                            card.classList.add('ring-2', 'ring-indigo-500', 'border-indigo-300', 'bg-indigo-50', 'dark:bg-indigo-500/10');
                         } else {
-                            card.classList.remove('ring-2', 'ring-indigo-500', 'border-indigo-200');
+                            card.classList.remove('ring-2', 'ring-indigo-500', 'border-indigo-300', 'bg-indigo-50', 'dark:bg-indigo-500/10');
                         }
                     }
+                }
+
+                function updateSelectedState() {
+                    if (!selectedState) return;
+                    var selectedOption = template.options[template.selectedIndex];
+                    if (!selectedOption) {
+                        selectedState.textContent = '';
+                        return;
+                    }
+
+                    var prefix = {{ json_encode(app()->getLocale() === 'pl' ? 'Wybrany typ: ' : 'Selected type: ') }};
+                    selectedState.textContent = prefix + selectedOption.text;
                 }
 
                 function updateTemplateGuide() {
@@ -259,6 +273,7 @@
 
                     setActiveCard(template.value);
                     updateTemplateGuide();
+                    updateSelectedState();
 
                     if (matchedLabel && !userPickedTemplate) {
                         setSuggestionText({!! json_encode(__('messages.quick_add.suggested_prefix')) !!} + matchedLabel + '.');
@@ -277,6 +292,7 @@
                     userPickedTemplate = true;
                     setActiveCard(template.value);
                     updateTemplateGuide();
+                    updateSelectedState();
                     setSuggestionText('');
                 });
 
@@ -290,6 +306,7 @@
                         template.value = key;
                         setActiveCard(key);
                         updateTemplateGuide();
+                        updateSelectedState();
                         setSuggestionText('');
                     });
                 }
@@ -298,6 +315,7 @@
                 if (!template.value) template.value = {{ json_encode($defaultTemplate) }};
                 setActiveCard(template.value);
                 updateTemplateGuide();
+                updateSelectedState();
             });
         </script>
     </x-modal>
