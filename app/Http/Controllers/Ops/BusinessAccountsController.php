@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Ops;
 
 use App\Models\Tenant;
+use App\Services\BillingPlanService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -66,16 +67,8 @@ class BusinessAccountsController
      */
     private function buildPayload(): array
     {
-        $defaultTier = strtolower(trim((string) config('wids.default_plan_tier', 'lite')));
-        $defaultTier = $defaultTier !== '' ? $defaultTier : 'lite';
         $maxAccounts = min(5000, max(1, (int) config('ops.business.max_accounts_export', 1000)));
-        $paidStatuses = config('ops.business.paid_subscription_statuses', ['active', 'trialing', 'manual_active', 'past_due']);
-        $paidStatuses = is_array($paidStatuses)
-            ? array_values(array_filter(array_map(
-                static fn ($status): string => strtolower(trim((string) $status)),
-                $paidStatuses
-            )))
-            : [];
+        $billingPlanService = app(BillingPlanService::class);
 
         $tenants = Tenant::query()
             ->with([
@@ -96,20 +89,16 @@ class BusinessAccountsController
                 'billing_plan_changed_at',
             ]);
 
-        $accounts = $tenants->map(function (Tenant $tenant) use ($defaultTier, $paidStatuses): array {
+        $accounts = $tenants->map(function (Tenant $tenant) use ($billingPlanService): array {
             $owner = $tenant->users->first();
-            $planTier = strtolower(trim((string) ($tenant->plan_tier ?? '')));
-            $planTier = $planTier !== '' ? $planTier : $defaultTier;
+            $planTier = $billingPlanService->effectivePlanTierForTenant($tenant);
 
             $subscriptionStatus = strtolower(trim((string) ($tenant->billing_subscription_status ?? '')));
             $subscriptionStatus = $subscriptionStatus !== '' ? $subscriptionStatus : null;
 
-            $paymentStatus = 'free';
-            if ($subscriptionStatus !== null) {
-                $paymentStatus = in_array($subscriptionStatus, $paidStatuses, true) ? 'paid' : 'unpaid';
-            } elseif ($planTier !== $defaultTier) {
-                $paymentStatus = 'paid';
-            }
+            $paymentStatus = $subscriptionStatus === null
+                ? 'free'
+                : ($billingPlanService->isPaidSubscriptionStatus($subscriptionStatus) ? 'paid' : 'unpaid');
 
             return [
                 'account_id' => 'tenant-'.$tenant->id,
@@ -162,4 +151,3 @@ class BusinessAccountsController
         }
     }
 }
-

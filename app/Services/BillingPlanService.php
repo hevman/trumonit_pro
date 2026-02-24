@@ -50,6 +50,42 @@ class BillingPlanService
         return $available[0] ?? 'lite';
     }
 
+    /**
+     * Effective tier used in customer-facing billing and OPS sync.
+     * If tenant has no paid subscription status, force FREE access tier.
+     */
+    public function effectivePlanTierForTenant(Tenant $tenant): string
+    {
+        $current = $this->currentPlanTierForTenant($tenant);
+
+        if ($current === 'free') {
+            return 'free';
+        }
+
+        $subscriptionStatus = $this->normalizedSubscriptionStatusForTenant($tenant);
+
+        if ($subscriptionStatus === null) {
+            return 'free';
+        }
+
+        if (! $this->isPaidSubscriptionStatus($subscriptionStatus)) {
+            return 'free';
+        }
+
+        return $current;
+    }
+
+    public function isPaidSubscriptionStatus(?string $subscriptionStatus): bool
+    {
+        $normalized = $this->normalizeSubscriptionStatus($subscriptionStatus);
+
+        if ($normalized === null) {
+            return false;
+        }
+
+        return in_array($normalized, $this->paidSubscriptionStatuses(), true);
+    }
+
     public function requestPlanChange(Tenant $tenant, int $actorUserId, string $targetPlanTier, ?Request $request = null): BillingCheckoutSession
     {
         $targetPlanTier = $this->normalizePlanTier($targetPlanTier);
@@ -223,6 +259,50 @@ class BillingPlanService
         }
 
         return $status;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function paidSubscriptionStatuses(): array
+    {
+        $configured = config('ops.business.paid_subscription_statuses', ['active', 'trialing', 'manual_active', 'past_due']);
+        if (! is_array($configured)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        foreach ($configured as $status) {
+            $candidate = $this->normalizeSubscriptionStatus(is_scalar($status) ? (string) $status : null);
+            if ($candidate === null) {
+                continue;
+            }
+
+            $normalized[$candidate] = true;
+        }
+
+        return array_values(array_keys($normalized));
+    }
+
+    private function normalizedSubscriptionStatusForTenant(Tenant $tenant): ?string
+    {
+        return $this->normalizeSubscriptionStatus(
+            is_scalar($tenant->billing_subscription_status ?? null)
+                ? (string) $tenant->billing_subscription_status
+                : null
+        );
+    }
+
+    private function normalizeSubscriptionStatus(?string $value): ?string
+    {
+        if (! is_string($value)) {
+            return null;
+        }
+
+        $normalized = strtolower(trim($value));
+
+        return $normalized !== '' ? $normalized : null;
     }
 
     private function normalizeNullableString(mixed $value, int $max = 0): ?string

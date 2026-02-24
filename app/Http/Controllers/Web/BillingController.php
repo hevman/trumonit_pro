@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\BillingCheckoutSession;
 use App\Models\MonitoredUrl;
+use App\Models\Tenant;
 use App\Models\TenantUsageMetric;
 use App\Models\WeeklyDigestReport;
 use App\Services\BillingPaymentService;
@@ -44,7 +45,8 @@ class BillingController extends Controller
             period: $periodStart,
         );
 
-        $plan = $billingUsage->billingPlanForTenant($tenant);
+        $effectivePlanTier = $billingPlanService->effectivePlanTierForTenant($tenant);
+        $plan = $billingUsage->billingPlanForTenant(new Tenant(['plan_tier' => $effectivePlanTier]));
         $rows = [];
         $now = now();
         $elapsedDays = max(1, (int) $now->day);
@@ -305,7 +307,7 @@ class BillingController extends Controller
             ->count();
 
         $availablePlanTiers = $billingPlanService->availablePlanTiers();
-        $resolvedTierByPlanService = $billingPlanService->currentPlanTierForTenant($tenant);
+        $resolvedTierByPlanService = $effectivePlanTier;
         $resolvedTierByUsagePlan = strtolower(trim((string) ($plan['tier'] ?? '')));
         $currentPlanTier = $resolvedTierByUsagePlan !== '' ? $resolvedTierByUsagePlan : $resolvedTierByPlanService;
         $planTierDisplay = strtoupper($currentPlanTier);
