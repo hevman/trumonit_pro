@@ -1,5 +1,7 @@
 @php
     $isOwner = (auth()->user()?->role ?? null) !== 'member';
+    $ssoSettingsVisible = (bool) config('wids.sso.oidc.enabled', false)
+        || (bool) config('wids.sso.saml.enabled', false);
 @endphp
 
 <div
@@ -80,11 +82,13 @@
                 {{ __('messages.nav.notifications') }}
             </a>
 
-            <a href="{{ route('sso.edit') }}"
-               class="flex items-center gap-2 rounded-lg px-3 py-2 transition-colors {{ request()->routeIs('sso.*') ? 'bg-gray-900 font-medium text-white dark:bg-indigo-500 dark:text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
-                <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h10" /></svg>
-                {{ __('messages.nav.sso') }}
-            </a>
+            @if ($ssoSettingsVisible)
+                <a href="{{ route('sso.edit') }}"
+                   class="flex items-center gap-2 rounded-lg px-3 py-2 transition-colors {{ request()->routeIs('sso.*') ? 'bg-gray-900 font-medium text-white dark:bg-indigo-500 dark:text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
+                    <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h10" /></svg>
+                    {{ __('messages.nav.sso') }}
+                </a>
+            @endif
 
             <a href="{{ route('billing.index') }}"
                class="flex items-center gap-2 rounded-lg px-3 py-2 transition-colors {{ request()->routeIs('billing.*') ? 'bg-gray-900 font-medium text-white dark:bg-indigo-500 dark:text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
