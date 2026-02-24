@@ -104,7 +104,7 @@
                         @endforeach
                     </select>
                     <div id="quick-add-template-selected-state" class="mt-2 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
-                    <div id="quick-add-template-purpose" class="mt-1 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-300"></div>
+                    <div id="quick-add-template-purpose" class="mt-1 hidden rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-300"></div>
                 </div>
 
                 <div>
@@ -231,12 +231,21 @@
                     var selected = byKey[template.value];
                     if (!selected) {
                         purpose.textContent = '';
+                        purpose.classList.add('hidden');
                         return;
                     }
 
                     var guide = templateGuides[template.value] || templateGuideFallback;
                     var usageText = selected.description || guide.for || templateGuideFallback.for || '';
+                    usageText = String(usageText || '').trim();
+                    if (usageText === '') {
+                        purpose.textContent = '';
+                        purpose.classList.add('hidden');
+                        return;
+                    }
+
                     purpose.textContent = {{ json_encode(app()->getLocale() === 'pl' ? 'Do czego służy: ' : 'Use case: ') }} + usageText;
+                    purpose.classList.remove('hidden');
                 }
 
                 function updateTemplateGuide() {

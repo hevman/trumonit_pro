@@ -61,7 +61,7 @@
 
                         <div id="template-suggestion" class="mt-3 hidden text-xs text-gray-600 dark:text-gray-400"></div>
                         <div id="template-selected-state" class="mt-2 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
-                        <div id="template-purpose" class="mt-1 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-300"></div>
+                        <div id="template-purpose" class="mt-1 hidden rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-300"></div>
 
                         @if ($featuredTemplates !== [])
                             <div class="mt-4">
@@ -182,11 +182,20 @@
                 var selected = byKey[template.value];
                 if (!selected) {
                     purpose.textContent = '';
+                    purpose.classList.add('hidden');
                     return;
                 }
 
                 var description = selected.description || '';
-                purpose.textContent = {{ json_encode(app()->getLocale() === 'pl' ? 'Do czego służy: ' : 'Use case: ') }} + description;
+                var usageText = description.trim();
+                if (usageText === '') {
+                    purpose.textContent = '';
+                    purpose.classList.add('hidden');
+                    return;
+                }
+
+                purpose.textContent = {{ json_encode(app()->getLocale() === 'pl' ? 'Do czego służy: ' : 'Use case: ') }} + usageText;
+                purpose.classList.remove('hidden');
             }
 
             function guessTemplateKey(raw) {

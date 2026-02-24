@@ -98,7 +98,7 @@
                         <div id="template-description" class="app-help">{{ __('Pick a template and apply defaults, then adjust fields if needed.') }}</div>
                         <div class="app-help">{{ __('messages.onboarding.template_pick_help') }}</div>
                         <div id="template-selected-state" class="mt-1 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
-                        <div id="template-purpose" class="mt-1 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-300"></div>
+                        <div id="template-purpose" class="mt-1 hidden rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-300"></div>
                     </div>
                     <div class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-200">
                         <div id="template-guide-for"></div>
@@ -308,6 +308,7 @@
                     description.textContent = @json(__('Pick a template and apply defaults, then adjust fields if needed.'));
                     if (purpose) {
                         purpose.textContent = '';
+                        purpose.classList.add('hidden');
                     }
                     return;
                 }
@@ -319,7 +320,15 @@
 
                 var guide = templateGuides[select.value] || templateGuideFallback;
                 var usageText = selected.description || guide.for || templateGuideFallback.for || '';
+                usageText = String(usageText || '').trim();
+                if (usageText === '') {
+                    purpose.textContent = '';
+                    purpose.classList.add('hidden');
+                    return;
+                }
+
                 purpose.textContent = @json(app()->getLocale() === 'pl' ? 'Do czego służy: ' : 'Use case: ') + usageText;
+                purpose.classList.remove('hidden');
             }
 
             function updateSelectedState() {
