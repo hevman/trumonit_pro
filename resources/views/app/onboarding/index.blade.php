@@ -42,6 +42,39 @@
                             $defaultFrequency = in_array(5, $frequencyOptions, true) ? 5 : ($frequencyOptions[0] ?? 5);
                             $featuredTemplateKeys = ['website_uptime', 'keyword_presence', 'api_health', 'cron_heartbeat'];
                             $templateByKey = collect($monitorTemplates)->keyBy('key');
+                            $selectedTemplate = is_string($defaultTemplate) ? ($templateByKey->get($defaultTemplate) ?: null) : null;
+                            $initialDescription = is_array($selectedTemplate) ? trim((string) ($selectedTemplate['description'] ?? '')) : '';
+
+                            $initialGuideFor = $initialDescription !== ''
+                                ? $initialDescription
+                                : (app()->getLocale() === 'pl'
+                                    ? 'Szablon ustawia domyslne parametry pod konkretny przypadek uzycia.'
+                                    : 'Template applies defaults for a specific use case.');
+
+                            $initialScanMode = is_array($selectedTemplate) && is_array($selectedTemplate['defaults'] ?? null)
+                                ? strtolower(trim((string) (($selectedTemplate['defaults']['scan_mode'] ?? '') ?: '')))
+                                : '';
+                            if ($initialScanMode === 'journey') {
+                                $initialGuideAlert = app()->getLocale() === 'pl'
+                                    ? 'Alarmuje, gdy kroki scenariusza nie przejda lub zabraknie oczekiwanych elementow UI.'
+                                    : 'Alerts when journey steps fail or expected UI elements are missing.';
+                            } elseif ($initialScanMode === 'port') {
+                                $initialGuideAlert = app()->getLocale() === 'pl'
+                                    ? 'Alarmuje, gdy wskazany port TCP nie odpowiada lub polaczenie jest odrzucane.'
+                                    : 'Alerts when TCP port does not respond or connection is refused.';
+                            } elseif ($initialScanMode === 'heartbeat') {
+                                $initialGuideAlert = app()->getLocale() === 'pl'
+                                    ? 'Alarmuje, gdy brak sygnalu heartbeat w oczekiwanym oknie czasowym.'
+                                    : 'Alerts when heartbeat signal is missing in expected time window.';
+                            } else {
+                                $initialGuideAlert = app()->getLocale() === 'pl'
+                                    ? 'Alarmuje przy niedostepnosci URL, timeoutach i nieoczekiwanym kodzie HTTP.'
+                                    : 'Alerts on URL downtime, timeouts, and unexpected HTTP status.';
+                            }
+
+                            $initialPurposeText = $initialDescription !== ''
+                                ? ((app()->getLocale() === 'pl' ? 'Do czego sluzy: ' : 'Use case: ') . $initialDescription)
+                                : '';
                             $featuredTemplates = collect($featuredTemplateKeys)
                                 ->map(fn (string $key) => $templateByKey->get($key))
                                 ->filter()
@@ -65,10 +98,10 @@
 
                         <div id="template-suggestion" class="mt-3 hidden text-xs text-gray-600 dark:text-gray-400"></div>
                         <div id="template-selected-state" class="mt-2 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
-                        <div id="template-purpose" class="mt-1 hidden rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-300"></div>
-                        <div id="template-guide-box" class="mt-2 hidden rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-200">
-                            <div id="template-guide-for"></div>
-                            <div id="template-guide-alert" class="mt-1"></div>
+                        <div id="template-purpose" class="mt-1 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-300 {{ $initialPurposeText === '' ? 'hidden' : '' }}">{{ $initialPurposeText }}</div>
+                        <div id="template-guide-box" class="mt-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-200">
+                            <div id="template-guide-for">{{ app()->getLocale() === 'pl' ? 'Co monitor robi: ' : 'What it does: ' }}{{ $initialGuideFor }}</div>
+                            <div id="template-guide-alert" class="mt-1">{{ app()->getLocale() === 'pl' ? 'Kiedy alarmuje: ' : 'When it alerts: ' }}{{ $initialGuideAlert }}</div>
                         </div>
 
                         @if ($featuredTemplates !== [])
