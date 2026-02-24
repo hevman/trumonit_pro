@@ -104,6 +104,7 @@
                         @endforeach
                     </select>
                     <div id="quick-add-template-selected-state" class="mt-2 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
+                    <div id="quick-add-template-purpose" class="mt-1 text-xs text-gray-700 dark:text-gray-300"></div>
                 </div>
 
                 <div>
@@ -175,18 +176,28 @@
                 var template = document.getElementById('quick-add-template');
                 var suggestion = document.getElementById('quick-add-suggestion');
                 var selectedState = document.getElementById('quick-add-template-selected-state');
+                var purpose = document.getElementById('quick-add-template-purpose');
                 var cardsWrap = document.getElementById('quick-add-template-cards');
                 var guideFor = document.getElementById('quick-add-template-guide-for');
                 var guideAlert = document.getElementById('quick-add-template-guide-alert');
+                var templates = {!! json_encode($templates, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!};
                 var templateGuides = {!! json_encode($quickTemplateGuide, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!};
                 var templateGuideFallback = {!! json_encode($quickTemplateGuideFallback, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!};
 
                 if (!url || !template) return;
 
                 var userPickedTemplate = false;
+                var byKey = {};
 
                 if (cardsWrap) {
                     cardsWrap.classList.remove('hidden');
+                }
+
+                for (var i = 0; i < templates.length; i++) {
+                    var item = templates[i];
+                    if (item && typeof item.key === 'string') {
+                        byKey[item.key] = item;
+                    }
                 }
 
                 function setActiveCard(key) {
@@ -213,6 +224,19 @@
 
                     var prefix = {{ json_encode(app()->getLocale() === 'pl' ? 'Wybrany typ: ' : 'Selected type: ') }};
                     selectedState.textContent = prefix + selectedOption.text;
+                }
+
+                function updatePurpose() {
+                    if (!purpose) return;
+                    var selected = byKey[template.value];
+                    if (!selected) {
+                        purpose.textContent = '';
+                        return;
+                    }
+
+                    var guide = templateGuides[template.value] || templateGuideFallback;
+                    var usageText = selected.description || guide.for || templateGuideFallback.for || '';
+                    purpose.textContent = {{ json_encode(app()->getLocale() === 'pl' ? 'Do czego służy: ' : 'Use case: ') }} + usageText;
                 }
 
                 function updateTemplateGuide() {
@@ -278,6 +302,7 @@
                     setActiveCard(template.value);
                     updateTemplateGuide();
                     updateSelectedState();
+                    updatePurpose();
 
                     if (matchedLabel && !userPickedTemplate) {
                         setSuggestionText({!! json_encode(__('messages.quick_add.suggested_prefix')) !!} + matchedLabel + '.');
@@ -297,6 +322,7 @@
                     setActiveCard(template.value);
                     updateTemplateGuide();
                     updateSelectedState();
+                    updatePurpose();
                     setSuggestionText('');
                 });
 
@@ -311,6 +337,7 @@
                         setActiveCard(key);
                         updateTemplateGuide();
                         updateSelectedState();
+                        updatePurpose();
                         setSuggestionText('');
                     });
                 }
@@ -320,6 +347,7 @@
                 setActiveCard(template.value);
                 updateTemplateGuide();
                 updateSelectedState();
+                updatePurpose();
             });
         </script>
     </x-modal>

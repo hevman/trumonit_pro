@@ -98,6 +98,7 @@
                         <div id="template-description" class="app-help">{{ __('Pick a template and apply defaults, then adjust fields if needed.') }}</div>
                         <div class="app-help">{{ __('messages.onboarding.template_pick_help') }}</div>
                         <div id="template-selected-state" class="mt-1 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
+                        <div id="template-purpose" class="mt-1 text-xs text-gray-700 dark:text-gray-300"></div>
                     </div>
                     <div class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-200">
                         <div id="template-guide-for"></div>
@@ -246,6 +247,7 @@
             var guideFor = document.getElementById('template-guide-for');
             var guideAlert = document.getElementById('template-guide-alert');
             var selectedState = document.getElementById('template-selected-state');
+            var purpose = document.getElementById('template-purpose');
             var templateGuides = @json($templateGuide ?? []);
             var templateGuideFallback = @json($templateGuideFallback ?? []);
 
@@ -304,10 +306,20 @@
                 var selected = byKey[select.value];
                 if (!selected) {
                     description.textContent = @json(__('Pick a template and apply defaults, then adjust fields if needed.'));
+                    if (purpose) {
+                        purpose.textContent = '';
+                    }
                     return;
                 }
 
                 description.textContent = selected.description || @json(__('Template loaded.'));
+                if (!purpose) {
+                    return;
+                }
+
+                var guide = templateGuides[select.value] || templateGuideFallback;
+                var usageText = selected.description || guide.for || templateGuideFallback.for || '';
+                purpose.textContent = @json(app()->getLocale() === 'pl' ? 'Do czego służy: ' : 'Use case: ') + usageText;
             }
 
             function updateSelectedState() {

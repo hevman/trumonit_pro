@@ -61,6 +61,7 @@
 
                         <div id="template-suggestion" class="mt-3 hidden text-xs text-gray-600 dark:text-gray-400"></div>
                         <div id="template-selected-state" class="mt-2 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
+                        <div id="template-purpose" class="mt-1 text-xs text-gray-700 dark:text-gray-300"></div>
 
                         @if ($featuredTemplates !== [])
                             <div class="mt-4">
@@ -123,11 +124,21 @@
             var template = document.getElementById('template');
             var suggestion = document.getElementById('template-suggestion');
             var selectedState = document.getElementById('template-selected-state');
+            var purpose = document.getElementById('template-purpose');
             var cardsWrap = document.getElementById('template-cards');
+            var templates = @json($monitorTemplates ?? []);
             var userPicked = false;
+            var byKey = {};
 
             if (!url || !template) {
                 return;
+            }
+
+            for (var i = 0; i < templates.length; i++) {
+                var item = templates[i];
+                if (item && typeof item.key === 'string') {
+                    byKey[item.key] = item;
+                }
             }
 
             if (cardsWrap) {
@@ -161,6 +172,21 @@
 
                 var prefix = {{ json_encode(app()->getLocale() === 'pl' ? 'Wybrany typ: ' : 'Selected type: ') }};
                 selectedState.textContent = prefix + selectedOption.text;
+            }
+
+            function updatePurpose() {
+                if (!purpose) {
+                    return;
+                }
+
+                var selected = byKey[template.value];
+                if (!selected) {
+                    purpose.textContent = '';
+                    return;
+                }
+
+                var description = selected.description || '';
+                purpose.textContent = {{ json_encode(app()->getLocale() === 'pl' ? 'Do czego służy: ' : 'Use case: ') }} + description;
             }
 
             function guessTemplateKey(raw) {
@@ -239,6 +265,7 @@
 
                 setActiveCard(template.value);
                 updateSelectedState();
+                updatePurpose();
 
                 if (suggestion && matchedLabel && !userPicked) {
                     suggestion.textContent = ({{ json_encode(app()->getLocale() === 'pl' ? 'Sugerowany typ: ' : 'Suggested: ') }} + matchedLabel + '.');
@@ -262,6 +289,7 @@
                     template.value = key;
                     setActiveCard(key);
                     updateSelectedState();
+                    updatePurpose();
                     if (suggestion) {
                         suggestion.classList.add('hidden');
                         suggestion.textContent = '';
@@ -273,6 +301,7 @@
                 userPicked = true;
                 setActiveCard(template.value);
                 updateSelectedState();
+                updatePurpose();
                 if (!suggestion) {
                     return;
                 }
@@ -283,6 +312,7 @@
             // Initial sync.
             setActiveCard(template.value || {{ json_encode($defaultTemplate) }});
             updateSelectedState();
+            updatePurpose();
         });
     </script>
 </x-app-layout>
