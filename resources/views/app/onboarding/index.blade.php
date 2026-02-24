@@ -62,6 +62,10 @@
                         <div id="template-suggestion" class="mt-3 hidden text-xs text-gray-600 dark:text-gray-400"></div>
                         <div id="template-selected-state" class="mt-2 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
                         <div id="template-purpose" class="mt-1 hidden rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-300"></div>
+                        <div class="mt-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-200">
+                            <div id="template-guide-for"></div>
+                            <div id="template-guide-alert" class="mt-1"></div>
+                        </div>
 
                         @if ($featuredTemplates !== [])
                             <div class="mt-4">
@@ -104,6 +108,24 @@
                         <input id="tags" name="tags" type="text" value="{{ old('tags') }}" class="app-input" placeholder="{{ __('messages.onboarding.tags_placeholder') }}" />
                     </div>
 
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-gray-900 dark:text-gray-100" for="frequency_minutes">
+                            {{ __('messages.quick_add.interval_label') }}
+                        </label>
+                        <select id="frequency_minutes" name="frequency_minutes" class="app-input">
+                            @php($freq = (int) old('frequency_minutes', 5))
+                            <option value="1" {{ $freq === 1 ? 'selected' : '' }}>1 min</option>
+                            <option value="2" {{ $freq === 2 ? 'selected' : '' }}>2 min</option>
+                            <option value="5" {{ $freq === 5 ? 'selected' : '' }}>5 min</option>
+                            <option value="10" {{ $freq === 10 ? 'selected' : '' }}>10 min</option>
+                            <option value="15" {{ $freq === 15 ? 'selected' : '' }}>15 min</option>
+                            <option value="30" {{ $freq === 30 ? 'selected' : '' }}>30 min</option>
+                            <option value="60" {{ $freq === 60 ? 'selected' : '' }}>60 min</option>
+                            <option value="1440" {{ $freq === 1440 ? 'selected' : '' }}>{{ app()->getLocale() === 'pl' ? 'Dziennie' : 'Daily' }}</option>
+                        </select>
+                        <div class="mt-1 text-xs text-gray-600 dark:text-gray-400">{{ __('messages.quick_add.interval_help') }}</div>
+                    </div>
+
                     <div class="app-card app-card-success text-sm">
                         {{ __('messages.onboarding.baseline_guidance') }}
                     </div>
@@ -127,8 +149,12 @@
             var purpose = document.getElementById('template-purpose');
             var cardsWrap = document.getElementById('template-cards');
             var templates = @json($monitorTemplates ?? []);
+            var guideFor = document.getElementById('template-guide-for');
+            var guideAlert = document.getElementById('template-guide-alert');
+            var frequency = document.getElementById('frequency_minutes');
             var userPicked = false;
             var byKey = {};
+            var userPickedFrequency = false;
 
             if (!url || !template) {
                 return;
@@ -143,6 +169,15 @@
 
             if (cardsWrap) {
                 cardsWrap.classList.remove('hidden');
+            }
+
+            if (frequency) {
+                frequency.addEventListener('change', function () {
+                    userPickedFrequency = true;
+                });
+                frequency.addEventListener('input', function () {
+                    userPickedFrequency = true;
+                });
             }
 
             function setActiveCard(key) {
@@ -172,6 +207,66 @@
 
                 var prefix = {{ json_encode(app()->getLocale() === 'pl' ? 'Wybrany typ: ' : 'Selected type: ') }};
                 selectedState.textContent = prefix + selectedOption.text;
+            }
+
+            function updateGuide() {
+                if (!guideFor || !guideAlert) {
+                    return;
+                }
+
+                var selected = byKey[template.value] || null;
+                var forText = selected && selected.description ? String(selected.description).trim() : '';
+                if (forText === '') {
+                    forText = {{ json_encode(app()->getLocale() === 'pl' ? 'Szablon dostosowuje domyślne ustawienia do konkretnego przypadku użycia.' : 'Template applies defaults for a specific use case.') }};
+                }
+
+                var alertText = '';
+                if (selected && selected.defaults && typeof selected.defaults === 'object') {
+                    var scanMode = String(selected.defaults.scan_mode || '').toLowerCase();
+                    if (scanMode === 'journey') {
+                        alertText = {{ json_encode(app()->getLocale() === 'pl'
+                            ? 'Alarmuje, gdy kroki scenariusza nie przejdą lub zabraknie oczekiwanych elementów UI.'
+                            : 'Alerts when journey steps fail or expected UI elements are missing.') }};
+                    } else if (scanMode === 'port') {
+                        alertText = {{ json_encode(app()->getLocale() === 'pl'
+                            ? 'Alarmuje, gdy wskazany port TCP nie odpowiada lub połączenie jest odrzucane.'
+                            : 'Alerts when TCP port does not respond or connection is refused.') }};
+                    } else if (scanMode === 'heartbeat') {
+                        alertText = {{ json_encode(app()->getLocale() === 'pl'
+                            ? 'Alarmuje, gdy brak sygnału heartbeat w oczekiwanym oknie czasowym.'
+                            : 'Alerts when heartbeat signal is missing in expected time window.') }};
+                    } else {
+                        alertText = {{ json_encode(app()->getLocale() === 'pl'
+                            ? 'Alarmuje przy niedostępności URL, timeoutach i nieoczekiwanym kodzie HTTP.'
+                            : 'Alerts on URL downtime, timeouts, and unexpected HTTP status.') }};
+                    }
+                }
+                if (alertText === '') {
+                    alertText = {{ json_encode(app()->getLocale() === 'pl'
+                        ? 'Alarmuje zgodnie z regułami wybranego typu monitora.'
+                        : 'Alerts according to selected monitor type rules.') }};
+                }
+
+                guideFor.textContent = {{ json_encode(app()->getLocale() === 'pl' ? 'Co monitor robi: ' : 'What it does: ') }} + forText;
+                guideAlert.textContent = {{ json_encode(app()->getLocale() === 'pl' ? 'Kiedy alarmuje: ' : 'When it alerts: ') }} + alertText;
+            }
+
+            function maybeApplyTemplateDefaultsToFrequency() {
+                if (!frequency || userPickedFrequency) {
+                    return;
+                }
+
+                var selected = byKey[template.value] || null;
+                if (!selected || !selected.defaults || typeof selected.defaults !== 'object') {
+                    return;
+                }
+
+                var value = selected.defaults.frequency_minutes;
+                if (value === null || typeof value === 'undefined') {
+                    return;
+                }
+
+                frequency.value = String(value);
             }
 
             function updatePurpose() {
@@ -275,6 +370,8 @@
                 setActiveCard(template.value);
                 updateSelectedState();
                 updatePurpose();
+                updateGuide();
+                maybeApplyTemplateDefaultsToFrequency();
 
                 if (suggestion && matchedLabel && !userPicked) {
                     suggestion.textContent = ({{ json_encode(app()->getLocale() === 'pl' ? 'Sugerowany typ: ' : 'Suggested: ') }} + matchedLabel + '.');
@@ -287,6 +384,11 @@
 
             url.addEventListener('change', maybeApplySuggestion);
             url.addEventListener('blur', maybeApplySuggestion);
+            url.addEventListener('input', function () {
+                if (url.value.length >= 8) {
+                    maybeApplySuggestion();
+                }
+            });
 
             if (cardsWrap) {
                 cardsWrap.addEventListener('click', function (event) {
@@ -299,6 +401,8 @@
                     setActiveCard(key);
                     updateSelectedState();
                     updatePurpose();
+                    updateGuide();
+                    maybeApplyTemplateDefaultsToFrequency();
                     if (suggestion) {
                         suggestion.classList.add('hidden');
                         suggestion.textContent = '';
@@ -311,6 +415,8 @@
                 setActiveCard(template.value);
                 updateSelectedState();
                 updatePurpose();
+                updateGuide();
+                maybeApplyTemplateDefaultsToFrequency();
                 if (!suggestion) {
                     return;
                 }
@@ -322,6 +428,8 @@
             setActiveCard(template.value || {{ json_encode($defaultTemplate) }});
             updateSelectedState();
             updatePurpose();
+            updateGuide();
+            maybeApplyTemplateDefaultsToFrequency();
         });
     </script>
 </x-app-layout>
