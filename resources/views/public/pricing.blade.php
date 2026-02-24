@@ -22,8 +22,8 @@
         'name' => $isPl ? 'Plany TruMonit' : 'TruMonit plans',
         'itemListElement' => [
             ['@type' => 'Offer', 'name' => __('messages.welcome.price_free_name'), 'price' => '0', 'priceCurrency' => 'USD'],
-            ['@type' => 'Offer', 'name' => __('messages.welcome.price_lite_name'), 'price' => '39', 'priceCurrency' => 'USD'],
-            ['@type' => 'Offer', 'name' => __('messages.welcome.price_pro_name'), 'price' => '149', 'priceCurrency' => 'USD'],
+            ['@type' => 'Offer', 'name' => __('messages.welcome.price_lite_name'), 'price' => '29', 'priceCurrency' => 'USD'],
+            ['@type' => 'Offer', 'name' => __('messages.welcome.price_pro_name'), 'price' => '79', 'priceCurrency' => 'USD'],
             ['@type' => 'Offer', 'name' => __('messages.welcome.price_enterprise_name'), 'price' => '289', 'priceCurrency' => 'USD'],
         ],
     ];
