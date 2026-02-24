@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\BillingCheckoutSession;
+use App\Models\MonitoredUrl;
 use App\Models\TenantUsageMetric;
 use App\Models\WeeklyDigestReport;
 use App\Services\BillingPaymentService;
 use App\Services\BillingPlanService;
 use App\Services\BillingUsageService;
+use App\Services\TenantQuotaService;
 use App\Services\WeeklyDigestReportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -29,6 +31,7 @@ class BillingController extends Controller
 
         $billingUsage = app(BillingUsageService::class);
         $billingPlanService = app(BillingPlanService::class);
+        $tenantQuotaService = app(TenantQuotaService::class);
         $metricDefinitions = $billingUsage->metricDefinitions();
         $metricKeys = array_values(array_keys($metricDefinitions));
         $periodStart = now()->startOfMonth();
@@ -302,7 +305,22 @@ class BillingController extends Controller
             ->count();
 
         $availablePlanTiers = $billingPlanService->availablePlanTiers();
-        $currentPlanTier = $billingPlanService->currentPlanTierForTenant($tenant);
+        $resolvedTierByPlanService = $billingPlanService->currentPlanTierForTenant($tenant);
+        $resolvedTierByUsagePlan = strtolower(trim((string) ($plan['tier'] ?? '')));
+        $currentPlanTier = $resolvedTierByUsagePlan !== '' ? $resolvedTierByUsagePlan : $resolvedTierByPlanService;
+        $planTierDisplay = strtoupper($currentPlanTier);
+        $planMismatchDetected = $resolvedTierByUsagePlan !== '' && $resolvedTierByPlanService !== $resolvedTierByUsagePlan;
+        $billingSubscriptionStatus = strtolower(trim((string) ($tenant->billing_subscription_status ?? '')));
+        $tenantLimits = $tenantQuotaService->limitsForTenant($tenant);
+        $monitoredUrlCount = MonitoredUrl::query()
+            ->where('tenant_id', (int) $tenant->id)
+            ->count();
+        $planHealthSummary = [
+            'forecast_breach' => (int) $forecastBreachCount,
+            'near_cap' => (int) $nearCapMetrics,
+            'uncapped' => (int) $uncappedMetrics,
+            'high_risk' => (int) $highRiskMetrics,
+        ];
 
         $checkoutSessions = BillingCheckoutSession::query()
             ->where('tenant_id', $tenant->id)
@@ -324,7 +342,7 @@ class BillingController extends Controller
         return view('app.billing.index', [
             'tenant' => $tenant,
             'periodStart' => $periodStart,
-            'planTier' => strtoupper((string) ($plan['tier'] ?? 'lite')),
+            'planTier' => $planTierDisplay,
             'currentPlanTier' => $currentPlanTier,
             'availablePlanTiers' => $availablePlanTiers,
             'rows' => $rows,
@@ -341,6 +359,11 @@ class BillingController extends Controller
             'metricDefinitions' => $metricDefinitions,
             'selectedMetric' => $selectedMetric,
             'executiveForecast' => $executiveForecast,
+            'planMismatchDetected' => $planMismatchDetected,
+            'billingSubscriptionStatus' => $billingSubscriptionStatus,
+            'tenantLimits' => $tenantLimits,
+            'monitoredUrlCount' => (int) $monitoredUrlCount,
+            'planHealthSummary' => $planHealthSummary,
         ]);
     }
 

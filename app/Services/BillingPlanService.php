@@ -35,13 +35,19 @@ class BillingPlanService
 
     public function currentPlanTierForTenant(Tenant $tenant): string
     {
+        $available = $this->availablePlanTiers();
         $current = $this->normalizePlanTier((string) ($tenant->plan_tier ?? ''));
 
-        if ($current === '') {
-            $current = $this->normalizePlanTier((string) config('wids.default_plan_tier', 'lite'));
+        if ($current !== '' && in_array($current, $available, true)) {
+            return $current;
         }
 
-        return $current !== '' ? $current : 'lite';
+        $default = $this->normalizePlanTier((string) config('wids.default_plan_tier', 'lite'));
+        if ($default !== '' && in_array($default, $available, true)) {
+            return $default;
+        }
+
+        return $available[0] ?? 'lite';
     }
 
     public function requestPlanChange(Tenant $tenant, int $actorUserId, string $targetPlanTier, ?Request $request = null): BillingCheckoutSession

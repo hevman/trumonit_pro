@@ -30,7 +30,10 @@
                 <section class="app-card">
                     <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('Plan') }}</div>
                     <div class="mt-2 text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ $planTier }}</div>
-                    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Current tier') }}: {{ strtoupper($currentPlanTier) }}</div>
+                    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        {{ __('Subscription status') }}:
+                        <span class="font-semibold">{{ $billingSubscriptionStatus !== '' ? strtoupper($billingSubscriptionStatus) : '-' }}</span>
+                    </div>
                 </section>
                 <section class="app-card">
                     <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('Enforcement') }}</div>
@@ -45,6 +48,57 @@
                     <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Metrics projected above cap this month') }}</div>
                 </section>
             </div>
+
+            @if ($planMismatchDetected)
+                <div class="app-card app-card-warning text-sm">
+                    {{ app()->getLocale() === 'pl'
+                        ? 'Wykryto niespójność konfiguracji planu. Panel używa planu z limitów billingowych, aby uniknąć błędnego naliczania.'
+                        : 'Plan configuration mismatch detected. Billing dashboard uses billing limits tier to avoid incorrect calculations.' }}
+                </div>
+            @endif
+
+            <section class="app-card">
+                <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                            {{ app()->getLocale() === 'pl' ? 'Twój plan i limity (prosto)' : 'Your plan and limits (simple)' }}
+                        </h3>
+                        <div class="mt-2 space-y-1 text-sm text-gray-700 dark:text-gray-300">
+                            <p>
+                                {{ app()->getLocale() === 'pl' ? 'Aktualny plan:' : 'Current plan:' }}
+                                <span class="font-semibold">{{ strtoupper($currentPlanTier) }}</span>
+                            </p>
+                            <p>
+                                {{ app()->getLocale() === 'pl' ? 'Monitory:' : 'Monitors:' }}
+                                <span class="font-semibold">{{ (int) $monitoredUrlCount }}</span>
+                                @if ((int) ($tenantLimits['max_monitored_urls'] ?? 0) > 0)
+                                    / <span class="font-semibold">{{ (int) ($tenantLimits['max_monitored_urls'] ?? 0) }}</span>
+                                @else
+                                    / <span class="font-semibold">{{ app()->getLocale() === 'pl' ? 'bez limitu' : 'unlimited' }}</span>
+                                @endif
+                            </p>
+                            <p>
+                                {{ app()->getLocale() === 'pl' ? 'Ryzyko przekroczeń w tym miesiącu:' : 'Cap risk this month:' }}
+                                <span class="font-semibold">{{ (int) ($planHealthSummary['forecast_breach'] ?? 0) }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="#plan-management" class="app-button-primary">
+                            {{ app()->getLocale() === 'pl' ? 'Zmień plan' : 'Change plan' }}
+                        </a>
+                        <a href="#advanced-billing-analytics" class="app-button-secondary">
+                            {{ app()->getLocale() === 'pl' ? 'Pokaż analitykę zaawansowaną' : 'Show advanced analytics' }}
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <details id="advanced-billing-analytics" class="app-card">
+                <summary class="cursor-pointer text-sm font-semibold text-gray-900 dark:text-gray-100">
+                    {{ app()->getLocale() === 'pl' ? 'Analityka zaawansowana i techniczna' : 'Advanced and technical analytics' }}
+                </summary>
+                <div class="mt-4 space-y-4">
 
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <section class="app-card">
@@ -209,8 +263,10 @@
                     :empty-text="__('No usage data for this metric in current month.')"
                 />
             </section>
+                </div>
+            </details>
 
-            <div class="app-card space-y-4">
+            <div id="plan-management" class="app-card space-y-4">
                 <div class="flex items-center justify-between gap-2">
                     <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ __('Plan management') }}</div>
                     <div class="text-xs text-gray-600 dark:text-gray-400">{{ __('Payment provider') }}: {{ $paymentProvider }}</div>
@@ -315,6 +371,11 @@
                 </div>
             </div>
 
+            <details class="app-card">
+                <summary class="cursor-pointer text-sm font-semibold text-gray-900 dark:text-gray-100">
+                    {{ app()->getLocale() === 'pl' ? 'Raporty i historia rozliczeń' : 'Reports and billing history' }}
+                </summary>
+                <div class="mt-4 space-y-4">
             <div class="app-card space-y-4">
                 <div class="flex items-center justify-between gap-2">
                     <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ __('Weekly report packs') }}</div>
@@ -533,6 +594,8 @@
                     </tbody>
                 </table>
             </div>
+                </div>
+            </details>
         </div>
     </div>
 </x-app-layout>

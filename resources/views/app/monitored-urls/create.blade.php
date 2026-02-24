@@ -27,6 +27,59 @@
                 <form method="POST" action="{{ route('monitored-urls.store') }}" class="space-y-4" x-data="{ advancedOpen: {{ (old('content_rules') || old('journey_steps')) ? 'true' : 'false' }} }">
                     @csrf
 
+                    @php
+                        $templateByKey = collect($monitorTemplates)->keyBy('key');
+                        $featuredTemplateKeys = ['website_uptime', 'api_health', 'login_journey', 'cron_heartbeat'];
+                        $featuredTemplates = collect($featuredTemplateKeys)
+                            ->map(fn (string $key) => $templateByKey->get($key))
+                            ->filter()
+                            ->values()
+                            ->all();
+                        $isPolishLocale = app()->getLocale() === 'pl';
+                        $templateGuide = [
+                            'website_uptime' => [
+                                'for' => $isPolishLocale ? 'Dla stron firmowych i landingów. Sprawdza dostępność URL i status HTTP.' : 'For websites and landing pages. Checks URL availability and expected HTTP status.',
+                                'alert' => $isPolishLocale ? 'Alarmuje przy niedostępności, złym kodzie odpowiedzi lub timeout.' : 'Alerts on downtime, wrong status code, or timeout.',
+                            ],
+                            'api_health' => [
+                                'for' => $isPolishLocale ? 'Dla endpointów API i webhooków. Najlepsze do monitoringu backendu.' : 'For API endpoints and webhooks. Best for backend monitoring.',
+                                'alert' => $isPolishLocale ? 'Alarmuje przy błędach 4xx/5xx, timeoutach i utracie dostępności.' : 'Alerts on 4xx/5xx responses, timeouts, and unavailability.',
+                            ],
+                            'login_journey' => [
+                                'for' => $isPolishLocale ? 'Dla krytycznych ścieżek użytkownika (np. logowanie).' : 'For critical user journeys (for example login flow).',
+                                'alert' => $isPolishLocale ? 'Alarmuje, gdy kroki scenariusza nie przejdą lub UI nie zawiera oczekiwanych elementów.' : 'Alerts when journey steps fail or expected UI markers are missing.',
+                            ],
+                            'cron_heartbeat' => [
+                                'for' => $isPolishLocale ? 'Dla zadań cron i workerów, które mają regularnie wysyłać sygnał.' : 'For cron jobs and workers that should check in regularly.',
+                                'alert' => $isPolishLocale ? 'Alarmuje, gdy nie ma sygnału heartbeat w oczekiwanym czasie.' : 'Alerts when heartbeat check-ins are missing in expected time window.',
+                            ],
+                        ];
+                        $templateGuideFallback = [
+                            'for' => $isPolishLocale ? 'Szablon dostosowuje domyślne ustawienia do konkretnego przypadku użycia.' : 'Template applies defaults for a specific use case.',
+                            'alert' => $isPolishLocale ? 'Alarmuje zgodnie z regułami wybranego typu monitora.' : 'Alerts according to selected monitor type rules.',
+                        ];
+                    @endphp
+
+                    @if ($featuredTemplates !== [])
+                        <div>
+                            <div class="mb-1 block text-sm font-medium text-gray-900 dark:text-gray-100">
+                                {{ app()->getLocale() === 'pl' ? 'Wybierz cel monitoringu (polecane)' : 'Choose monitoring goal (recommended)' }}
+                            </div>
+                            <div id="template-cards" class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                                @foreach ($featuredTemplates as $template)
+                                    <button
+                                        type="button"
+                                        data-template-key="{{ $template['key'] }}"
+                                        class="rounded-lg border border-gray-200 bg-white px-3 py-2 text-left transition hover:border-gray-300 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-gray-600"
+                                    >
+                                        <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $template['name'] }}</div>
+                                        <div class="mt-1 text-xs text-gray-600 dark:text-gray-400">{{ $template['description'] }}</div>
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                     <div>
                         <label class="block text-sm font-medium mb-1" for="template">{{ __('Template') }}</label>
                         <div class="flex flex-col sm:flex-row gap-2">
@@ -44,6 +97,10 @@
                         </div>
                         <div id="template-description" class="app-help">{{ __('Pick a template and apply defaults, then adjust fields if needed.') }}</div>
                         <div class="app-help">{{ __('messages.onboarding.template_pick_help') }}</div>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-200">
+                        <div id="template-guide-for"></div>
+                        <div id="template-guide-alert" class="mt-1"></div>
                     </div>
 
                     <div>
@@ -184,6 +241,11 @@
             var select = document.getElementById('template');
             var apply = document.getElementById('apply-template');
             var description = document.getElementById('template-description');
+            var cardsWrap = document.getElementById('template-cards');
+            var guideFor = document.getElementById('template-guide-for');
+            var guideAlert = document.getElementById('template-guide-alert');
+            var templateGuides = @json($templateGuide ?? []);
+            var templateGuideFallback = @json($templateGuideFallback ?? []);
 
             if (!select || !apply || !description) {
                 return;
@@ -242,6 +304,28 @@
                 description.textContent = selected.description || @json(__('Template loaded.'));
             }
 
+            function setActiveCard(key) {
+                if (!cardsWrap) return;
+                var cards = cardsWrap.querySelectorAll('[data-template-key]');
+                for (var i = 0; i < cards.length; i++) {
+                    var card = cards[i];
+                    var isActive = card.getAttribute('data-template-key') === key;
+                    if (isActive) {
+                        card.classList.add('ring-2', 'ring-indigo-500', 'border-indigo-200');
+                    } else {
+                        card.classList.remove('ring-2', 'ring-indigo-500', 'border-indigo-200');
+                    }
+                }
+            }
+
+            function updateTemplateGuide() {
+                if (!guideFor || !guideAlert) return;
+                var key = select.value || '';
+                var guide = templateGuides[key] || templateGuideFallback;
+                guideFor.textContent = @json(app()->getLocale() === 'pl' ? 'Co monitor robi: ' : 'What it does: ') + (guide.for || templateGuideFallback.for || '');
+                guideAlert.textContent = @json(app()->getLocale() === 'pl' ? 'Kiedy alarmuje: ' : 'When it alerts: ') + (guide.alert || templateGuideFallback.alert || '');
+            }
+
             function applyTemplateDefaults() {
                 var selected = byKey[select.value];
                 if (!selected || typeof selected.defaults !== 'object' || selected.defaults === null) {
@@ -281,9 +365,27 @@
                 setJsonValue('journey_steps', defaults.journey_steps);
             }
 
-            select.addEventListener('change', updateDescription);
+            select.addEventListener('change', function () {
+                updateDescription();
+                updateTemplateGuide();
+                setActiveCard(select.value);
+            });
             apply.addEventListener('click', applyTemplateDefaults);
+            if (cardsWrap) {
+                cardsWrap.addEventListener('click', function (event) {
+                    var target = event.target.closest('[data-template-key]');
+                    if (!target) return;
+                    var key = target.getAttribute('data-template-key');
+                    if (!key) return;
+                    select.value = key;
+                    setActiveCard(key);
+                    updateDescription();
+                    updateTemplateGuide();
+                });
+            }
             updateDescription();
+            updateTemplateGuide();
+            setActiveCard(select.value);
         });
     </script>
 </x-app-layout>
