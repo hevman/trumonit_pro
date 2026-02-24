@@ -98,7 +98,7 @@
                         <div id="template-description" class="app-help">{{ __('Pick a template and apply defaults, then adjust fields if needed.') }}</div>
                         <div class="app-help">{{ __('messages.onboarding.template_pick_help') }}</div>
                         <div id="template-selected-state" class="mt-1 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
-                        <div id="template-purpose" class="mt-1 text-xs text-gray-700 dark:text-gray-300"></div>
+                        <div id="template-purpose" class="mt-1 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-300"></div>
                     </div>
                     <div class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-200">
                         <div id="template-guide-for"></div>
@@ -349,9 +349,38 @@
             function updateTemplateGuide() {
                 if (!guideFor || !guideAlert) return;
                 var key = select.value || '';
-                var guide = templateGuides[key] || templateGuideFallback;
-                guideFor.textContent = @json(app()->getLocale() === 'pl' ? 'Co monitor robi: ' : 'What it does: ') + (guide.for || templateGuideFallback.for || '');
-                guideAlert.textContent = @json(app()->getLocale() === 'pl' ? 'Kiedy alarmuje: ' : 'When it alerts: ') + (guide.alert || templateGuideFallback.alert || '');
+                var selected = byKey[key] || null;
+                var guide = templateGuides[key] || {};
+                var forText = guide.for || (selected && selected.description ? selected.description : '') || templateGuideFallback.for || '';
+                var alertText = guide.alert || '';
+
+                if (!alertText && selected && selected.defaults && typeof selected.defaults === 'object') {
+                    var scanMode = String(selected.defaults.scan_mode || '').toLowerCase();
+                    if (scanMode === 'journey') {
+                        alertText = @json(app()->getLocale() === 'pl'
+                            ? 'Alarmuje, gdy kroki scenariusza nie przejdą lub zabraknie oczekiwanych elementów UI.'
+                            : 'Alerts when journey steps fail or expected UI elements are missing.');
+                    } else if (scanMode === 'port') {
+                        alertText = @json(app()->getLocale() === 'pl'
+                            ? 'Alarmuje, gdy wskazany port TCP nie odpowiada lub połączenie jest odrzucane.'
+                            : 'Alerts when TCP port does not respond or connection is refused.');
+                    } else if (scanMode === 'heartbeat') {
+                        alertText = @json(app()->getLocale() === 'pl'
+                            ? 'Alarmuje, gdy brak sygnału heartbeat w oczekiwanym oknie czasowym.'
+                            : 'Alerts when heartbeat signal is missing in expected time window.');
+                    } else {
+                        alertText = @json(app()->getLocale() === 'pl'
+                            ? 'Alarmuje przy niedostępności URL, timeoutach i nieoczekiwanym kodzie HTTP.'
+                            : 'Alerts on URL downtime, timeouts, and unexpected HTTP status.');
+                    }
+                }
+
+                if (!alertText) {
+                    alertText = templateGuideFallback.alert || '';
+                }
+
+                guideFor.textContent = @json(app()->getLocale() === 'pl' ? 'Co monitor robi: ' : 'What it does: ') + forText;
+                guideAlert.textContent = @json(app()->getLocale() === 'pl' ? 'Kiedy alarmuje: ' : 'When it alerts: ') + alertText;
             }
 
             function applyTemplateDefaults() {
@@ -404,6 +433,9 @@
             }
 
             select.addEventListener('change', function () {
+                syncTemplateState(true);
+            });
+            select.addEventListener('input', function () {
                 syncTemplateState(true);
             });
             if (apply) {

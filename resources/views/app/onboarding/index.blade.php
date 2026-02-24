@@ -61,7 +61,7 @@
 
                         <div id="template-suggestion" class="mt-3 hidden text-xs text-gray-600 dark:text-gray-400"></div>
                         <div id="template-selected-state" class="mt-2 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
-                        <div id="template-purpose" class="mt-1 text-xs text-gray-700 dark:text-gray-300"></div>
+                        <div id="template-purpose" class="mt-1 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-300"></div>
 
                         @if ($featuredTemplates !== [])
                             <div class="mt-4">

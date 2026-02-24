@@ -104,7 +104,7 @@
                         @endforeach
                     </select>
                     <div id="quick-add-template-selected-state" class="mt-2 text-xs font-medium text-indigo-700 dark:text-indigo-300"></div>
-                    <div id="quick-add-template-purpose" class="mt-1 text-xs text-gray-700 dark:text-gray-300"></div>
+                    <div id="quick-add-template-purpose" class="mt-1 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-300"></div>
                 </div>
 
                 <div>
@@ -242,9 +242,38 @@
                 function updateTemplateGuide() {
                     if (!guideFor || !guideAlert) return;
                     var key = template.value || '';
-                    var guide = templateGuides[key] || templateGuideFallback;
-                    guideFor.textContent = {{ json_encode(app()->getLocale() === 'pl' ? 'Co monitor robi: ' : 'What it does: ') }} + (guide.for || templateGuideFallback.for || '');
-                    guideAlert.textContent = {{ json_encode(app()->getLocale() === 'pl' ? 'Kiedy alarmuje: ' : 'When it alerts: ') }} + (guide.alert || templateGuideFallback.alert || '');
+                    var selected = byKey[key] || null;
+                    var guide = templateGuides[key] || {};
+                    var forText = guide.for || (selected && selected.description ? selected.description : '') || templateGuideFallback.for || '';
+                    var alertText = guide.alert || '';
+
+                    if (!alertText && selected && selected.defaults && typeof selected.defaults === 'object') {
+                        var scanMode = String(selected.defaults.scan_mode || '').toLowerCase();
+                        if (scanMode === 'journey') {
+                            alertText = {{ json_encode(app()->getLocale() === 'pl'
+                                ? 'Alarmuje, gdy kroki scenariusza nie przejdą lub zabraknie oczekiwanych elementów UI.'
+                                : 'Alerts when journey steps fail or expected UI elements are missing.') }};
+                        } else if (scanMode === 'port') {
+                            alertText = {{ json_encode(app()->getLocale() === 'pl'
+                                ? 'Alarmuje, gdy wskazany port TCP nie odpowiada lub połączenie jest odrzucane.'
+                                : 'Alerts when TCP port does not respond or connection is refused.') }};
+                        } else if (scanMode === 'heartbeat') {
+                            alertText = {{ json_encode(app()->getLocale() === 'pl'
+                                ? 'Alarmuje, gdy brak sygnału heartbeat w oczekiwanym oknie czasowym.'
+                                : 'Alerts when heartbeat signal is missing in expected time window.') }};
+                        } else {
+                            alertText = {{ json_encode(app()->getLocale() === 'pl'
+                                ? 'Alarmuje przy niedostępności URL, timeoutach i nieoczekiwanym kodzie HTTP.'
+                                : 'Alerts on URL downtime, timeouts, and unexpected HTTP status.') }};
+                        }
+                    }
+
+                    if (!alertText) {
+                        alertText = templateGuideFallback.alert || '';
+                    }
+
+                    guideFor.textContent = {{ json_encode(app()->getLocale() === 'pl' ? 'Co monitor robi: ' : 'What it does: ') }} + forText;
+                    guideAlert.textContent = {{ json_encode(app()->getLocale() === 'pl' ? 'Kiedy alarmuje: ' : 'When it alerts: ') }} + alertText;
                 }
 
                 function guessTemplateKey(raw) {
@@ -318,6 +347,14 @@
                 });
 
                 template.addEventListener('change', function () {
+                    userPickedTemplate = true;
+                    setActiveCard(template.value);
+                    updateTemplateGuide();
+                    updateSelectedState();
+                    updatePurpose();
+                    setSuggestionText('');
+                });
+                template.addEventListener('input', function () {
                     userPickedTemplate = true;
                     setActiveCard(template.value);
                     updateTemplateGuide();
