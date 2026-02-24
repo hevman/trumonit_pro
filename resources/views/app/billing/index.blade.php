@@ -85,20 +85,21 @@
                     </div>
                     <div class="flex flex-wrap gap-2">
                         <a href="#plan-management" class="app-button-primary">
-                            {{ app()->getLocale() === 'pl' ? 'Zmień plan' : 'Change plan' }}
+                            {{ app()->getLocale() === 'pl' ? 'Przejdz do zmiany planu' : 'Go to plan change' }}
                         </a>
                         <a href="#advanced-billing-analytics" class="app-button-secondary">
-                            {{ app()->getLocale() === 'pl' ? 'Pokaż analitykę zaawansowaną' : 'Show advanced analytics' }}
+                            {{ app()->getLocale() === 'pl' ? 'Przejdz do analityki zaawansowanej' : 'Go to advanced analytics' }}
                         </a>
                     </div>
                 </div>
             </section>
 
-            <details id="advanced-billing-analytics" class="app-card">
-                <summary class="cursor-pointer text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    {{ app()->getLocale() === 'pl' ? 'Analityka zaawansowana i techniczna' : 'Advanced and technical analytics' }}
-                </summary>
-                <div class="mt-4 space-y-4">
+            <section id="advanced-billing-analytics" class="app-card space-y-4">
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                        {{ app()->getLocale() === 'pl' ? 'Analityka zaawansowana i techniczna' : 'Advanced and technical analytics' }}
+                    </h3>
+                </div>
 
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <section class="app-card">
@@ -263,8 +264,7 @@
                     :empty-text="__('No usage data for this metric in current month.')"
                 />
             </section>
-                </div>
-            </details>
+            </section>
 
             <div id="plan-management" class="app-card space-y-4">
                 <div class="flex items-center justify-between gap-2">
