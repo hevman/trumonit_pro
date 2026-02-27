@@ -25,14 +25,35 @@ use App\Http\Controllers\Public\StatusPagePublicController;
 use App\Models\StatusPage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Route;
 
 $resolveMarketingLocale = static function (Request $request): string {
     $supported = ['en', 'pl'];
+    $cookieName = 'trumonit_locale';
     $queryLang = (string) $request->query('lang', '');
 
     if ($queryLang !== '' && in_array($queryLang, $supported, true)) {
+        if ($request->hasSession()) {
+            $request->session()->put('locale', $queryLang);
+        }
+        Cookie::queue(cookie()->forever($cookieName, $queryLang));
+
         return $queryLang;
+    }
+
+    $sessionLocale = (string) ($request->hasSession() ? $request->session()->get('locale', '') : '');
+    if ($sessionLocale !== '' && in_array($sessionLocale, $supported, true)) {
+        return $sessionLocale;
+    }
+
+    $cookieLocale = (string) $request->cookie($cookieName, '');
+    if ($cookieLocale !== '' && in_array($cookieLocale, $supported, true)) {
+        if ($request->hasSession()) {
+            $request->session()->put('locale', $cookieLocale);
+        }
+
+        return $cookieLocale;
     }
 
     $preferred = (string) $request->getPreferredLanguage($supported);
@@ -61,6 +82,10 @@ Route::get('/', function (Request $request) use ($resolveMarketingLocale) {
 
 Route::get('/lang/{locale}', function (string $locale, Request $request): RedirectResponse {
     abort_unless(in_array($locale, ['en', 'pl'], true), 404);
+    if ($request->hasSession()) {
+        $request->session()->put('locale', $locale);
+    }
+    Cookie::queue(cookie()->forever('trumonit_locale', $locale));
 
     $target = (string) $request->query('redirect', '/');
     $fallbackHost = (string) parse_url(url('/'), PHP_URL_HOST);
