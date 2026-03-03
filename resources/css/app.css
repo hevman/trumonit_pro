@@ -161,7 +161,7 @@
     }
 
     .app-button-primary {
-        @apply inline-flex items-center rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-black dark:bg-indigo-500 dark:hover:bg-indigo-400;
+        @apply inline-flex items-center rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-black dark:bg-indigo-600 dark:hover:bg-indigo-500;
     }
 
     .app-button-secondary {

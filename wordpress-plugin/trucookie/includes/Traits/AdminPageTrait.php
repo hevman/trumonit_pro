@@ -856,7 +856,7 @@ trait SC_AdminPageTrait
                     </tr>
                     <tr>
                         <th scope="row"><label for="primaryColor"><?php echo esc_html__('Primary color', 'trucookie-cmp-consent-mode-v2'); ?></label></th>
-                        <td><input name="primaryColor" id="primaryColor" type="text" class="regular-text" value="<?php echo esc_attr((string) ($localBannerCfg['primaryColor'] ?? '#059669')); ?>" /></td>
+                        <td><input name="primaryColor" id="primaryColor" type="text" class="regular-text" value="<?php echo esc_attr((string) ($localBannerCfg['primaryColor'] ?? '#047857')); ?>" /></td>
                     </tr>
                     <tr>
                         <th scope="row"><label for="backgroundColor"><?php echo esc_html__('Background color', 'trucookie-cmp-consent-mode-v2'); ?></label></th>

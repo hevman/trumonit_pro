@@ -53,6 +53,54 @@
     return "eu";
   }
 
+  function parseColorToRgb(input) {
+    if (typeof input !== "string") return null;
+    var s = String(input || "").trim().toLowerCase();
+    if (!s) return null;
+    if (s[0] === "#") {
+      var h = s.slice(1);
+      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+      if (h.length !== 6) return null;
+      var hr = parseInt(h.slice(0, 2), 16);
+      var hg = parseInt(h.slice(2, 4), 16);
+      var hb = parseInt(h.slice(4, 6), 16);
+      if (!isFinite(hr) || !isFinite(hg) || !isFinite(hb)) return null;
+      return { r: hr, g: hg, b: hb };
+    }
+    var m = s.match(/^rgb\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*\)$/);
+    if (!m) return null;
+    var r = parseInt(m[1], 10), g = parseInt(m[2], 10), b = parseInt(m[3], 10);
+    if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) return null;
+    return { r: r, g: g, b: b };
+  }
+
+  function relLum(rgb) {
+    function c(v) {
+      v = v / 255;
+      return (v <= 0.03928) ? (v / 12.92) : Math.pow((v + 0.055) / 1.055, 2.4);
+    }
+    return 0.2126 * c(rgb.r) + 0.7152 * c(rgb.g) + 0.0722 * c(rgb.b);
+  }
+
+  function contrast(a, b) {
+    var l1 = relLum(a);
+    var l2 = relLum(b);
+    var hi = Math.max(l1, l2);
+    var lo = Math.min(l1, l2);
+    return (hi + 0.05) / (lo + 0.05);
+  }
+
+  function primaryTextColor() {
+    var bg = parseColorToRgb(cfg.primaryColor || "#047857");
+    if (!bg) return "#fff";
+    var white = { r: 255, g: 255, b: 255 };
+    var dark = { r: 17, g: 24, b: 39 };
+    var cWhite = contrast(bg, white);
+    var cDark = contrast(bg, dark);
+    if (cWhite >= 4.5 || cWhite >= cDark) return "#fff";
+    return "rgb(17,24,39)";
+  }
+
   function copyFor() {
     var base = localeBase(cfg.locale);
     var region = regionMode(cfg.regionMode);
@@ -418,8 +466,8 @@ function applyConsentMode(consent) {
       btn.style.padding = "8px 11px";
       btn.style.fontWeight = "600";
       btn.style.border = primary ? "0" : "1px solid rgba(17,24,39,.2)";
-      btn.style.background = primary ? (cfg.primaryColor || "#059669") : "transparent";
-      btn.style.color = primary ? "#fff" : "#111827";
+      btn.style.background = primary ? (cfg.primaryColor || "#047857") : "transparent";
+      btn.style.color = primary ? primaryTextColor() : "#111827";
       return btn;
     }
 
@@ -509,8 +557,8 @@ function applyConsentMode(consent) {
     saveBtn.style.padding = "8px 11px";
     saveBtn.style.borderRadius = "8px";
     saveBtn.style.border = "0";
-    saveBtn.style.background = cfg.primaryColor || "#059669";
-    saveBtn.style.color = "#fff";
+    saveBtn.style.background = cfg.primaryColor || "#047857";
+    saveBtn.style.color = primaryTextColor();
     saveBtn.addEventListener("click", function () {
       setConsent({ analytics: analytics.input.checked, marketing: marketing.input.checked });
       if (modal.parentNode) modal.parentNode.removeChild(modal);

@@ -22,7 +22,7 @@
       position: $("#position").val() || "bottom",
       bannerSize: $("#bannerSize").val() || "standard",
       style: $("#style").val() || "bar",
-      primaryColor: $("#primaryColor").val() || "#059669",
+      primaryColor: $("#primaryColor").val() || "#047857",
       backgroundColor: $("#backgroundColor").val() || "#ffffff",
       autoTheme: $("input[type=checkbox][name=autoTheme]").is(":checked"),
       showDeclineButton: $("input[type=checkbox][name=showDeclineButton]").is(":checked"),
@@ -123,6 +123,46 @@
       var btnBorder = bgIsDark ? 'rgba(255,255,255,0.22)' : 'rgba(17,24,39,0.18)';
       return { bg:bg, isDark:!!bgIsDark, text:textColor, border:border, divider:divider, btnBorder:btnBorder };
     }
+    function parseColorToRgb(input){
+      if(typeof input !== 'string') return null;
+      var s = String(input || '').trim().toLowerCase();
+      if(!s) return null;
+      if(s[0] === '#'){
+        var h = s.slice(1);
+        if(h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+        if(h.length !== 6) return null;
+        var hr = parseInt(h.slice(0,2),16), hg = parseInt(h.slice(2,4),16), hb = parseInt(h.slice(4,6),16);
+        if(!isFinite(hr) || !isFinite(hg) || !isFinite(hb)) return null;
+        return { r:hr, g:hg, b:hb };
+      }
+      var m = s.match(/^rgb\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*\)$/);
+      if(!m) return null;
+      var r = parseInt(m[1],10), g = parseInt(m[2],10), b = parseInt(m[3],10);
+      if(r<0||r>255||g<0||g>255||b<0||b>255) return null;
+      return { r:r, g:g, b:b };
+    }
+    function relLum(rgb){
+      function c(v){
+        v = v / 255;
+        return (v <= 0.03928) ? (v / 12.92) : Math.pow((v + 0.055) / 1.055, 2.4);
+      }
+      return 0.2126 * c(rgb.r) + 0.7152 * c(rgb.g) + 0.0722 * c(rgb.b);
+    }
+    function contrast(a,b){
+      var l1 = relLum(a), l2 = relLum(b);
+      var hi = Math.max(l1,l2), lo = Math.min(l1,l2);
+      return (hi + 0.05) / (lo + 0.05);
+    }
+    function primaryTextColor(){
+      var bg = parseColorToRgb(cfg.primaryColor || '#047857');
+      if(!bg) return '#ffffff';
+      var white = { r:255, g:255, b:255 };
+      var dark = { r:17, g:24, b:39 };
+      var cWhite = contrast(bg, white);
+      var cDark = contrast(bg, dark);
+      if(cWhite >= 4.5 || cWhite >= cDark) return '#ffffff';
+      return 'rgb(17,24,39)';
+    }
     function applyBannerLayout(wrap){
       var sp = '12px';
       wrap.style.bottom = sp;
@@ -153,6 +193,7 @@
     }
     function btn(label, primary){
       var th = bannerTheme();
+      var primaryColor = primaryTextColor();
       var b = el('button', label);
       b.type = 'button';
       b.style.cursor = 'pointer';
@@ -161,8 +202,8 @@
       b.style.fontSize = '13px';
       b.style.fontWeight = '600';
       b.style.border = '1px solid ' + th.btnBorder;
-      b.style.background = primary ? (cfg.primaryColor || '#059669') : 'transparent';
-      b.style.color = primary ? '#ffffff' : th.text;
+      b.style.background = primary ? (cfg.primaryColor || '#047857') : 'transparent';
+      b.style.color = primary ? primaryColor : th.text;
       return b;
     }
 
@@ -256,7 +297,7 @@
         a.target = '_blank';
         a.rel = 'noopener';
         a.style.textDecoration = 'underline';
-        a.style.color = (cfg.primaryColor || '#059669');
+        a.style.color = (cfg.primaryColor || '#047857');
         return a;
       }
       var links = el('div');
@@ -290,7 +331,7 @@
         input.checked = !!initial;
         input.style.width = '18px';
         input.style.height = '18px';
-        input.style.accentColor = (cfg.primaryColor || '#059669');
+        input.style.accentColor = (cfg.primaryColor || '#047857');
         row.appendChild(left);
         row.appendChild(input);
         return row;
@@ -354,7 +395,7 @@
     a.textContent = text.learnMore;
     a.style.marginLeft = '8px';
     a.style.textDecoration = 'underline';
-    a.style.color = (cfg.primaryColor || '#059669');
+    a.style.color = (cfg.primaryColor || '#047857');
     disc.appendChild(document.createTextNode(' \u00b7 '));
     disc.appendChild(a);
 
