@@ -19,6 +19,7 @@ use App\Http\Controllers\Web\SnapshotController;
 use App\Http\Controllers\Ops\BusinessAccountsController;
 use App\Http\Controllers\Ops\BusinessSummaryController;
 use App\Http\Controllers\Ops\MetricsController;
+use App\Http\Controllers\Public\AlternativesHubController;
 use App\Http\Controllers\Public\FaqController;
 use App\Http\Controllers\Public\SolutionsController;
 use App\Http\Controllers\Public\StatusPagePublicController;
@@ -122,6 +123,10 @@ Route::get('/lang/{locale}', function (string $locale, Request $request): Redire
         return redirect()->route('localized.public.solutions.index', ['locale' => $locale], 301);
     }
 
+    if ($normalizedPath === 'monitoring-alternatives') {
+        return redirect()->route('localized.public.alternatives.index', ['locale' => $locale], 301);
+    }
+
     if ($normalizedPath === 'privacy') {
         return redirect()->route('localized.legal.privacy', ['locale' => $locale], 301);
     }
@@ -179,6 +184,10 @@ Route::get('/solutions/{slug}', function (string $slug, Request $request) use ($
     ], 301);
 })->name('public.solutions.show');
 
+Route::get('/monitoring-alternatives', function (Request $request) use ($resolveMarketingLocale) {
+    return redirect()->route('localized.public.alternatives.index', ['locale' => $resolveMarketingLocale($request)], 301);
+})->name('public.alternatives.index');
+
 Route::prefix('{locale}')
     ->where(['locale' => 'en|pl'])
     ->as('localized.')
@@ -214,6 +223,7 @@ Route::prefix('{locale}')
 
         Route::get('/solutions', [SolutionsController::class, 'index'])->name('public.solutions.index');
         Route::get('/solutions/{slug}', [SolutionsController::class, 'show'])->name('public.solutions.show');
+        Route::get('/monitoring-alternatives', [AlternativesHubController::class, 'index'])->name('public.alternatives.index');
     });
 
 Route::get('/sitemap.xml', function () {
@@ -242,6 +252,28 @@ Route::get('/sitemap.xml', function () {
     // in content sources may emit bytes before XML declaration and break sitemap parsing.
     $faqSlugs = $collectSlugs(resource_path('content/faq/en'));
     $solutionSlugs = $collectSlugs(resource_path('content/solutions/en'));
+    $alternativeHubSlugs = [
+        'uptimerobot-alternative-for-smb',
+        'statuscake-alternative-with-status-pages',
+        'pingdom-alternative-for-smb',
+        'better-stack-alternative-for-smb',
+        'datadog-synthetics-alternative-for-smb',
+        'new-relic-synthetics-alternative',
+        'site24x7-alternative-for-teams',
+        'uptrends-alternative-for-smb',
+        'freshping-alternative-for-small-teams',
+        'hetrixtools-alternative-for-agencies',
+        'hyperping-alternative-with-incident-workflow',
+        'checkly-alternative-for-website-monitoring',
+        'sematext-alternative-for-uptime-monitoring',
+        'appsignal-uptime-alternative',
+        'statuspage-alternative-for-saas',
+        'cachet-alternative-with-hosted-status-page',
+        'updown-io-alternative-for-growing-teams',
+        'cronitor-alternative-for-cron-monitoring',
+        'ohdear-alternative-for-smb',
+        'supermonitoring-alternative-for-agencies',
+    ];
 
     $atom = static function (?int $mtime): string {
         if (! is_int($mtime) || $mtime <= 0) {
@@ -318,6 +350,16 @@ Route::get('/sitemap.xml', function () {
             'lastmod' => $atom($maxMtime(array_merge(
                 [resource_path('views/public/solutions/index.blade.php')],
                 array_map(static fn (string $slug): string => resource_path("content/solutions/{$locale}/{$slug}.php"), $solutionSlugs)
+            ))),
+            'changefreq' => 'weekly',
+            'priority' => '0.8',
+        ];
+
+        $urls[] = [
+            'loc' => route('localized.public.alternatives.index', ['locale' => $locale]),
+            'lastmod' => $atom($maxMtime(array_merge(
+                [resource_path('views/public/solutions/alternatives_hub.blade.php')],
+                array_map(static fn (string $slug): string => resource_path("content/solutions/{$locale}/{$slug}.php"), $alternativeHubSlugs)
             ))),
             'changefreq' => 'weekly',
             'priority' => '0.8',

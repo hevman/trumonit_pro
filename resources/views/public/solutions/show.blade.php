@@ -11,6 +11,7 @@
     $canonicalUrl = route('localized.public.solutions.show', ['locale' => app()->getLocale(), 'slug' => $page['slug']]);
     $langSwitchEn = route('localized.public.solutions.show', ['locale' => 'en', 'slug' => $page['slug']]);
     $langSwitchPl = route('localized.public.solutions.show', ['locale' => 'pl', 'slug' => $page['slug']]);
+    $comparison = is_array($page['comparison'] ?? null) ? $page['comparison'] : [];
 
     $howToSchema = [
         '@context' => 'https://schema.org',
@@ -94,6 +95,28 @@
             <article class="mt-6 rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 dark:border-slate-800 dark:bg-slate-900">
                 <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ $page['title'] }}</h1>
                 <p class="mt-3 text-slate-600 dark:text-slate-300">{{ $page['summary'] }}</p>
+
+                @if (! empty($comparison))
+                    <section class="mt-6 rounded-2xl border border-indigo-200 bg-indigo-50/60 p-5 dark:border-indigo-700 dark:bg-indigo-950/40">
+                        <h2 class="text-base font-semibold">
+                            {{ $isPl ? 'Szybka decyzja zakupowa' : 'Fast buying decision' }}
+                        </h2>
+                        <div class="mt-3 grid grid-cols-1 lg:grid-cols-2 gap-4 text-sm">
+                            <div class="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
+                                <div class="font-semibold">{{ $isPl ? 'Kiedy zostac przy ' : 'When to stay with ' }}{{ $comparison['competitor'] ?? '' }}</div>
+                                <p class="mt-2 text-slate-600 dark:text-slate-300">{{ $comparison['choose_competitor'] ?? '' }}</p>
+                            </div>
+                            <div class="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
+                                <div class="font-semibold">{{ $isPl ? 'Kiedy wybrac TruMonit' : 'When to choose TruMonit' }}</div>
+                                <p class="mt-2 text-slate-600 dark:text-slate-300">{{ $comparison['choose_trumonit'] ?? '' }}</p>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-sm text-slate-600 dark:text-slate-300 space-y-1">
+                            <p><strong>{{ $isPl ? 'Sygnal zmiany:' : 'Switch trigger:' }}</strong> {{ $comparison['switch_trigger'] ?? '' }}</p>
+                            <p><strong>{{ $isPl ? 'Jak migrowac bez ryzyka:' : 'Low-risk migration:' }}</strong> {{ $comparison['migration_hint'] ?? '' }}</p>
+                        </div>
+                    </section>
+                @endif
 
                 <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-5">
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-700 dark:bg-slate-950">

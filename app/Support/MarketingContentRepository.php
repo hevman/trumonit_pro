@@ -218,6 +218,190 @@ class MarketingContentRepository
         ],
     ];
 
+    /** @var array<string, array<string, string>> */
+    private const ALTERNATIVE_PROFILES = [
+        'uptimerobot-alternative-for-smb' => [
+            'competitor' => 'UptimeRobot',
+            'segment_en' => 'SMB teams that started with basic uptime checks',
+            'segment_pl' => 'zespoly SMB, ktore zaczely od prostych checkow uptime',
+            'competitor_best_en' => 'you only need basic checks and simple alerting',
+            'competitor_best_pl' => 'wystarcza Ci podstawowy check i proste alerty',
+            'switch_trigger_en' => 'alert noise grows and incidents need ownership plus status updates',
+            'switch_trigger_pl' => 'rosnie szum alertow i incydenty wymagaja ownership oraz status update',
+        ],
+        'statuscake-alternative-with-status-pages' => [
+            'competitor' => 'StatusCake',
+            'segment_en' => 'teams focused on external uptime visibility',
+            'segment_pl' => 'zespoly skupione na widocznosci uptime dla klientow',
+            'competitor_best_en' => 'you mainly need straightforward checks and notifications',
+            'competitor_best_pl' => 'potrzebujesz glownie prostych checkow i powiadomien',
+            'switch_trigger_en' => 'you need stronger incident-to-status workflow and less manual communication',
+            'switch_trigger_pl' => 'potrzebujesz mocniejszego workflow incydent-status i mniej recznej komunikacji',
+        ],
+        'pingdom-alternative-for-smb' => [
+            'competitor' => 'Pingdom',
+            'segment_en' => 'SMB teams with classic uptime-first setup',
+            'segment_pl' => 'zespoly SMB z klasycznym podejsciem uptime-first',
+            'competitor_best_en' => 'classic uptime reporting is enough for your operations',
+            'competitor_best_pl' => 'klasyczne raporty uptime sa dla Ciebie wystarczajace',
+            'switch_trigger_en' => 'you need faster triage and cleaner escalation policy',
+            'switch_trigger_pl' => 'potrzebujesz szybszego triage i czystszej polityki eskalacji',
+        ],
+        'better-stack-alternative-for-smb' => [
+            'competitor' => 'Better Stack',
+            'segment_en' => 'lean teams that combine monitoring and ops quickly',
+            'segment_pl' => 'zwinne zespoly laczace monitoring i ops w szybkim tempie',
+            'competitor_best_en' => 'you prefer broad toolbox flexibility over strict process',
+            'competitor_best_pl' => 'wolisz szeroka elastycznosc narzedzi ponad sztywny proces',
+            'switch_trigger_en' => 'you want simpler ownership and predictable incident handoff',
+            'switch_trigger_pl' => 'chcesz prostszego ownership i przewidywalnego handoff incydentow',
+        ],
+        'datadog-synthetics-alternative-for-smb' => [
+            'competitor' => 'Datadog Synthetics',
+            'segment_en' => 'product teams with advanced synthetic checks',
+            'segment_pl' => 'zespoly produktowe z rozbudowanymi checkami synthetic',
+            'competitor_best_en' => 'you already run broad Datadog stack and need deep integration',
+            'competitor_best_pl' => 'masz juz szeroki stack Datadog i potrzebujesz glebokiej integracji',
+            'switch_trigger_en' => 'you need lower operational overhead and clearer pricing for SMB',
+            'switch_trigger_pl' => 'potrzebujesz mniejszego narzutu operacyjnego i czytelniejszego kosztu dla SMB',
+        ],
+        'new-relic-synthetics-alternative' => [
+            'competitor' => 'New Relic Synthetics',
+            'segment_en' => 'teams validating journeys with synthetic monitoring',
+            'segment_pl' => 'zespoly walidujace sciezki uzytkownika przez synthetic monitoring',
+            'competitor_best_en' => 'you prioritize deep New Relic ecosystem alignment',
+            'competitor_best_pl' => 'priorytetem jest dla Ciebie zgodnosc z ekosystemem New Relic',
+            'switch_trigger_en' => 'you want more focused uptime workflow for SMB operations',
+            'switch_trigger_pl' => 'chcesz bardziej skupionego workflow uptime dla operacji SMB',
+        ],
+        'site24x7-alternative-for-teams' => [
+            'competitor' => 'Site24x7',
+            'segment_en' => 'teams managing mixed infrastructure and websites',
+            'segment_pl' => 'zespoly monitorujace mieszana infrastrukture i strony',
+            'competitor_best_en' => 'you need broad infrastructure-style monitoring breadth',
+            'competitor_best_pl' => 'potrzebujesz szerokiego zakresu monitoringu infrastruktury',
+            'switch_trigger_en' => 'you need simpler daily operations and faster incident ownership',
+            'switch_trigger_pl' => 'potrzebujesz prostszej codziennej operacji i szybszego ownership incydentow',
+        ],
+        'uptrends-alternative-for-smb' => [
+            'competitor' => 'Uptrends',
+            'segment_en' => 'SMB teams tracking availability and user paths',
+            'segment_pl' => 'zespoly SMB kontrolujace dostepnosc i sciezki uzytkownika',
+            'competitor_best_en' => 'your process works and you mainly need stable checks',
+            'competitor_best_pl' => 'Twoj proces dziala i potrzebujesz glownie stabilnych checkow',
+            'switch_trigger_en' => 'you need tighter escalation and incident communication loop',
+            'switch_trigger_pl' => 'potrzebujesz ciasniejszej petli eskalacji i komunikacji incydentowej',
+        ],
+        'freshping-alternative-for-small-teams' => [
+            'competitor' => 'Freshping',
+            'segment_en' => 'small teams with lightweight uptime stack',
+            'segment_pl' => 'male zespoly z lekkim stackiem uptime',
+            'competitor_best_en' => 'you only need a very simple free-style monitoring baseline',
+            'competitor_best_pl' => 'wystarcza Ci bardzo prosty baseline monitoringu',
+            'switch_trigger_en' => 'you need more mature incident process as team and risk grow',
+            'switch_trigger_pl' => 'potrzebujesz dojrzalszego procesu incydentowego wraz ze wzrostem zespolu i ryzyka',
+        ],
+        'hetrixtools-alternative-for-agencies' => [
+            'competitor' => 'HetrixTools',
+            'segment_en' => 'agencies and multi-client operations teams',
+            'segment_pl' => 'agencje i zespoly obslugujace wielu klientow',
+            'competitor_best_en' => 'you mostly need status visibility per client',
+            'competitor_best_pl' => 'potrzebujesz glownie widocznosci statusu per klient',
+            'switch_trigger_en' => 'you need stronger owner routing and repeatable client communication',
+            'switch_trigger_pl' => 'potrzebujesz mocniejszego routingu ownerow i powtarzalnej komunikacji z klientem',
+        ],
+        'hyperping-alternative-with-incident-workflow' => [
+            'competitor' => 'Hyperping',
+            'segment_en' => 'product teams with modern uptime UI expectations',
+            'segment_pl' => 'zespoly produktowe oczekujace nowoczesnego UX monitoringu',
+            'competitor_best_en' => 'design-first monitoring is your main priority',
+            'competitor_best_pl' => 'priorytetem jest dla Ciebie design-first w monitoringu',
+            'switch_trigger_en' => 'you need stricter incident workflow and operational governance',
+            'switch_trigger_pl' => 'potrzebujesz bardziej rygorystycznego workflow incydentow i governance operacyjnego',
+        ],
+        'checkly-alternative-for-website-monitoring' => [
+            'competitor' => 'Checkly',
+            'segment_en' => 'dev-heavy teams monitoring journeys with tests',
+            'segment_pl' => 'zespoly dev-heavy monitorujace sciezki testami',
+            'competitor_best_en' => 'engineering-centered check-as-code is your core model',
+            'competitor_best_pl' => 'core modelem jest u Ciebie engineering i check-as-code',
+            'switch_trigger_en' => 'you need less engineering overhead for business-side monitoring',
+            'switch_trigger_pl' => 'potrzebujesz mniejszego narzutu engineering przy monitoringu biznesowym',
+        ],
+        'sematext-alternative-for-uptime-monitoring' => [
+            'competitor' => 'Sematext',
+            'segment_en' => 'teams combining logs, metrics, and uptime in one suite',
+            'segment_pl' => 'zespoly laczace logi, metryki i uptime w jednym pakiecie',
+            'competitor_best_en' => 'you need broader observability depth beyond uptime workflow',
+            'competitor_best_pl' => 'potrzebujesz szerszej observability wykraczajacej poza uptime workflow',
+            'switch_trigger_en' => 'you want focused uptime and incident process without extra complexity',
+            'switch_trigger_pl' => 'chcesz skupionego procesu uptime i incydentow bez dodatkowej zlozonosci',
+        ],
+        'appsignal-uptime-alternative' => [
+            'competitor' => 'AppSignal Uptime',
+            'segment_en' => 'teams close to application performance workflows',
+            'segment_pl' => 'zespoly bliskie workflow application performance',
+            'competitor_best_en' => 'APM-first context is more important than process standardization',
+            'competitor_best_pl' => 'kontekst APM-first jest wazniejszy niz standaryzacja procesu',
+            'switch_trigger_en' => 'you need clearer public incident communication with simple ownership',
+            'switch_trigger_pl' => 'potrzebujesz czytelniejszej publicznej komunikacji incydentow i prostego ownership',
+        ],
+        'statuspage-alternative-for-saas' => [
+            'competitor' => 'Statuspage',
+            'segment_en' => 'SaaS teams where public status trust is critical',
+            'segment_pl' => 'zespoly SaaS, gdzie kluczowe jest zaufanie do status page',
+            'competitor_best_en' => 'status communication is your core need and monitoring lives elsewhere',
+            'competitor_best_pl' => 'status communication jest core, a monitoring masz osobno',
+            'switch_trigger_en' => 'you need detection, incident ownership, and status updates in one loop',
+            'switch_trigger_pl' => 'potrzebujesz jednej petli: detekcja, ownership incydentu i status update',
+        ],
+        'cachet-alternative-with-hosted-status-page' => [
+            'competitor' => 'Cachet',
+            'segment_en' => 'teams considering self-hosted status solutions',
+            'segment_pl' => 'zespoly rozwazajace self-hosted status page',
+            'competitor_best_en' => 'you accept self-hosting overhead for full control',
+            'competitor_best_pl' => 'akceptujesz narzut self-hostingu w zamian za pelna kontrole',
+            'switch_trigger_en' => 'you need hosted reliability and less maintenance burden',
+            'switch_trigger_pl' => 'potrzebujesz niezawodnosci hosted i mniejszego burden utrzymaniowego',
+        ],
+        'updown-io-alternative-for-growing-teams' => [
+            'competitor' => 'Updown.io',
+            'segment_en' => 'growing teams with cost-sensitive uptime checks',
+            'segment_pl' => 'rosnace zespoly z naciskiem na koszt monitoringu uptime',
+            'competitor_best_en' => 'you only need very lean check execution and billing simplicity',
+            'competitor_best_pl' => 'potrzebujesz tylko lekkiego check execution i prostego rozliczenia',
+            'switch_trigger_en' => 'you need stronger escalation model and team handoff as incidents grow',
+            'switch_trigger_pl' => 'potrzebujesz mocniejszego modelu eskalacji i handoff przy rosnacej skali incydentow',
+        ],
+        'cronitor-alternative-for-cron-monitoring' => [
+            'competitor' => 'Cronitor',
+            'segment_en' => 'teams where cron and scheduled task reliability matters',
+            'segment_pl' => 'zespoly, gdzie krytyczna jest niezawodnosc cron i taskow cyklicznych',
+            'competitor_best_en' => 'cron-centric workflows are your main monitoring concern',
+            'competitor_best_pl' => 'workflow cron-centric jest Twoim glownym obszarem monitoringu',
+            'switch_trigger_en' => 'you need cron plus website and incident communication in one place',
+            'switch_trigger_pl' => 'potrzebujesz cron plus website i komunikacji incydentowej w jednym miejscu',
+        ],
+        'ohdear-alternative-for-smb' => [
+            'competitor' => 'Oh Dear',
+            'segment_en' => 'SMB teams looking for all-in-one site health checks',
+            'segment_pl' => 'zespoly SMB szukajace all-in-one dla health checkow strony',
+            'competitor_best_en' => 'you prioritize broad website checks over incident workflow depth',
+            'competitor_best_pl' => 'priorytetem sa szerokie checki strony, nie glebokosc workflow incydentow',
+            'switch_trigger_en' => 'you need clearer owner model and communication process during downtime',
+            'switch_trigger_pl' => 'potrzebujesz czytelniejszego modelu ownerow i procesu komunikacji podczas downtime',
+        ],
+        'supermonitoring-alternative-for-agencies' => [
+            'competitor' => 'Super Monitoring',
+            'segment_en' => 'agencies handling many clients and SLA expectations',
+            'segment_pl' => 'agencje obslugujace wielu klientow i oczekiwania SLA',
+            'competitor_best_en' => 'you need straightforward client monitoring baseline only',
+            'competitor_best_pl' => 'potrzebujesz jedynie prostego baseline monitoringu klientow',
+            'switch_trigger_en' => 'you need repeatable incident handling and better client-facing status updates',
+            'switch_trigger_pl' => 'potrzebujesz powtarzalnego incident handling i lepszych status update dla klientow',
+        ],
+    ];
+
     public function normalizeLocale(string $locale): string
     {
         return $locale === 'pl' ? 'pl' : 'en';
@@ -249,6 +433,10 @@ class MarketingContentRepository
             }
 
             $raw = $this->applyBofuSolutionOverrides($slug, $raw, $locale);
+            $comparison = $this->buildAlternativeComparisonData($slug, $locale);
+            if (is_array($comparison)) {
+                $raw = $this->enrichAlternativeRaw($raw, $comparison, $locale);
+            }
 
             $title = trim((string) ($raw['title'] ?? ''));
             $summary = trim((string) ($raw['summary'] ?? ''));
@@ -274,6 +462,7 @@ class MarketingContentRepository
                 'checklist' => $this->normalizeStringList($raw['checklist'] ?? []),
                 'pitfalls' => $this->normalizeStringList($raw['pitfalls'] ?? []),
                 'related_faq' => $this->normalizeStringList($raw['related_faq'] ?? []),
+                'comparison' => $comparison ?? [],
                 'order' => (int) ($raw['order'] ?? 9999),
             ];
         }
@@ -697,6 +886,127 @@ class MarketingContentRepository
         return $raw;
     }
 
+    /**
+     * @return array<string, string>|null
+     */
+    private function buildAlternativeComparisonData(string $slug, string $locale): ?array
+    {
+        $profile = self::ALTERNATIVE_PROFILES[$slug] ?? null;
+        if (! is_array($profile)) {
+            return null;
+        }
+
+        $competitor = (string) ($profile['competitor'] ?? '');
+        if ($competitor === '') {
+            return null;
+        }
+
+        if ($locale === 'pl') {
+            return [
+                'competitor' => $competitor,
+                'segment' => (string) ($profile['segment_pl'] ?? ''),
+                'choose_competitor' => (string) ($profile['competitor_best_pl'] ?? ''),
+                'switch_trigger' => (string) ($profile['switch_trigger_pl'] ?? ''),
+                'choose_trumonit' => 'potrzebujesz jednego procesu: detekcja, eskalacja, ownership i status updates',
+                'migration_hint' => 'zrob test rownolegly 7-14 dni na krytycznych URL i porownaj opoznienie detekcji oraz jakosc eskalacji',
+            ];
+        }
+
+        return [
+            'competitor' => $competitor,
+            'segment' => (string) ($profile['segment_en'] ?? ''),
+            'choose_competitor' => (string) ($profile['competitor_best_en'] ?? ''),
+            'switch_trigger' => (string) ($profile['switch_trigger_en'] ?? ''),
+            'choose_trumonit' => 'you need one process for detection, escalation, ownership, and status updates',
+            'migration_hint' => 'run a 7-14 day parallel test on critical URLs and compare detection lag with escalation quality',
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $raw
+     * @param array<string, string> $comparison
+     * @return array<string, mixed>
+     */
+    private function enrichAlternativeRaw(array $raw, array $comparison, string $locale): array
+    {
+        $competitor = $comparison['competitor'] ?? 'the current tool';
+        $chooseCompetitor = $comparison['choose_competitor'] ?? '';
+        $chooseTruMonit = $comparison['choose_trumonit'] ?? '';
+        $switchTrigger = $comparison['switch_trigger'] ?? '';
+        $migrationHint = $comparison['migration_hint'] ?? '';
+
+        if ($locale === 'pl') {
+            $raw['approach'] = [
+                'Uruchom test rownolegly: TruMonit vs ' . $competitor . ' na tych samych uslugach krytycznych.',
+                'Porownaj trzy metryki: opoznienie detekcji, falszywe alarmy i czas do pierwszej sensownej akcji.',
+                'Zweryfikuj caly workflow: alert -> owner -> status update -> zamkniecie incydentu.',
+            ];
+            $raw['proof'] = [
+                'Mniejszy szum alertowy i szybszy triage podczas awarii niz w scenariuszu bazowym ' . $competitor . '.',
+                'Czytelny ownership oraz lepszy handoff miedzy osobami on-call w porownaniu z rozproszonym workflow.',
+                'Bardziej spojna komunikacja statusowa do klientow i interesariuszy przy modelu TruMonit vs ' . $competitor . '.',
+            ];
+            $raw['checklist'] = [
+                'Czy obecny proces na ' . $competitor . ' daje jasny owner dla kazdego alertu krytycznego?',
+                'Czy status update da sie opublikowac bez recznego chaosu i bez dodatkowych narzedzi?',
+                'Czy po deployu proces pozostaje stabilny i powtarzalny przez minimum 7 dni?',
+                'Czy po tygodniu testu TruMonit vs ' . $competitor . ' widac roznice w czasie reakcji?',
+            ];
+            $raw['pitfalls'] = [
+                'Decyzja tylko po cenie i liczbie monitorow bez oceny procesu incydentowego w ' . $competitor . '.',
+                'Brak testu rownoleglego TruMonit i ' . $competitor . ' na tych samych URL oraz endpointach.',
+                'Mieszanie alertow krytycznych i informacyjnych w jednym kanale, niezaleznie od narzedzia.',
+            ];
+
+            $appendix = '<h3>Szybka decyzja: TruMonit vs ' . htmlspecialchars($competitor, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</h3>'
+                . '<p><strong>Kiedy zostac przy ' . htmlspecialchars($competitor, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . ':</strong> ' . htmlspecialchars($chooseCompetitor, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '.</p>'
+                . '<p><strong>Kiedy wybrac TruMonit:</strong> ' . htmlspecialchars($chooseTruMonit, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '.</p>'
+                . '<p><strong>Sygnal zmiany:</strong> ' . htmlspecialchars($switchTrigger, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '.</p>'
+                . '<p><strong>Jak migrowac bez ryzyka:</strong> ' . htmlspecialchars($migrationHint, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '.</p>';
+        } else {
+            $raw['approach'] = [
+                'Run a parallel test: TruMonit vs ' . $competitor . ' on the same critical services.',
+                'Compare three core metrics: detection lag, false positives, and time to first meaningful action.',
+                'Validate full workflow: alert -> owner -> status update -> incident closure.',
+            ];
+            $raw['proof'] = [
+                'Lower alert noise and faster triage during outages compared with baseline ' . $competitor . '.',
+                'Clear ownership model with cleaner on-call handoff during incident pressure.',
+                'More consistent status communication for customers and stakeholders across the full incident cycle.',
+            ];
+            $raw['checklist'] = [
+                'Does your current ' . $competitor . ' setup assign a clear owner to every critical alert?',
+                'Can your team publish status updates quickly without manual chaos or extra tools?',
+                'Is the workflow still reliable after deploys and configuration changes for at least one week?',
+                'After side-by-side testing, is response time measurably better with TruMonit?',
+            ];
+            $raw['pitfalls'] = [
+                'Choosing by price and monitor count without evaluating incident workflow quality in ' . $competitor . '.',
+                'Skipping side-by-side testing of TruMonit and ' . $competitor . ' on the same URLs and endpoints.',
+                'Mixing critical and informational alerts in one noisy channel regardless of tool.',
+            ];
+
+            $appendix = '<h3>Quick decision: TruMonit vs ' . htmlspecialchars($competitor, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</h3>'
+                . '<p><strong>When to stay with ' . htmlspecialchars($competitor, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . ':</strong> ' . htmlspecialchars($chooseCompetitor, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '.</p>'
+                . '<p><strong>When to choose TruMonit:</strong> ' . htmlspecialchars($chooseTruMonit, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '.</p>'
+                . '<p><strong>Switch trigger:</strong> ' . htmlspecialchars($switchTrigger, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '.</p>'
+                . '<p><strong>Low-risk migration hint:</strong> ' . htmlspecialchars($migrationHint, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '.</p>';
+        }
+
+        $body = trim((string) ($raw['body'] ?? ''));
+        if ($body === '') {
+            $body = $locale === 'pl'
+                ? '<p>To porownanie pokazuje roznice operacyjne miedzy TruMonit i ' . htmlspecialchars($competitor, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '.</p>'
+                : '<p>This comparison highlights operational differences between TruMonit and ' . htmlspecialchars($competitor, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '.</p>';
+        }
+        if (! str_contains($body, 'Quick decision: TruMonit vs') && ! str_contains($body, 'Szybka decyzja: TruMonit vs')) {
+            $body .= $appendix;
+        }
+        $raw['body'] = $body;
+
+        return $raw;
+    }
+
     private function normalizeSolutionMetaDescription(string $rawMeta, string $title, string $summary, string $locale): string
     {
         $meta = trim($rawMeta);
@@ -944,6 +1254,16 @@ class MarketingContentRepository
     {
         if ($node instanceof \DOMElement) {
             $tag = strtolower($node->tagName);
+
+            if (in_array($tag, ['html', 'body'], true)) {
+                foreach (iterator_to_array($node->childNodes) as $child) {
+                    if ($child instanceof \DOMNode) {
+                        $this->sanitizeHtmlNode($child);
+                    }
+                }
+
+                return;
+            }
 
             $stripEntirely = ['script', 'style', 'iframe', 'object', 'embed', 'link', 'meta'];
             if (in_array($tag, $stripEntirely, true)) {

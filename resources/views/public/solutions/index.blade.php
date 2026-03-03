@@ -1,4 +1,4 @@
-﻿@php
+@php
     $isPl = app()->getLocale() === 'pl';
     $seoTitle = $isPl ? 'Przykłady wdrożeń monitoringu | TruMonit' : 'Monitoring implementation examples | TruMonit';
     $seoDescription = $isPl
@@ -8,6 +8,7 @@
     $pricingUrl = route('localized.public.pricing', ['locale' => app()->getLocale()]);
     $faqIndexUrl = route('localized.public.faq.index', ['locale' => app()->getLocale()]);
     $solutionsIndexUrl = route('localized.public.solutions.index', ['locale' => app()->getLocale()]);
+    $alternativesHubUrl = route('localized.public.alternatives.index', ['locale' => app()->getLocale()]);
     $privacyUrl = route('localized.legal.privacy', ['locale' => app()->getLocale()]);
     $termsUrl = route('localized.legal.terms', ['locale' => app()->getLocale()]);
     $canonicalUrl = $solutionsIndexUrl;
@@ -96,6 +97,7 @@
                 <div class="mt-6 flex flex-wrap gap-3">
                     <a href="{{ $pricingUrl }}" class="inline-flex items-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-black dark:bg-indigo-500 dark:hover:bg-indigo-400">{{ __('messages.welcome.nav_pricing') }}</a>
                     <a href="{{ route('register') }}" class="inline-flex items-center rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-800">{{ __('messages.welcome.cta_primary') }}</a>
+                    <a href="{{ $alternativesHubUrl }}" class="inline-flex items-center rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-800">{{ $isPl ? 'Hub porownan (20)' : 'Alternatives hub (20)' }}</a>
                 </div>
             </section>
 
