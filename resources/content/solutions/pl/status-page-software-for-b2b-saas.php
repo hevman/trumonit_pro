@@ -4,8 +4,8 @@ return array (
   'order' => 32,
   'title' => 'Status page software dla B2B SaaS',
   'meta_title' => 'Status page software dla B2B SaaS | TruMonit',
-  'meta_description' => 'Status page software dla B2B SaaS — Praktyczny przewodnik: diagnoza, kroki wdrożenia, checklista i powiązane scenariusze monitoringu w TruMonit.',
-  'summary' => 'Scenariusz o intencji zakupowej, skupiony na wynikach operacyjnych: szybsza detekcja, lepsza eskalacja i mniej szumu alertowego.',
+  'meta_description' => 'Status page dla B2B SaaS: publikuj jasne aktualizacje incydentów, zmniejsz presję na support i połącz detekcję, ownership oraz komunikację z klientem.',
+  'summary' => 'Status page w B2B SaaS to nie branding, tylko workflow zaufania i komunikacji podczas incydentów klient-facing.',
   'body' => '<p>Ta strona odpowiada na zapytania BOFU i porównuje opcje monitoringu przez wpływ operacyjny, a nie samą listę funkcji. Liczy się jakość sygnału, niezawodna eskalacja i bezpieczna komunikacja incydentów.</p><p>Użyj prostego modelu: podziel monitory według krytyczności, ustaw routing per severity i testuj workflow w miesięcznych drillach. To zwykle obniża szum i skraca reakcję.</p><p><strong>Checklist:</strong> owner monitorów krytycznych, polityka progów, timery eskalacji, rytm aktualizacji statusu i przegląd po incydencie.</p>',
   'problem' => 'Zespoły tracą czas i zaufanie, gdy monitoring nie ma klarownego workflow incydentowego i użytecznego alertingu.',
   'approach' => 

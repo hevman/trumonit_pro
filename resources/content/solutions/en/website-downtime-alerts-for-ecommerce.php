@@ -4,8 +4,8 @@ return array (
   'order' => 38,
   'title' => 'Website Downtime Alerts for Ecommerce Revenue Paths',
   'meta_title' => 'Website Downtime Alerts for Ecommerce Revenue Paths | TruMonit',
-  'meta_description' => 'Website Downtime Alerts for Ecommerce Revenue Paths — Practical guide with diagnosis, implementation steps, checklist, and related monitoring workflows in.',
-  'summary' => 'Buying-intent scenario focused on operational outcomes: detection speed, cleaner escalation, and lower alert noise.',
+  'meta_description' => 'Website downtime alerts for ecommerce: monitor checkout, cart, payment callbacks, redirects, and key revenue paths before lost sales show up in support.',
+  'summary' => 'For ecommerce, homepage uptime is not enough. Monitor cart, checkout, payment, and revenue-critical flows first.',
   'body' => '<p>This page targets BOFU queries and compares monitoring options by operational impact, not only feature count. Focus on signal quality, escalation reliability, and customer-safe incident communication.</p><p>Use a practical model: classify critical paths, map severity to channels, and validate workflows through monthly drills. This reduces noise and improves response speed.</p><p><strong>Checklist:</strong> critical ownership, threshold policy, escalation timers, status communication cadence, and post-incident review.</p>',
   'problem' => 'Teams lose time and trust when monitoring lacks clear incident workflow and actionable alerting.',
   'approach' => 

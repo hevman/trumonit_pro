@@ -1,11 +1,11 @@
 @php
     $isPl = app()->getLocale() === 'pl';
     $seoTitle = $isPl
-        ? 'Alternatywy monitoringu: 20 porownan | TruMonit'
-        : 'Monitoring alternatives: 20 comparisons | TruMonit';
+        ? 'Alternatywy dla UptimeRobot, Better Stack i innych: 20 porównań | TruMonit'
+        : 'UptimeRobot, Better Stack, and other monitoring alternatives: 20 comparisons | TruMonit';
     $seoDescription = $isPl
-        ? 'Hub porownan narzedzi monitoringu. Zobacz 20 stron typu X alternative i porownaj wdrozenie, alerty, status page oraz proces incydentowy.'
-        : 'Comparison hub for monitoring tools. Explore 20 X-alternative pages and compare rollout speed, alerting quality, status pages, and incident workflow.';
+        ? 'Hub porównań narzędzi monitoringu dla SaaS i agencji. Zobacz 20 stron typu X alternative i porównaj alerty, status page, workflow incydentów i wdrożenie.'
+        : 'Comparison hub for monitoring tools used by SaaS teams and agencies. Explore 20 X-alternative pages and compare alerting, status pages, incident workflow, and rollout speed.';
     $homeUrl = route('localized.public.home', ['locale' => app()->getLocale()]);
     $pricingUrl = route('localized.public.pricing', ['locale' => app()->getLocale()]);
     $faqIndexUrl = route('localized.public.faq.index', ['locale' => app()->getLocale()]);
@@ -15,6 +15,42 @@
     $termsUrl = route('localized.legal.terms', ['locale' => app()->getLocale()]);
     $langSwitchEn = route('localized.public.alternatives.index', ['locale' => 'en']);
     $langSwitchPl = route('localized.public.alternatives.index', ['locale' => 'pl']);
+    $featuredRoutes = [
+        [
+            'title' => $isPl ? 'Dla agencji utrzymujących strony klientów' : 'For website maintenance agencies',
+            'slug' => 'monitoring-for-client-websites-maintenance-agency',
+        ],
+        [
+            'title' => $isPl ? 'Dla małego zespołu SaaS' : 'For small SaaS teams',
+            'slug' => 'best-monitoring-setup-for-small-saas-team',
+        ],
+        [
+            'title' => $isPl ? 'Dla Laravel w produkcji' : 'For Laravel apps in production',
+            'slug' => 'monitor-laravel-apps-in-production',
+        ],
+        [
+            'title' => $isPl ? 'Dla WooCommerce po update' : 'For WooCommerce after updates',
+            'slug' => 'woocommerce-monitoring-after-plugin-updates',
+        ],
+    ];
+    $breadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => config('app.name', 'TruMonit'),
+                'item' => $homeUrl,
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => $isPl ? 'Porównania' : 'Alternatives',
+                'item' => $alternativesUrl,
+            ],
+        ],
+    ];
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -27,6 +63,7 @@
     <link rel="canonical" href="{{ $alternativesUrl }}">
     <link rel="alternate" hreflang="en" href="{{ $langSwitchEn }}">
     <link rel="alternate" hreflang="pl" href="{{ $langSwitchPl }}">
+    <link rel="alternate" hreflang="x-default" href="{{ $langSwitchEn }}">
     <meta property="og:type" content="website">
     <meta property="og:title" content="{{ $seoTitle }}">
     <meta property="og:description" content="{{ $seoDescription }}">
@@ -36,6 +73,7 @@
     <meta name="twitter:title" content="{{ $seoTitle }}">
     <meta name="twitter:description" content="{{ $seoDescription }}">
     <meta name="twitter:image" content="{{ asset('android-chrome-512x512.png') }}">
+    <script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
     @include('partials.theme-head')
     @include('partials.favicons')
     @include('partials.trucookie-banner')
@@ -75,7 +113,18 @@
         </header>
 
         <main class="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+            <nav aria-label="Breadcrumb" class="text-sm text-slate-500 dark:text-slate-400">
+                <ol class="flex flex-wrap items-center gap-2">
+                    <li><a href="{{ $homeUrl }}" class="hover:text-slate-900 dark:hover:text-slate-100">{{ config('app.name', 'TruMonit') }}</a></li>
+                    <li aria-hidden="true">/</li>
+                    <li class="text-slate-700 dark:text-slate-200">{{ $isPl ? 'Porównania' : 'Alternatives' }}</li>
+                </ol>
+            </nav>
+
             <section class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 dark:border-slate-800 dark:bg-slate-900">
+                <div class="inline-flex rounded-full border border-indigo-300 bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-indigo-800 dark:border-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-200">
+                    {{ $isPl ? 'Hub comparison intent' : 'Comparison intent hub' }}
+                </div>
                 <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight">
                     {{ $isPl ? 'Hub porownan monitoringu (20 stron)' : 'Monitoring alternatives hub (20 pages)' }}
                 </h1>
@@ -87,6 +136,29 @@
                 <div class="mt-6 flex flex-wrap gap-3">
                     <a href="{{ $pricingUrl }}" class="inline-flex items-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-black dark:bg-indigo-600 dark:hover:bg-indigo-500">{{ __('messages.welcome.nav_pricing') }}</a>
                     <a href="{{ route('register') }}" class="inline-flex items-center rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-800">{{ __('messages.welcome.cta_primary') }}</a>
+                </div>
+            </section>
+
+            <section class="mt-6 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+                <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <h2 class="text-xl font-semibold">{{ $isPl ? 'Nie każdy klik powinien lądować na comparison page' : 'Not every click should land on a comparison page' }}</h2>
+                        <p class="mt-2 max-w-3xl text-sm text-slate-600 dark:text-slate-300">
+                            {{ $isPl
+                                ? 'Porównania służą intencji alternative. Jeśli ktoś szuka rozwiązania dla konkretnego setupu, lepiej wysłać go na dedykowany page solution.'
+                                : 'Comparison pages serve alternative intent. If someone wants a concrete setup, send them to a dedicated solution page instead.' }}
+                        </p>
+                    </div>
+                    <a href="{{ $solutionsIndexUrl }}" class="inline-flex rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-800">
+                        {{ $isPl ? 'Przejdź do stron solution' : 'Open solution pages' }}
+                    </a>
+                </div>
+                <div class="mt-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                    @foreach ($featuredRoutes as $featured)
+                        <a href="{{ route('localized.public.solutions.show', ['locale' => app()->getLocale(), 'slug' => $featured['slug']]) }}" class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-medium text-slate-700 hover:border-indigo-300 hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-indigo-500/60 dark:hover:bg-slate-900 dark:hover:text-slate-100">
+                            {{ $featured['title'] }}
+                        </a>
+                    @endforeach
                 </div>
             </section>
 

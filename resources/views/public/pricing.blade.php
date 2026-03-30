@@ -1,11 +1,11 @@
 @php
     $isPl = app()->getLocale() === 'pl';
     $seoTitle = $isPl
-        ? 'Cennik monitoringu stron i API | TruMonit'
-        : 'Website and API Monitoring Pricing | TruMonit';
+        ? 'Cennik monitoringu dla SaaS, agencji i e-commerce | TruMonit'
+        : 'Monitoring Pricing for SaaS, Agencies, and Ecommerce | TruMonit';
     $seoDescription = $isPl
-        ? 'Porównaj plany TruMonit: limity monitorów, częstotliwość sprawdzeń, moduł SEO (GSC+GA4), strony statusowe i integracje alertów.'
-        : 'Compare TruMonit plans: monitor limits, scan frequency, SEO Risk (GSC+GA4), status pages, and alerting integrations.';
+        ? 'Porównaj plany TruMonit dla SaaS, software house i sklepów online: monitory, login/API/checkout, status page, SEO Risk i alerting.'
+        : 'Compare TruMonit plans for SaaS teams, agencies, and ecommerce: monitors, login/API/checkout coverage, status pages, SEO risk, and alerting.';
     $homeUrl = route('localized.public.home', ['locale' => app()->getLocale()]);
     $pricingUrl = route('localized.public.pricing', ['locale' => app()->getLocale()]);
     $faqIndexUrl = route('localized.public.faq.index', ['locale' => app()->getLocale()]);
@@ -212,6 +212,7 @@
     <link rel="canonical" href="{{ $canonicalUrl }}">
     <link rel="alternate" hreflang="en" href="{{ $langSwitchEn }}">
     <link rel="alternate" hreflang="pl" href="{{ $langSwitchPl }}">
+    <link rel="alternate" hreflang="x-default" href="{{ $langSwitchEn }}">
     <meta property="og:type" content="website">
     <meta property="og:title" content="{{ $seoTitle }}">
     <meta property="og:description" content="{{ $seoDescription }}">
@@ -387,4 +388,3 @@
     </div>
 </body>
 </html>
-

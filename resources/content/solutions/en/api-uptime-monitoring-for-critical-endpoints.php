@@ -4,10 +4,10 @@ return array (
   'order' => 35,
   'title' => 'API Uptime Monitoring for Critical Endpoints',
   'meta_title' => 'API Uptime Monitoring for Critical Endpoints | TruMonit',
-  'meta_description' => 'API Uptime Monitoring for Critical Endpoints — Practical guide with diagnosis, implementation steps, checklist, and related monitoring workflows in TruMonit.',
-  'summary' => 'Buying-intent scenario focused on operational outcomes: detection speed, cleaner escalation, and lower alert noise.',
-  'body' => '<p>This page targets BOFU queries and compares monitoring options by operational impact, not only feature count. Focus on signal quality, escalation reliability, and customer-safe incident communication.</p><p>Use a practical model: classify critical paths, map severity to channels, and validate workflows through monthly drills. This reduces noise and improves response speed.</p><p><strong>Checklist:</strong> critical ownership, threshold policy, escalation timers, status communication cadence, and post-incident review.</p>',
-  'problem' => 'Teams lose time and trust when monitoring lacks clear incident workflow and actionable alerting.',
+  'meta_description' => 'API uptime monitoring for critical endpoints: status, latency, payload validation, auth checks, and routing so you detect real customer-facing failures before users do.',
+  'summary' => 'Monitor the API paths customers actually depend on, not only /health. Focus on latency, payload correctness, auth, and clear alert routing.',
+  'body' => '<p><strong>API uptime monitoring</strong> is useful only when it watches the endpoints that customers truly depend on. A green /health endpoint does not help if login, invoices, or checkout APIs are slow, rate-limited, or returning broken payloads.</p><p>For critical endpoints, monitor four things together: status code, latency, response correctness, and ownership. This gives you faster detection and cleaner escalation than generic uptime checks.</p><p><strong>Checklist:</strong> one health endpoint, one business-critical endpoint, stable payload assertions, timeout thresholds, 429 visibility, and severity-based alert routing.</p>',
+  'problem' => 'Teams miss real API incidents when they monitor only technical health instead of customer-facing endpoints with latency and payload validation.',
   'approach' => 
   array (
     0 => 'Map business-critical monitors first.',

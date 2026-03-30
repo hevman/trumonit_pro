@@ -1,9 +1,9 @@
 @php
     $isPl = app()->getLocale() === 'pl';
-    $seoTitle = $isPl ? 'Przykłady wdrożeń monitoringu | TruMonit' : 'Monitoring implementation examples | TruMonit';
+    $seoTitle = $isPl ? 'Monitoring dla SaaS, agencji, Laravel i WordPress | TruMonit' : 'Monitoring for SaaS, Agencies, Laravel, and WordPress | TruMonit';
     $seoDescription = $isPl
-        ? 'Gotowe scenariusze: monitoring uptime, API, SSL, strony statusu i procesy incydentowe. Strony pod decyzje zakupowe.'
-        : 'Buying-intent pages for uptime, API, SSL monitoring, status pages, and incident workflows.';
+        ? 'Strony pod konkretne intencje zakupowe: monitoring dla agencji, SaaS, Laravel, WordPress, auth flow, redirectów i wdrożeń po deployu.'
+        : 'Buying-intent pages for agencies, SaaS, Laravel apps, WordPress maintenance, auth flows, redirects, and post-deploy monitoring.';
     $homeUrl = route('localized.public.home', ['locale' => app()->getLocale()]);
     $pricingUrl = route('localized.public.pricing', ['locale' => app()->getLocale()]);
     $faqIndexUrl = route('localized.public.faq.index', ['locale' => app()->getLocale()]);
@@ -40,6 +40,7 @@
     <link rel="canonical" href="{{ $canonicalUrl }}">
     <link rel="alternate" hreflang="en" href="{{ $langSwitchEn }}">
     <link rel="alternate" hreflang="pl" href="{{ $langSwitchPl }}">
+    <link rel="alternate" hreflang="x-default" href="{{ $langSwitchEn }}">
     <meta property="og:type" content="website">
     <meta property="og:title" content="{{ $seoTitle }}">
     <meta property="og:description" content="{{ $seoDescription }}">
@@ -92,13 +93,36 @@
 
         <main class="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
             <section class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 dark:border-slate-800 dark:bg-slate-900">
-                <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ $isPl ? 'Przykłady wdrożeń' : 'Implementation examples' }}</h1>
+                <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ $isPl ? 'Monitoring pod konkretne use case' : 'Monitoring for specific use cases' }}</h1>
                 <p class="mt-3 text-slate-600 dark:text-slate-300">{{ $seoDescription }}</p>
                 <div class="mt-6 flex flex-wrap gap-3">
                     <a href="{{ $pricingUrl }}" class="inline-flex items-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-black dark:bg-indigo-600 dark:hover:bg-indigo-500">{{ __('messages.welcome.nav_pricing') }}</a>
                     <a href="{{ route('register') }}" class="inline-flex items-center rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-800">{{ __('messages.welcome.cta_primary') }}</a>
                     <a href="{{ $alternativesHubUrl }}" class="inline-flex items-center rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-800">{{ $isPl ? 'Hub porownan (20)' : 'Alternatives hub (20)' }}</a>
                 </div>
+            </section>
+
+            <section class="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <article class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+                    <h2 class="text-base font-semibold">{{ $isPl ? 'Agencje i software house' : 'Agencies and software houses' }}</h2>
+                    <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ $isPl ? 'Strony dla utrzymania wielu projektów klientów i client-facing incident response.' : 'Pages for managing many client projects and client-facing incident response.' }}</p>
+                    <a href="{{ route('localized.public.solutions.show', ['locale' => app()->getLocale(), 'slug' => 'website-monitoring-tool-for-agencies']) }}" class="mt-3 inline-flex text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-300">{{ $isPl ? 'Zobacz agency pages' : 'See agency pages' }}</a>
+                </article>
+                <article class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+                    <h2 class="text-base font-semibold">{{ $isPl ? 'SaaS i B2B' : 'SaaS and B2B' }}</h2>
+                    <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ $isPl ? 'Monitoring loginu, API, checkoutu, status page i workflow incydentów.' : 'Monitoring login, API, checkout, status pages, and incident workflow.' }}</p>
+                    <a href="{{ route('localized.public.solutions.show', ['locale' => app()->getLocale(), 'slug' => 'uptime-monitoring-for-saas']) }}" class="mt-3 inline-flex text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-300">{{ $isPl ? 'Zobacz SaaS pages' : 'See SaaS pages' }}</a>
+                </article>
+                <article class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+                    <h2 class="text-base font-semibold">{{ $isPl ? 'Laravel production' : 'Laravel production' }}</h2>
+                    <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ $isPl ? 'Release checks, webhooki, kolejki i auth flow po wdrożeniach.' : 'Release checks, webhooks, queues, and auth flow after deployments.' }}</p>
+                    <a href="{{ route('localized.public.solutions.show', ['locale' => app()->getLocale(), 'slug' => 'monitor-laravel-apps-in-production']) }}" class="mt-3 inline-flex text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-300">{{ $isPl ? 'Zobacz Laravel page' : 'See Laravel page' }}</a>
+                </article>
+                <article class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+                    <h2 class="text-base font-semibold">{{ $isPl ? 'WordPress i WooCommerce' : 'WordPress and WooCommerce' }}</h2>
+                    <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ $isPl ? 'Flow po update pluginów: formularze, UI, redirecty i checkout.' : 'Post-plugin-update coverage for forms, UI, redirects, and checkout.' }}</p>
+                    <a href="{{ route('localized.public.solutions.show', ['locale' => app()->getLocale(), 'slug' => 'monitor-wordpress-websites-after-plugin-updates']) }}" class="mt-3 inline-flex text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-300">{{ $isPl ? 'Zobacz WordPress page' : 'See WordPress page' }}</a>
+                </article>
             </section>
 
             <section class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -141,4 +165,3 @@
     </div>
 </body>
 </html>
-

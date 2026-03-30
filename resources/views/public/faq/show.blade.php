@@ -24,6 +24,30 @@
     $canonicalUrl = route('localized.public.faq.show', ['locale' => app()->getLocale(), 'slug' => $article['slug']]);
     $langSwitchEn = route('localized.public.faq.show', ['locale' => 'en', 'slug' => $article['slug']]);
     $langSwitchPl = route('localized.public.faq.show', ['locale' => 'pl', 'slug' => $article['slug']]);
+    $breadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => config('app.name', 'TruMonit'),
+                'item' => $homeUrl,
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => $isPl ? 'FAQ' : 'FAQ',
+                'item' => $faqIndexUrl,
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 3,
+                'name' => $question,
+                'item' => $canonicalUrl,
+            ],
+        ],
+    ];
     $articleSchema = [
         '@context' => 'https://schema.org',
         '@type' => 'Article',
@@ -38,6 +62,10 @@
             'url' => url('/'),
         ],
     ];
+    $schemaGraph = [
+        '@context' => 'https://schema.org',
+        '@graph' => [$articleSchema, $breadcrumbSchema],
+    ];
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -50,6 +78,7 @@
     <link rel="canonical" href="{{ $canonicalUrl }}">
     <link rel="alternate" hreflang="en" href="{{ $langSwitchEn }}">
     <link rel="alternate" hreflang="pl" href="{{ $langSwitchPl }}">
+    <link rel="alternate" hreflang="x-default" href="{{ $langSwitchEn }}">
     <meta property="og:type" content="article">
     <meta property="og:title" content="{{ $seoTitle }}">
     <meta property="og:description" content="{{ $seoDescription }}">
@@ -59,7 +88,7 @@
     <meta name="twitter:title" content="{{ $seoTitle }}">
     <meta name="twitter:description" content="{{ $seoDescription }}">
     <meta name="twitter:image" content="{{ asset('android-chrome-512x512.png') }}">
-    <script type="application/ld+json">{!! json_encode($articleSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+    <script type="application/ld+json">{!! json_encode($schemaGraph, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
     @include('partials.theme-head')
     @include('partials.favicons')
     @include('partials.trucookie-banner')
@@ -101,10 +130,45 @@
         </header>
 
         <main class="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+            <nav aria-label="Breadcrumb" class="text-sm text-slate-500 dark:text-slate-400">
+                <ol class="flex flex-wrap items-center gap-2">
+                    <li><a href="{{ $homeUrl }}" class="hover:text-slate-900 dark:hover:text-slate-100">{{ config('app.name', 'TruMonit') }}</a></li>
+                    <li aria-hidden="true">/</li>
+                    <li><a href="{{ $faqIndexUrl }}" class="hover:text-slate-900 dark:hover:text-slate-100">{{ __('faq.nav_faq') }}</a></li>
+                    <li aria-hidden="true">/</li>
+                    <li class="text-slate-700 dark:text-slate-200">{{ $question }}</li>
+                </ol>
+            </nav>
+
             <a href="{{ $faqIndexUrl }}" class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
                 <span aria-hidden="true">&larr;</span>
                 <span>{{ __('faq.back_to_index') }}</span>
             </a>
+
+            <section class="mt-6 rounded-2xl border border-amber-200 bg-amber-50/80 p-5 dark:border-amber-700/60 dark:bg-amber-950/30">
+                <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <div class="inline-flex rounded-full border border-amber-300 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-amber-800 dark:border-amber-600 dark:text-amber-200">
+                            {{ $isPl ? 'FAQ / strona informacyjna' : 'FAQ / educational page' }}
+                        </div>
+                        <p class="mt-3 max-w-3xl text-sm text-slate-700 dark:text-slate-200">
+                            {{ $isPl
+                                ? 'Ta strona odpowiada na konkretne pytanie i pomaga zrozumieć temat. Jeśli chcesz przejść do gotowego wdrożenia, otwórz powiązane przykłady poniżej albo zobacz pricing.'
+                                : 'This page answers a specific question. If you need a ready implementation path, open the related solution pages below or jump to pricing.' }}
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-3">
+                        @if ($solutionsIndexUrl)
+                            <a href="{{ $solutionsIndexUrl }}" class="inline-flex rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800">
+                                {{ $isPl ? 'Przejdź do wdrożeń' : 'Open solution pages' }}
+                            </a>
+                        @endif
+                        <a href="{{ $pricingUrl }}" class="inline-flex rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-black dark:bg-indigo-600 dark:hover:bg-indigo-500">
+                            {{ __('messages.welcome.nav_pricing') }}
+                        </a>
+                    </div>
+                </div>
+            </section>
 
             <article class="mt-6 rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 dark:border-slate-800 dark:bg-slate-900">
                 <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ $question }}</h1>

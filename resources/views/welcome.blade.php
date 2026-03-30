@@ -2,11 +2,11 @@
 @php
     $isPl = app()->getLocale() === 'pl';
     $seoTitle = $isPl
-        ? 'TruMonit - Monitoring uptime, SSL i endpointów API'
-        : 'TruMonit - Uptime, SSL, and API Endpoint Monitoring';
+        ? 'Monitoring stron dla SaaS, agencji, Laravel i WordPress | TruMonit'
+        : 'Website Monitoring for SaaS, Agencies, Laravel, and WordPress | TruMonit';
     $seoDescription = $isPl
-        ? 'TruMonit zapewnia monitoring 24/7 stron i API, alerty w czasie rzeczywistym, moduł SEO (GSC + GA4) oraz strony statusowe dla klientów i zespołów.'
-        : 'TruMonit delivers 24/7 website and API monitoring, real-time alerts, SEO Risk (GSC+GA4), and status pages for teams and clients.';
+        ? 'Monitoring stron i aplikacji: login, API, redirecty, checkout, SEO Risk i status page dla SaaS, software house, Laravel i WordPress.'
+        : 'Monitor login, API, redirects, checkout, SEO risk, and status pages for SaaS teams, agencies, Laravel apps, and WordPress websites.';
     $homeUrl = route('localized.public.home', ['locale' => app()->getLocale()]);
     $pricingUrl = route('localized.public.pricing', ['locale' => app()->getLocale()]);
     $faqIndexUrl = route('localized.public.faq.index', ['locale' => app()->getLocale()]);
@@ -18,6 +18,32 @@
     $ogImage = asset('favicon-512x512.png');
     $langSwitchEn = route('localized.public.home', ['locale' => 'en']);
     $langSwitchPl = route('localized.public.home', ['locale' => 'pl']);
+    $intentHubs = [
+        [
+            'title' => $isPl ? 'Dla agencji i software house' : 'For agencies and software houses',
+            'body' => $isPl ? 'Monitoring wielu stron klientów, status page i standaryzacja incident response.' : 'Monitoring many client websites, status pages, and standardized incident response.',
+            'primary' => route('localized.public.solutions.show', ['locale' => app()->getLocale(), 'slug' => 'website-monitoring-tool-for-agencies']),
+            'secondary' => route('localized.public.solutions.show', ['locale' => app()->getLocale(), 'slug' => 'incident-response-for-agencies-with-client-sites']),
+        ],
+        [
+            'title' => $isPl ? 'Dla SaaS i B2B' : 'For SaaS and B2B teams',
+            'body' => $isPl ? 'Monitoring loginu, API, checkoutu i status page dla flow krytycznych biznesowo.' : 'Monitor login, API, checkout, and status pages for business-critical flows.',
+            'primary' => route('localized.public.solutions.show', ['locale' => app()->getLocale(), 'slug' => 'uptime-monitoring-for-saas']),
+            'secondary' => route('localized.public.solutions.show', ['locale' => app()->getLocale(), 'slug' => 'status-page-software-for-b2b-saas']),
+        ],
+        [
+            'title' => $isPl ? 'Dla Laravel' : 'For Laravel apps',
+            'body' => $isPl ? 'Release checks, webhooki, kolejki, redirecty i auth flow po deployu.' : 'Release checks, webhooks, queues, redirects, and auth flow after deploys.',
+            'primary' => route('localized.public.solutions.show', ['locale' => app()->getLocale(), 'slug' => 'monitor-laravel-apps-in-production']),
+            'secondary' => route('localized.public.solutions.show', ['locale' => app()->getLocale(), 'slug' => 'release-regression-monitoring']),
+        ],
+        [
+            'title' => $isPl ? 'Dla WordPress i WooCommerce' : 'For WordPress and WooCommerce',
+            'body' => $isPl ? 'Monitoring po aktualizacjach pluginów: formularze, UI, redirecty i checkout.' : 'Post-update monitoring for forms, UI, redirects, and checkout.',
+            'primary' => route('localized.public.solutions.show', ['locale' => app()->getLocale(), 'slug' => 'monitor-wordpress-websites-after-plugin-updates']),
+            'secondary' => route('localized.public.solutions.show', ['locale' => app()->getLocale(), 'slug' => 'website-downtime-alerts-for-ecommerce']),
+        ],
+    ];
     $organizationSchema = [
         '@context' => 'https://schema.org',
         '@type' => 'Organization',
@@ -50,6 +76,7 @@
     <link rel="canonical" href="{{ $canonicalUrl }}">
     <link rel="alternate" hreflang="en" href="{{ route('localized.public.home', ['locale' => 'en']) }}">
     <link rel="alternate" hreflang="pl" href="{{ route('localized.public.home', ['locale' => 'pl']) }}">
+    <link rel="alternate" hreflang="x-default" href="{{ route('localized.public.home', ['locale' => 'en']) }}">
     <meta property="og:type" content="website">
     <meta property="og:title" content="{{ $seoTitle }}">
     <meta property="og:description" content="{{ $seoDescription }}">
@@ -225,6 +252,39 @@
                 </div>
             </section>
 
+            <section id="intent-hubs" class="mt-14">
+                <div class="flex items-end justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight">
+                            {{ $isPl ? 'Wejścia pod konkretne potrzeby' : 'Entry points for specific needs' }}
+                        </h2>
+                        <p class="mt-2 text-slate-600 dark:text-slate-300">
+                            {{ $isPl ? 'Zamiast ogólnego “monitoringu stron”, wybierz ścieżkę najbliższą Twojemu przypadkowi użycia.' : 'Instead of generic “website monitoring”, pick the path that matches your actual use case.' }}
+                        </p>
+                    </div>
+                    <a href="{{ $solutionsIndexUrl }}" class="inline-flex rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
+                        {{ $isPl ? 'Zobacz wszystkie strony' : 'See all solution pages' }}
+                    </a>
+                </div>
+
+                <div class="mt-6 grid gap-4 md:grid-cols-2">
+                    @foreach ($intentHubs as $hub)
+                        <article class="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+                            <h3 class="text-lg font-semibold">{{ $hub['title'] }}</h3>
+                            <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ $hub['body'] }}</p>
+                            <div class="mt-4 flex flex-wrap gap-3">
+                                <a href="{{ $hub['primary'] }}" class="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-300">
+                                    {{ $isPl ? 'Główna strona tematu' : 'Primary topic page' }}
+                                </a>
+                                <a href="{{ $hub['secondary'] }}" class="text-sm font-medium text-slate-600 hover:underline dark:text-slate-300">
+                                    {{ $isPl ? 'Powiązana strona' : 'Related page' }}
+                                </a>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            </section>
+
             <section id="seo-risk" class="mt-14 rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 dark:border-slate-800 dark:bg-slate-900">
                 <div class="flex flex-wrap items-end justify-between gap-4">
                     <div>
@@ -356,4 +416,3 @@
     </div>
 </body>
 </html>
-

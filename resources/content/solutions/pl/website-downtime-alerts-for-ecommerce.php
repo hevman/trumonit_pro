@@ -4,8 +4,8 @@ return array (
   'order' => 38,
   'title' => 'Website downtime alerts dla e-commerce',
   'meta_title' => 'Website downtime alerts dla e-commerce | TruMonit',
-  'meta_description' => 'Website downtime alerts dla e-commerce: chroń checkout, płatności i ścieżki konwersji dzięki alertom ustawionym pod realny wpływ na przychód.',
-  'summary' => 'Skonfiguruj alerty przestojów pod ścieżki przychodowe e-commerce: karta produktu, koszyk, checkout i płatności.',
+  'meta_description' => 'Alerty o awarii dla e-commerce: monitoruj checkout, koszyk, callbacki płatności, redirecty i kluczowe ścieżki przychodowe zanim sprzedaż zacznie znikać.',
+  'summary' => 'W e-commerce sama strona główna nie wystarczy. Najpierw monitoruj koszyk, checkout, płatności i ścieżki krytyczne dla przychodu.',
   'body' => '<p>W e-commerce <strong>website downtime alerts</strong> powinny być ustawione pod wpływ na sprzedaż, a nie tylko pod ogólny status strony. Awaria strony głównej i awaria checkoutu to nie ten sam poziom ryzyka biznesowego.</p>
 
 <p>Największy błąd zespołów to jednolity alerting dla wszystkich adresów. Efekt: szum, opóźniony triage i brak skupienia na miejscach, gdzie każda minuta awarii kosztuje realny przychód. Dlatego monitoruj osobno: kartę produktu, koszyk, checkout, callback płatności i endpointy API związane z finalizacją zamówienia.</p>

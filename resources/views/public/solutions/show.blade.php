@@ -6,13 +6,54 @@
     $pricingUrl = route('localized.public.pricing', ['locale' => app()->getLocale()]);
     $faqIndexUrl = route('localized.public.faq.index', ['locale' => app()->getLocale()]);
     $solutionsIndexUrl = route('localized.public.solutions.index', ['locale' => app()->getLocale()]);
+    $alternativesUrl = route('localized.public.alternatives.index', ['locale' => app()->getLocale()]);
     $privacyUrl = route('localized.legal.privacy', ['locale' => app()->getLocale()]);
     $termsUrl = route('localized.legal.terms', ['locale' => app()->getLocale()]);
     $canonicalUrl = route('localized.public.solutions.show', ['locale' => app()->getLocale(), 'slug' => $page['slug']]);
     $langSwitchEn = route('localized.public.solutions.show', ['locale' => 'en', 'slug' => $page['slug']]);
     $langSwitchPl = route('localized.public.solutions.show', ['locale' => 'pl', 'slug' => $page['slug']]);
     $comparison = is_array($page['comparison'] ?? null) ? $page['comparison'] : [];
-
+    $isComparisonPage = ! empty($comparison);
+    $pageLabel = $isComparisonPage
+        ? ($isPl ? 'Strona porównawcza' : 'Comparison page')
+        : ($isPl ? 'Przewodnik wdrożeniowy' : 'Implementation guide');
+    $pageIntentSummary = $isComparisonPage
+        ? ($isPl ? 'Ten URL jest pod intencję comparison / alternative. Pomaga podjąć decyzję zakupową między narzędziami.' : 'This URL targets comparison / alternative intent. It helps buyers choose between tools.')
+        : ($isPl ? 'Ten URL jest pod intencję solution / implementation. Pomaga przejść od problemu do konkretnego setupu monitoringu.' : 'This URL targets solution / implementation intent. It helps buyers move from problem to a practical monitoring setup.');
+    $pageSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'WebPage',
+        'name' => $page['title'],
+        'description' => $page['summary'],
+        'url' => $canonicalUrl,
+        'inLanguage' => $isPl ? 'pl-PL' : 'en-US',
+    ];
+    $breadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => config('app.name', 'TruMonit'),
+                'item' => $homeUrl,
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => $isComparisonPage
+                    ? ($isPl ? 'Porównania' : 'Alternatives')
+                    : ($isPl ? 'Wdrożenia' : 'Solutions'),
+                'item' => $isComparisonPage ? $alternativesUrl : $solutionsIndexUrl,
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 3,
+                'name' => $page['title'],
+                'item' => $canonicalUrl,
+            ],
+        ],
+    ];
     $howToSchema = [
         '@context' => 'https://schema.org',
         '@type' => 'HowTo',
@@ -23,6 +64,14 @@
             'position' => $idx + 1,
             'text' => $item,
         ])->all(),
+    ];
+    $schemaGraph = [
+        '@context' => 'https://schema.org',
+        '@graph' => array_values(array_filter([
+            $pageSchema,
+            $breadcrumbSchema,
+            ! empty($page['approach']) ? $howToSchema : null,
+        ])),
     ];
 @endphp
 <!DOCTYPE html>
@@ -36,6 +85,7 @@
     <link rel="canonical" href="{{ $canonicalUrl }}">
     <link rel="alternate" hreflang="en" href="{{ $langSwitchEn }}">
     <link rel="alternate" hreflang="pl" href="{{ $langSwitchPl }}">
+    <link rel="alternate" hreflang="x-default" href="{{ $langSwitchEn }}">
     <meta property="og:type" content="article">
     <meta property="og:title" content="{{ $seoTitle }}">
     <meta property="og:description" content="{{ $seoDescription }}">
@@ -45,7 +95,7 @@
     <meta name="twitter:title" content="{{ $seoTitle }}">
     <meta name="twitter:description" content="{{ $seoDescription }}">
     <meta name="twitter:image" content="{{ asset('android-chrome-512x512.png') }}">
-    <script type="application/ld+json">{!! json_encode($howToSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+    <script type="application/ld+json">{!! json_encode($schemaGraph, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
     @include('partials.theme-head')
     @include('partials.favicons')
     @include('partials.trucookie-banner')
@@ -87,14 +137,57 @@
         </header>
 
         <main class="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-            <a href="{{ $solutionsIndexUrl }}" class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
+            <nav aria-label="Breadcrumb" class="text-sm text-slate-500 dark:text-slate-400">
+                <ol class="flex flex-wrap items-center gap-2">
+                    <li><a href="{{ $homeUrl }}" class="hover:text-slate-900 dark:hover:text-slate-100">{{ config('app.name', 'TruMonit') }}</a></li>
+                    <li aria-hidden="true">/</li>
+                    <li>
+                        <a href="{{ $isComparisonPage ? $alternativesUrl : $solutionsIndexUrl }}" class="hover:text-slate-900 dark:hover:text-slate-100">
+                            {{ $isComparisonPage ? ($isPl ? 'Porównania' : 'Alternatives') : ($isPl ? 'Wdrożenia' : 'Solutions') }}
+                        </a>
+                    </li>
+                    <li aria-hidden="true">/</li>
+                    <li class="text-slate-700 dark:text-slate-200">{{ $page['title'] }}</li>
+                </ol>
+            </nav>
+
+            <a href="{{ $isComparisonPage ? $alternativesUrl : $solutionsIndexUrl }}" class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
                 <span aria-hidden="true">&larr;</span>
-                <span>{{ $isPl ? 'Wszystkie przykłady wdrożeń' : 'All implementation examples' }}</span>
+                <span>{{ $isComparisonPage ? ($isPl ? 'Wszystkie porównania' : 'All alternatives') : ($isPl ? 'Wszystkie przykłady wdrożeń' : 'All implementation examples') }}</span>
             </a>
 
             <article class="mt-6 rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 dark:border-slate-800 dark:bg-slate-900">
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="inline-flex rounded-full border border-indigo-300 bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-indigo-800 dark:border-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-200">
+                        {{ $pageLabel }}
+                    </span>
+                    @if ($isComparisonPage)
+                        <span class="inline-flex rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-700 dark:border-slate-700 dark:text-slate-200">
+                            {{ $comparison['competitor'] ?? 'Alternative' }}
+                        </span>
+                    @endif
+                </div>
                 <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ $page['title'] }}</h1>
                 <p class="mt-3 text-slate-600 dark:text-slate-300">{{ $page['summary'] }}</p>
+                <p class="mt-3 max-w-3xl text-sm text-slate-500 dark:text-slate-400">{{ $pageIntentSummary }}</p>
+
+                <div class="mt-5 flex flex-wrap gap-3">
+                    <a href="{{ route('register') }}" class="inline-flex rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-black dark:bg-indigo-600 dark:hover:bg-indigo-500">
+                        {{ __('messages.welcome.cta_primary') }}
+                    </a>
+                    <a href="{{ $pricingUrl }}" class="inline-flex rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-800">
+                        {{ __('messages.welcome.nav_pricing') }}
+                    </a>
+                    @if ($isComparisonPage)
+                        <a href="{{ $alternativesUrl }}" class="inline-flex rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-800">
+                            {{ $isPl ? 'Wróć do hubu porównań' : 'Back to alternatives hub' }}
+                        </a>
+                    @else
+                        <a href="{{ $faqIndexUrl }}" class="inline-flex rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-800">
+                            {{ $isPl ? 'Powiązane FAQ' : 'Open FAQ' }}
+                        </a>
+                    @endif
+                </div>
 
                 @if (! empty($comparison))
                     <section class="mt-6 rounded-2xl border border-indigo-200 bg-indigo-50/60 p-5 dark:border-indigo-700 dark:bg-indigo-950/40">
