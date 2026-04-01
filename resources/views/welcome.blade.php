@@ -411,6 +411,12 @@
 
                     <div class="text-sm text-slate-500 dark:text-slate-400">&copy; {{ date('Y') }} {{ config('app.name', 'TruMonit') }}</div>
                 </div>
+                <div class="mt-3 text-xs text-slate-500 dark:text-slate-400">
+                    {{ app()->getLocale() === 'pl' ? 'Produkt rozwijany przez' : 'A product by' }}
+                    <a class="font-medium text-slate-700 hover:underline dark:text-slate-200" href="https://hevman.com" target="_blank" rel="noopener">
+                        Hevman Core
+                    </a>
+                </div>
             </div>
         </footer>
     </div>
