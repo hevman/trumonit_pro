@@ -2,10 +2,10 @@
 
 return array (
   'order' => 27,
-  'title' => 'Status page dla agencji i wielu projektów (mniej supportu)',
-  'meta_title' => 'Status page dla agencji | TruMonit',
-  'meta_description' => 'Agencje tracą czas na “czy działa?”. Status page dla projektów + komunikaty incydentowe redukują support i budują zaufanie u klientów.',
-  'summary' => 'Status page w agencji to nie bajer. To najszybszy sposób, żeby ograniczyć pingowanie i tłumaczenie incydentów w kółko.',
+  'title' => 'Strona statusu dla agencji i wielu projektów (mniej wsparcia)',
+  'meta_title' => 'Strona statusu dla agencji | TruMonit',
+  'meta_description' => 'Agencje tracą czas na pytania „czy działa?”. Strona statusu dla projektów i komunikaty incydentowe redukują obciążenie wsparcia i budują zaufanie u klientów.',
+  'summary' => 'Strona statusu w agencji to nie bajer. To najszybszy sposób, żeby ograniczyć pingowanie i tłumaczenie incydentów w kółko.',
   'body' => '<p>W agencji problemem nie jest tylko downtime. Problemem jest <strong>czas</strong>: klient pisze “czy coś nie działa?”, ktoś sprawdza ręcznie, potem kolejny klient pyta to samo. Status page i jasna komunikacja potrafią odjąć godziny supportu.</p>
 
 <h3>Co powinno być na status page</h3>

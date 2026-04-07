@@ -2,12 +2,12 @@
 
 return array (
   'order' => 31,
-  'title' => 'Incident management software dla SMB SaaS',
-  'meta_title' => 'Incident management software dla SMB SaaS | TruMonit',
-  'meta_description' => 'Incident management dla SMB SaaS: uporządkuj severity, ownership, eskalacje i komunikację statusową, żeby mały zespół działał jak dojrzały ops.',
+  'title' => 'Zarządzanie incydentami dla SMB SaaS',
+  'meta_title' => 'Zarządzanie incydentami dla SMB SaaS | TruMonit',
+  'meta_description' => 'Zarządzanie incydentami dla SMB SaaS: uporządkuj poziomy krytyczności, właścicieli, eskalacje i komunikację statusową, żeby mały zespół działał jak dojrzały dział operacyjny.',
   'summary' => 'Dla małego SaaS incident management oznacza szybszy ownership, czystszą eskalację i powtarzalną komunikację do klientów.',
-  'body' => '<p>Ta strona odpowiada na zapytania BOFU i porównuje opcje monitoringu przez wpływ operacyjny, a nie samą listę funkcji. Liczy się jakość sygnału, niezawodna eskalacja i bezpieczna komunikacja incydentów.</p><p>Użyj prostego modelu: podziel monitory według krytyczności, ustaw routing per severity i testuj workflow w miesięcznych drillach. To zwykle obniża szum i skraca reakcję.</p><p><strong>Checklist:</strong> owner monitorów krytycznych, polityka progów, timery eskalacji, rytm aktualizacji statusu i przegląd po incydencie.</p>',
-  'problem' => 'Zespoły tracą czas i zaufanie, gdy monitoring nie ma klarownego workflow incydentowego i użytecznego alertingu.',
+  'body' => '<p>W SMB SaaS zarządzanie incydentami musi być lekkie, ale konkretne: jasne role, prosta eskalacja i szybka komunikacja do klientów. Zbyt rozbudowane procesy zwykle kończą się tym, że nikt ich nie używa.</p><p>Najlepsze efekty daje minimalny, powtarzalny schemat: wykrycie -> triage -> owner -> komunikat -> podsumowanie. To wystarczy, by znacząco obniżyć MTTR i ograniczyć chaos.</p><p>TruMonit wspiera właśnie taki model, dzięki czemu mały zespół może działać jak dojrzały dział operacyjny bez ciężkiej biurokracji.</p>',
+  'problem' => 'Brak prostego i egzekwowalnego procesu incydentowego wydłuża czas naprawy i obniża zaufanie klientów.',
   'approach' => 
   array (
     0 => 'Najpierw oznacz ścieżki krytyczne biznesowo.',

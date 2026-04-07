@@ -10,28 +10,28 @@ return array (
   'problem' => 'Teams miss real API incidents when they monitor only technical health instead of customer-facing endpoints with latency and payload validation.',
   'approach' => 
   array (
-    0 => 'Map business-critical monitors first.',
-    1 => 'Set severity-based routing and cooldown.',
-    2 => 'Validate process through recurring incident drills.',
+    0 => 'Inventory customer-critical endpoints (login, billing, checkout, webhooks).',
+    1 => 'Define assertions for status, latency, and response payload integrity.',
+    2 => 'Route incidents by endpoint owner and business impact.',
   ),
   'proof' => 
   array (
-    0 => 'Higher signal-to-noise in alerts.',
-    1 => 'Faster triage and escalation.',
-    2 => 'Better customer communication during incidents.',
+    0 => 'Critical API failures are detected before support tickets spike.',
+    1 => 'Teams can triage auth, latency, and payload errors separately.',
+    2 => 'Incident updates include endpoint-level impact instead of generic downtime.',
   ),
   'checklist' => 
   array (
-    0 => 'Critical monitors tagged and owned.',
-    1 => 'Alert policy mapped by severity.',
-    2 => 'Status update cadence defined.',
-    3 => 'Postmortem review scheduled.',
+    0 => 'At least one business endpoint per customer journey is monitored.',
+    1 => 'Assertion rules exist for payload and timeout thresholds.',
+    2 => '429/rate-limit failures have dedicated routing.',
+    3 => 'Owners and escalation channels are defined per endpoint group.',
   ),
   'pitfalls' => 
   array (
-    0 => 'One severity policy for all monitors.',
-    1 => 'Late escalation after repeated failures.',
-    2 => 'No drills before production incidents.',
+    0 => 'Monitoring only /health and treating it as service reliability.',
+    1 => 'Using status-code checks without payload validation.',
+    2 => 'Combining all API alerts into one shared channel.',
   ),
   'related_faq' => 
   array (

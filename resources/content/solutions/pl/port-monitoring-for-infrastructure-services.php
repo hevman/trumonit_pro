@@ -6,8 +6,8 @@ return array (
   'meta_title' => 'Port monitoring dla usług infrastrukturalnych | TruMonit',
   'meta_description' => 'Port monitoring dla usług infrastrukturalnych — Praktyczny przewodnik: diagnoza, kroki wdrożenia, checklista i powiązane scenariusze monitoringu w TruMonit.',
   'summary' => 'Scenariusz o intencji zakupowej, skupiony na wynikach operacyjnych: szybsza detekcja, lepsza eskalacja i mniej szumu alertowego.',
-  'body' => '<p>Ta strona odpowiada na zapytania BOFU i porównuje opcje monitoringu przez wpływ operacyjny, a nie samą listę funkcji. Liczy się jakość sygnału, niezawodna eskalacja i bezpieczna komunikacja incydentów.</p><p>Użyj prostego modelu: podziel monitory według krytyczności, ustaw routing per severity i testuj workflow w miesięcznych drillach. To zwykle obniża szum i skraca reakcję.</p><p><strong>Checklist:</strong> owner monitorów krytycznych, polityka progów, timery eskalacji, rytm aktualizacji statusu i przegląd po incydencie.</p>',
-  'problem' => 'Zespoły tracą czas i zaufanie, gdy monitoring nie ma klarownego workflow incydentowego i użytecznego alertingu.',
+  'body' => '<p>Port monitoring jest dobry do szybkiego wykrywania problemów infrastrukturalnych, ale łatwo generuje fałszywe poczucie bezpieczeństwa. Otwarty port nie znaczy jeszcze, że usługa działa poprawnie dla użytkownika.</p><p>Dlatego warto łączyć kontrole portów z monitoringiem HTTP/API i jasnymi regułami eskalacji. Tylko wtedy zespół odróżnia problem sieciowy od awarii aplikacyjnej i reaguje właściwie.</p><p>TruMonit umożliwia taki model warstwowy bez budowania skomplikowanego stacku monitoringu.</p>',
+  'problem' => 'Samo monitorowanie portów nie daje pełnego obrazu awarii i może opóźniać właściwą diagnozę.',
   'approach' => 
   array (
     0 => 'Najpierw oznacz ścieżki krytyczne biznesowo.',

@@ -2,10 +2,10 @@
 
 return array (
   'order' => 28,
-  'title' => 'Jak agencje mogą standaryzować incident response dla stron klientów',
-  'meta_title' => 'Jak agencje mogą standaryzować incident response dla stron klientów | TruMonit',
-  'meta_description' => 'Praktyczny model incident response dla agencji: routing alertów, ownership, komunikacja z klientem, status page i postmortemy dla wielu utrzymywanych serwisów.',
-  'summary' => 'Prosty workflow incydentu dla agencji utrzymujących wiele stron klientów: alert, owner, update do klienta, rozwiązanie i postmortem.',
+  'title' => 'Jak agencje mogą standaryzować reakcję na incydenty dla stron klientów',
+  'meta_title' => 'Jak agencje mogą standaryzować reakcję na incydenty dla stron klientów | TruMonit',
+  'meta_description' => 'Praktyczny model reakcji na incydenty dla agencji: kierowanie alertów, odpowiedzialność, komunikacja z klientem, strona statusu i postmortemy dla wielu utrzymywanych serwisów.',
+  'summary' => 'Prosty proces incydentu dla agencji utrzymujących wiele stron klientów: alert, właściciel, aktualizacja dla klienta, rozwiązanie i postmortem.',
   'body' => '<p>Agencje nie przegrywają dlatego, że nie mają alertów. Przegrywają wtedy, gdy każdy incydent staje się improwizacją: kto to sprawdza, kto pisze do klienta, jaki to ma priorytet i gdzie jest status. To trzeba ustandaryzować.</p>
 
 <h3>Minimalny model incident response dla agencji</h3>

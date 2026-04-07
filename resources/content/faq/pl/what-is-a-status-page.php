@@ -12,7 +12,7 @@ return array (
   array (
     0 => 'status-page-for-saas',
   ),
-  'question' => 'Czym jest status page (strona statusu) i dlaczego jest ważny?',
+  'question' => 'Czym jest strona statusu i dlaczego jest ważna?',
   'answer' => '<p><strong>Status page</strong> (strona statusu) to publiczny kanał komunikacji o bieżącym stanie usługi oraz historii incydentów. To narzędzie komunikacji podczas awarii, a nie „ładna strona”.</p>
 
 <h3>Po co jest status page</h3>
@@ -30,6 +30,6 @@ return array (
 </ul>
 
 <p>Jeśli obsługujesz klientów, status page realnie poprawia wiarygodność i skraca czas spędzony na odpowiadaniu na te same pytania.</p>',
-  'meta_title' => 'Czym jest status page (strona statusu) i dlaczego jest ważny? | TruMonit',
-  'meta_description' => 'Status page (strona statusu) to publiczna komunikacja incydentów: komponenty, update’y, historia. Redukuje ticket storm i zwiększa zaufanie klientów.',
+  'meta_title' => 'Czym jest strona statusu i dlaczego jest ważna? | TruMonit',
+  'meta_description' => 'Strona statusu to publiczna komunikacja incydentów: komponenty, aktualizacje i historia. Redukuje lawinę zgłoszeń i zwiększa zaufanie klientów.',
 );

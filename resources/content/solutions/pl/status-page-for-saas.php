@@ -2,10 +2,10 @@
 
 return array (
   'order' => 4,
-  'title' => 'Status page (strona statusu) dla SaaS',
-  'meta_title' => 'Status page dla SaaS (strona statusu) | TruMonit',
-  'meta_description' => 'Buduj zaufanie w incydentach: status page (strona statusu) z komponentami, aktualizacjami i historią. Mniej ticketów do supportu podczas awarii.',
-  'summary' => 'Status page zamienia incydenty w komunikację: redukuje presję na support, porządkuje update’y i poprawia zaufanie klientów.',
+  'title' => 'Strona statusu dla SaaS',
+  'meta_title' => 'Strona statusu dla SaaS | TruMonit',
+  'meta_description' => 'Buduj zaufanie w incydentach: strona statusu z komponentami, aktualizacjami i historią. Mniej zgłoszeń do wsparcia podczas awarii.',
+  'summary' => 'Strona statusu zamienia incydenty w komunikację: redukuje presję na wsparcie, porządkuje aktualizacje i poprawia zaufanie klientów.',
   'body' => '<p>Status page (strona statusu) to nie landing marketingowy. To <strong>narzędzie komunikacji incydentowej</strong>: co nie działa, kogo dotyczy, jaki jest wpływ i kiedy będzie kolejny update.</p>
 
 <h3>Co publikować na status page</h3>

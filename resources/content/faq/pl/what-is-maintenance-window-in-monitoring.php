@@ -14,7 +14,7 @@ return array (
     1 => 'reduce-false-alerts',
     2 => 'incident-response-playbook',
   ),
-  'question' => 'Czym jest maintenance window w monitoringu?',
+  'question' => 'Czym jest okno serwisowe w monitoringu?',
   'answer' => '<p><strong>Maintenance window</strong> (okno serwisowe) to zaplanowany okres, w którym alerty są czasowo wyciszone podczas kontrolowanych zmian: deployów, migracji, zmian infrastruktury.</p>
 
 <h3>Po co to jest?</h3>
@@ -31,6 +31,6 @@ return array (
 </ul>
 
 <p>Więcej: <a href=\"/pl/solutions/maintenance-windows-during-deploys\">okna serwisowe podczas deployów (praktyka)</a>.</p>',
-  'meta_title' => 'Czym jest maintenance window w monitoringu? | TruMonit',
-  'meta_description' => 'Maintenance window (okno serwisowe) w monitoringu: po co jest, jak ustawić start/koniec i ownership oraz jak nie ukryć realnej awarii. Praktyczna checklista po deployu.',
+  'meta_title' => 'Czym jest okno serwisowe w monitoringu? | TruMonit',
+  'meta_description' => 'Okno serwisowe w monitoringu: po co jest, jak ustawić start i koniec oraz odpowiedzialność, a także jak nie ukryć realnej awarii. Praktyczna lista kontrolna po wdrożeniu.',
 );

@@ -34,5 +34,5 @@ return array (
 
 <p>Najważniejsze: MTTR spada, gdy masz powtarzalny proces i monitoring, któremu zespół ufa.</p>',
   'meta_title' => 'Czym jest MTTR i jak go poprawić? | TruMonit',
-  'meta_description' => 'MTTR to średni czas przywrócenia usługi po incydencie. Poprawisz go przez lepszą detekcję (monitoring), triage (playbook), mitygację (rollback/flags) i status page.',
+  'meta_description' => 'MTTR to średni czas przywrócenia usługi po incydencie. Poprawisz go przez lepszą detekcję (monitoring), triage (plan reakcji), mitygację (rollback/flags) i stronę statusu.',
 );

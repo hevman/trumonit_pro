@@ -2,10 +2,10 @@
 
 return array (
   'order' => 6,
-  'title' => 'Playbook incydentowy (reakcja na awarie)',
-  'meta_title' => 'Playbook incydentowy: MTTR, status page, postmortem | TruMonit',
-  'meta_description' => 'Zbuduj playbook incydentowy: triage, komunikacja, mitygacja i postmortem. Skróć MTTR, popraw powtarzalność reakcji i uspokój support w trakcie awarii.',
-  'summary' => 'Dobrze spisany playbook incydentowy skraca MTTR, porządkuje komunikację i zmniejsza chaos, kiedy wpada alert.',
+  'title' => 'Plan reakcji na incydenty (reakcja na awarie)',
+  'meta_title' => 'Plan reakcji na incydent: MTTR, strona statusu, postmortem | TruMonit',
+  'meta_description' => 'Zbuduj plan reakcji na incydenty: triage, komunikacja, mitygacja i postmortem. Skróć MTTR, popraw powtarzalność reakcji i uspokój wsparcie w trakcie awarii.',
+  'summary' => 'Dobrze spisany plan reakcji na incydenty skraca MTTR, porządkuje komunikację i zmniejsza chaos, kiedy wpada alert.',
   'body' => '<p>Playbook reakcji na incydent to system szybkich decyzji. Nie zastępuje kompetencji zespołu, ale <strong>eliminuje chaos</strong> w pierwszych minutach awarii: kto dowodzi, co sprawdzamy i jak komunikujemy wpływ.</p>
 
 <h3>Minimalny playbook (który realnie działa)</h3>

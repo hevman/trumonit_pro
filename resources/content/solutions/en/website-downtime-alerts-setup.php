@@ -6,32 +6,32 @@ return array (
   'meta_title' => 'Website Downtime Alerts Setup That Actually Works | TruMonit',
   'meta_description' => 'Website downtime alerts setup: retries, consecutive failures, routing, cooldown, and ownership so alerts are fast enough to matter but quiet enough to trust.',
   'summary' => 'Set up website downtime alerts that catch real outages fast without spamming the team on every transient failure.',
-  'body' => '<p>This page targets BOFU queries and compares monitoring options by operational impact, not only feature count. Focus on signal quality, escalation reliability, and customer-safe incident communication.</p><p>Use a practical model: classify critical paths, map severity to channels, and validate workflows through monthly drills. This reduces noise and improves response speed.</p><p><strong>Checklist:</strong> critical ownership, threshold policy, escalation timers, status communication cadence, and post-incident review.</p>',
-  'problem' => 'Teams lose time and trust when monitoring lacks clear incident workflow and actionable alerting.',
+  'body' => '<p>Effective downtime alerts are a balance between speed and trust. Overly aggressive rules create noise; overly conservative rules delay real incident response.</p><p>A reliable setup starts with simple controls: retries, consecutive failures, cooldown, and different thresholds for critical versus non-critical URLs. Expand only after baseline quality is stable.</p><p>TruMonit supports this staged approach so teams can reach high-signal alerting without weeks of tuning.</p>',
+  'problem' => 'Poor alert thresholds either flood teams with noise or detect outages too late.',
   'approach' => 
   array (
-    0 => 'Map business-critical monitors first.',
-    1 => 'Set severity-based routing and cooldown.',
-    2 => 'Validate process through recurring incident drills.',
+    0 => 'Start with retries and consecutive-failure rules per endpoint type.',
+    1 => 'Split alert routes by severity and business criticality.',
+    2 => 'Tune cooldown and maintenance windows using real incident data.',
   ),
   'proof' => 
   array (
-    0 => 'Higher signal-to-noise in alerts.',
-    1 => 'Faster triage and escalation.',
-    2 => 'Better customer communication during incidents.',
+    0 => 'False-positive volume drops without delaying major outage detection.',
+    1 => 'On-call teams respond with less context-switching and fatigue.',
+    2 => 'Critical alerts become actionable within the first notification.',
   ),
   'checklist' => 
   array (
-    0 => 'Critical monitors tagged and owned.',
-    1 => 'Alert policy mapped by severity.',
-    2 => 'Status update cadence defined.',
-    3 => 'Postmortem review scheduled.',
+    0 => 'Retry policy is defined for each check category.',
+    1 => 'Consecutive failure thresholds are calibrated for critical URLs.',
+    2 => 'Escalation channels differ for warning vs critical incidents.',
+    3 => 'Maintenance windows suppress planned-change noise.',
   ),
   'pitfalls' => 
   array (
-    0 => 'One severity policy for all monitors.',
-    1 => 'Late escalation after repeated failures.',
-    2 => 'No drills before production incidents.',
+    0 => 'Paging on single failures for non-critical endpoints.',
+    1 => 'Using the same thresholds for static pages and checkout paths.',
+    2 => 'Skipping periodic threshold review after traffic growth.',
   ),
   'related_faq' => 
   array (

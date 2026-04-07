@@ -13,7 +13,7 @@ return array (
     0 => 'status-page-for-saas',
     1 => 'incident-response-playbook',
   ),
-  'question' => 'Jak używać status page podczas incydentu?',
+  'question' => 'Jak używać strony statusu podczas incydentu?',
   'answer' => '<p>Status page działa wtedy, gdy jest szybka i przewidywalna. Najgorsze są: cisza przez 30 minut albo „spam update’ów” bez treści. Klienci chcą dwóch rzeczy: <strong>czy problem jest po Waszej stronie</strong> i <strong>kiedy będzie kolejny update</strong>.</p>
 
 <h3>Minimalny schemat komunikacji</h3>
@@ -38,6 +38,6 @@ return array (
 </ul>
 
 <p>Dobra status page realnie obniża liczbę ticketów i poprawia zaufanie, bo klienci widzą, że incydent jest zarządzany.</p>',
-  'meta_title' => 'Jak używać status page podczas incydentu? | TruMonit',
-  'meta_description' => 'Status page w incydencie: szybkie potwierdzenie (2–5 min), update’y co 15–30 min, zakres wpływu i czas kolejnej aktualizacji. Mniej ticketów i większe zaufanie.',
+  'meta_title' => 'Jak używać strony statusu podczas incydentu? | TruMonit',
+  'meta_description' => 'Strona statusu w incydencie: szybkie potwierdzenie (2-5 min), aktualizacje co 15-30 min, zakres wpływu i czas kolejnej informacji. Mniej zgłoszeń i większe zaufanie.',
 );

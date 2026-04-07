@@ -12,10 +12,10 @@ return array (
 
 <p>Najbezpieczniejszy sposób porównania to test równoległy przez 7-14 dni na krytycznych usługach. Mierz opóźnienie detekcji, odsetek fałszywych alarmów i czas do pierwszej sensownej akcji. Potem oceń komunikację: czy da się publikować status bez przepinania między wieloma panelami.</p>
 
-<p>W TruMonit małe zespoły zwykle łączą trzy warstwy: uptime checks do szybkiej detekcji, workflow incydentowy do ownership i eskalacji oraz status page do komunikacji z klientem. To taki zestaw najczęściej realnie poprawia MTTR i zaufanie klientów.</p>
+<p>W TruMonit małe zespoły zwykle łączą trzy warstwy: kontrole dostępności do szybkiej detekcji, proces incydentowy do przypisania odpowiedzialności i eskalacji oraz stronę statusu do komunikacji z klientem. Taki zestaw najczęściej realnie poprawia MTTR i zaufanie klientów.</p>
 
 <p>Przed pełną migracją zrób jeden drill kontrolowany. Zasymuluj krótką awarię, sprawdź routing alertów, potwierdź on-call ownera i rytm aktualizacji statusu. Jeśli proces przechodzi taki test, ryzyko migracji jest niskie, a codzienna operacja staje się znacznie prostsza.</p>',
-  'problem' => 'Zespoły tracą czas i zaufanie klientów, gdy alerty są głośne, ownership niejasny, a komunikacja incydentowa ręczna.',
+  'problem' => 'Zespoły tracą czas i zaufanie klientów, gdy alerty są głośne, odpowiedzialność jest niejasna, a komunikacja incydentowa ręczna.',
   'approach' => 
   array (
     0 => 'Porównuj narzędzia na podstawie realnych incydentów, a nie tylko cennika i limitów monitorów.',
@@ -32,7 +32,7 @@ return array (
   array (
     0 => 'Usługi krytyczne mają przypisanych ownerów.',
     1 => 'Routing alertów jest rozdzielony per severity i typ usługi.',
-    2 => 'Incydenty i status page działają w jednym procesie.',
+    2 => 'Incydenty i strona statusu działają w jednym procesie.',
     3 => 'Drill kontrolowany potwierdza gotowość operacyjną.',
   ),
   'pitfalls' => 

@@ -13,7 +13,7 @@ return array (
     0 => 'synthetic-monitoring-login-flow',
     1 => 'api-endpoint-monitoring',
   ),
-  'question' => 'Synthetic checks vs HTTP checks: jaka jest różnica?',
+  'question' => 'Testy syntetyczne vs testy HTTP: jaka jest różnica?',
   'answer' => '<p>To dwa różne poziomy monitoringu:</p>
 
 <ul>
@@ -36,6 +36,6 @@ return array (
 </ul>
 
 <p>Praktyka: używaj HTTP checks jako „baseline” dla wielu endpointów, a synthetic checks dla kilku najważniejszych user journeys.</p>',
-  'meta_title' => 'Synthetic checks vs HTTP checks: jaka jest różnica? | TruMonit',
-  'meta_description' => 'HTTP checks są szybkie (status/latency/keyword). Synthetic checks (Playwright) monitorują przeglądarkę i user journey (login/checkout), wykrywając błędy UI/JS.',
+  'meta_title' => 'Testy syntetyczne vs testy HTTP: jaka jest różnica? | TruMonit',
+  'meta_description' => 'Testy HTTP są szybkie (status/opóźnienie/słowo kluczowe). Testy syntetyczne (Playwright) monitorują przeglądarkę i ścieżkę użytkownika (logowanie/checkout), wykrywając błędy UI/JS.',
 );

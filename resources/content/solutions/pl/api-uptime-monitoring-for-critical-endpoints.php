@@ -2,8 +2,8 @@
 
 return array (
   'order' => 35,
-  'title' => 'API uptime monitoring dla krytycznych endpointów',
-  'meta_title' => 'API uptime monitoring dla krytycznych endpointów | TruMonit',
+  'title' => 'Monitoring dostępności API dla krytycznych endpointów',
+  'meta_title' => 'Monitoring dostępności API dla krytycznych endpointów | TruMonit',
   'meta_description' => 'Monitoring API dla krytycznych endpointów: status, latency, walidacja payloadu, auth checks i routing alertów, żeby wykrywać realne awarie przed użytkownikami.',
   'summary' => 'Monitoruj endpointy API, od których naprawdę zależą użytkownicy, a nie tylko /health. Liczą się latency, poprawność odpowiedzi, auth i jasny routing alertów.',
   'body' => '<p><strong>Monitoring API dla krytycznych endpointów</strong> ma sens tylko wtedy, gdy pilnuje ścieżek, z których naprawdę korzystają klienci. Zielony /health nic nie daje, jeśli login, faktury albo checkout API zwalniają, wpadają w rate limit albo zwracają błędny payload.</p><p>Dla krytycznych endpointów warto monitorować jednocześnie cztery rzeczy: status, opóźnienie, poprawność odpowiedzi i ownership. Taki układ daje szybszą detekcję i czystszą eskalację niż ogólny uptime check.</p><p><strong>Checklist:</strong> jeden endpoint health, jeden endpoint biznesowy, stabilne asercje payloadu, progi timeout/latency, widoczność 429 i routing alertów po severity.</p>',

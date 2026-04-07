@@ -6,32 +6,32 @@ return array (
   'meta_title' => 'Website Downtime Alerts for Ecommerce Revenue Paths | TruMonit',
   'meta_description' => 'Website downtime alerts for ecommerce: monitor checkout, cart, payment callbacks, redirects, and key revenue paths before lost sales show up in support.',
   'summary' => 'For ecommerce, homepage uptime is not enough. Monitor cart, checkout, payment, and revenue-critical flows first.',
-  'body' => '<p>This page targets BOFU queries and compares monitoring options by operational impact, not only feature count. Focus on signal quality, escalation reliability, and customer-safe incident communication.</p><p>Use a practical model: classify critical paths, map severity to channels, and validate workflows through monthly drills. This reduces noise and improves response speed.</p><p><strong>Checklist:</strong> critical ownership, threshold policy, escalation timers, status communication cadence, and post-incident review.</p>',
-  'problem' => 'Teams lose time and trust when monitoring lacks clear incident workflow and actionable alerting.',
+  'body' => '<p>For ecommerce, monitoring only the homepage gives false confidence. Revenue is decided in cart, checkout, payment callbacks, and post-payment redirects.</p><p>Alert policy should prioritize revenue paths: stricter thresholds for checkout and payment, separate escalation routes, and immediate incident communication when conversion-critical paths fail.</p><p>TruMonit helps teams protect these flows by combining path-level checks with actionable escalation and incident tracking.</p>',
+  'problem' => 'Revenue-impacting failures in checkout and payment paths are detected too late when monitoring stays page-level.',
   'approach' => 
   array (
-    0 => 'Map business-critical monitors first.',
-    1 => 'Set severity-based routing and cooldown.',
-    2 => 'Validate process through recurring incident drills.',
+    0 => 'Prioritize monitoring for cart, checkout, payment, and callback paths.',
+    1 => 'Apply stricter thresholds and faster routing for revenue-critical flows.',
+    2 => 'Test alert-to-action readiness during peak traffic windows.',
   ),
   'proof' => 
   array (
-    0 => 'Higher signal-to-noise in alerts.',
-    1 => 'Faster triage and escalation.',
-    2 => 'Better customer communication during incidents.',
+    0 => 'Revenue-impact incidents are detected before conversion collapses.',
+    1 => 'Checkout and payment failures are escalated to the right owners quickly.',
+    2 => 'Teams communicate active disruptions with clear business impact.',
   ),
   'checklist' => 
   array (
-    0 => 'Critical monitors tagged and owned.',
-    1 => 'Alert policy mapped by severity.',
-    2 => 'Status update cadence defined.',
-    3 => 'Postmortem review scheduled.',
+    0 => 'All conversion-critical URLs are covered by dedicated monitors.',
+    1 => 'Payment callback endpoints have separate failure policies.',
+    2 => 'Escalation channels include commerce and engineering stakeholders.',
+    3 => 'Incident review includes lost-orders window analysis.',
   ),
   'pitfalls' => 
   array (
-    0 => 'One severity policy for all monitors.',
-    1 => 'Late escalation after repeated failures.',
-    2 => 'No drills before production incidents.',
+    0 => 'Monitoring homepage uptime as a proxy for checkout health.',
+    1 => 'Delaying escalation for payment-path failures.',
+    2 => 'Ignoring third-party dependency failures in revenue flows.',
   ),
   'related_faq' => 
   array (

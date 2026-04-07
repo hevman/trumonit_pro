@@ -2,12 +2,12 @@
 
 return array (
   'order' => 32,
-  'title' => 'Status page software dla B2B SaaS',
-  'meta_title' => 'Status page software dla B2B SaaS | TruMonit',
-  'meta_description' => 'Status page dla B2B SaaS: publikuj jasne aktualizacje incydentów, zmniejsz presję na support i połącz detekcję, ownership oraz komunikację z klientem.',
-  'summary' => 'Status page w B2B SaaS to nie branding, tylko workflow zaufania i komunikacji podczas incydentów klient-facing.',
-  'body' => '<p>Ta strona odpowiada na zapytania BOFU i porównuje opcje monitoringu przez wpływ operacyjny, a nie samą listę funkcji. Liczy się jakość sygnału, niezawodna eskalacja i bezpieczna komunikacja incydentów.</p><p>Użyj prostego modelu: podziel monitory według krytyczności, ustaw routing per severity i testuj workflow w miesięcznych drillach. To zwykle obniża szum i skraca reakcję.</p><p><strong>Checklist:</strong> owner monitorów krytycznych, polityka progów, timery eskalacji, rytm aktualizacji statusu i przegląd po incydencie.</p>',
-  'problem' => 'Zespoły tracą czas i zaufanie, gdy monitoring nie ma klarownego workflow incydentowego i użytecznego alertingu.',
+  'title' => 'Narzędzie strony statusu dla B2B SaaS',
+  'meta_title' => 'Narzędzie strony statusu dla B2B SaaS | TruMonit',
+  'meta_description' => 'Strona statusu dla B2B SaaS: publikuj jasne aktualizacje incydentów, zmniejsz presję na wsparcie i połącz detekcję, odpowiedzialność oraz komunikację z klientem.',
+  'summary' => 'Strona statusu w B2B SaaS to nie branding, tylko proces budowania zaufania i komunikacji podczas incydentów po stronie klienta.',
+  'body' => '<p>W B2B SaaS strona statusu jest elementem procesu obsługi klienta, a nie tylko dodatkiem marketingowym. Klienci oczekują szybkiego potwierdzenia incydentu, zakresu wpływu i przewidywalnego rytmu aktualizacji.</p><p>Porównując narzędzia, sprawdź jak szybko od alertu publikujesz pierwszy komunikat oraz czy aktualizacje mogą być prowadzone przez ten sam zespół, który zarządza incydentem. To bezpośrednio wpływa na zaufanie i liczbę zgłoszeń do supportu.</p><p>TruMonit łączy monitoring i komunikację statusową w jednym przebiegu, dzięki czemu zespół nie traci czasu na ręczne przenoszenie informacji między systemami.</p>',
+  'problem' => 'Komunikacja do klientów jest opóźniona względem realnego stanu incydentu, co zwiększa presję na wsparcie.',
   'approach' => 
   array (
     0 => 'Najpierw oznacz ścieżki krytyczne biznesowo.',

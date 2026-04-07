@@ -33,5 +33,5 @@ return array (
 
 <p>Jeśli alerty są głośne, ludzie je wyciszają. To prosta droga do przegapionych incydentów.</p>',
   'meta_title' => 'Jak ograniczyć fałszywe alerty (alert fatigue)? | TruMonit',
-  'meta_description' => 'Fałszywe alerty: kolejne błędy + retry, cooldown/deduplikacja, maintenance windows i multi‑region. Praktyczne ustawienia, które redukują szum bez ukrywania awarii.',
+  'meta_description' => 'Fałszywe alerty: kolejne błędy + ponowienia, wygaszanie/deduplikacja, okna serwisowe i wiele regionów. Praktyczne ustawienia, które redukują szum bez ukrywania awarii.',
 );

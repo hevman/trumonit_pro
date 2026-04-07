@@ -6,8 +6,8 @@ return array (
   'meta_title' => 'Ping monitoring vs HTTP monitoring | TruMonit',
   'meta_description' => 'Ping monitoring vs HTTP monitoring — Praktyczny przewodnik: diagnoza, kroki wdrożenia, checklista i powiązane scenariusze monitoringu w TruMonit.',
   'summary' => 'Scenariusz o intencji zakupowej, skupiony na wynikach operacyjnych: szybsza detekcja, lepsza eskalacja i mniej szumu alertowego.',
-  'body' => '<p>Ta strona odpowiada na zapytania BOFU i porównuje opcje monitoringu przez wpływ operacyjny, a nie samą listę funkcji. Liczy się jakość sygnału, niezawodna eskalacja i bezpieczna komunikacja incydentów.</p><p>Użyj prostego modelu: podziel monitory według krytyczności, ustaw routing per severity i testuj workflow w miesięcznych drillach. To zwykle obniża szum i skraca reakcję.</p><p><strong>Checklist:</strong> owner monitorów krytycznych, polityka progów, timery eskalacji, rytm aktualizacji statusu i przegląd po incydencie.</p>',
-  'problem' => 'Zespoły tracą czas i zaufanie, gdy monitoring nie ma klarownego workflow incydentowego i użytecznego alertingu.',
+  'body' => '<p>Porównanie ping vs HTTP najczęściej sprowadza się do pytania: czy chcesz wykrywać tylko dostępność hosta, czy realny problem użytkownika. Ping jest szybki, ale nie wykryje wielu awarii aplikacyjnych.</p><p>HTTP monitoring daje więcej kontekstu: status kod, opóźnienie, treść odpowiedzi, redirecty. Dlatego w praktyce najlepszy model to ping jako warstwa bazowa i HTTP jako warstwa decyzyjna.</p><p>TruMonit ułatwia połączenie obu podejść i ustawienie różnych progów dla sygnałów infrastrukturalnych oraz aplikacyjnych.</p>',
+  'problem' => 'Zespół opiera się na pingach i zbyt późno wykrywa awarie, które są widoczne dopiero na poziomie HTTP.',
   'approach' => 
   array (
     0 => 'Najpierw oznacz ścieżki krytyczne biznesowo.',

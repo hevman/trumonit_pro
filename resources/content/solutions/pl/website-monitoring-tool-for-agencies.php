@@ -2,12 +2,12 @@
 
 return array (
   'order' => 30,
-  'title' => 'Website monitoring tool dla agencji',
-  'meta_title' => 'Website monitoring tool dla agencji | TruMonit',
+  'title' => 'Narzędzie monitoringu stron dla agencji',
+  'meta_title' => 'Narzędzie monitoringu stron dla agencji | TruMonit',
   'meta_description' => 'Monitoring stron dla agencji: monitoruj wiele serwisów klientów, routuj alerty per projekt, ogranicz fałszywe alarmy i komunikuj incydenty bez ręcznego chaosu.',
   'summary' => 'Setup monitoringu dla agencji utrzymujących wiele stron klientów: czytelny ownership, mniej szumu i szybsze komunikaty do klienta.',
-  'body' => '<p>Ta strona odpowiada na zapytania BOFU i porównuje opcje monitoringu przez wpływ operacyjny, a nie samą listę funkcji. Liczy się jakość sygnału, niezawodna eskalacja i bezpieczna komunikacja incydentów.</p><p>Użyj prostego modelu: podziel monitory według krytyczności, ustaw routing per severity i testuj workflow w miesięcznych drillach. To zwykle obniża szum i skraca reakcję.</p><p><strong>Checklist:</strong> owner monitorów krytycznych, polityka progów, timery eskalacji, rytm aktualizacji statusu i przegląd po incydencie.</p>',
-  'problem' => 'Zespoły tracą czas i zaufanie, gdy monitoring nie ma klarownego workflow incydentowego i użytecznego alertingu.',
+  'body' => '<p>Agencje potrzebują monitoringu, który działa na wielu projektach jednocześnie i nie miesza odpowiedzialności między klientami. Największym kosztem jest zwykle ręczna koordynacja, a nie sama detekcja awarii.</p><p>Dlatego warto wybierać narzędzie, które wspiera podział per klient, per projekt i per krytyczność. To pozwala ograniczyć szum i pokazać klientom przewidywalny standard reakcji.</p><p>W TruMonit łatwiej utrzymać taki model operacyjny, bo monitoring i obsługa incydentu są spięte w jednym workflow agencyjnym.</p>',
+  'problem' => 'Monitoring wielokliencki bez jasnego podziału odpowiedzialności generuje opóźnienia i chaos komunikacyjny.',
   'approach' => 
   array (
     0 => 'Najpierw oznacz ścieżki krytyczne biznesowo.',

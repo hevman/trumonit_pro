@@ -39,5 +39,5 @@ return array (
 
 <p>Jeśli chcesz szybciej przejść do działania, zacznij od 2 monitorów: /health + 1 endpoint biznesowy. Potem dodaj 429/rate limit i webhooki.</p>',
   'meta_title' => 'Jak monitorować endpointy API (REST/JSON)? | TruMonit',
-  'meta_description' => 'Praktyczny monitoring API: /health + endpoint biznesowy, progi latency, stabilne asercje JSON/keyword oraz separacja 429 (rate limit) od 5xx.',
+  'meta_description' => 'Praktyczny monitoring API: /health + endpoint biznesowy, progi opóźnienia, stabilne asercje JSON/słów kluczowych oraz rozdzielenie 429 (limitów) od 5xx.',
 );

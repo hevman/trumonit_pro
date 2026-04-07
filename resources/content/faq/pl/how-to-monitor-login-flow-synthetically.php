@@ -12,7 +12,7 @@ return array (
   array (
     0 => 'synthetic-monitoring-login-flow',
   ),
-  'question' => 'Jak monitorować flow logowania przez synthetic checks (Playwright)?',
+  'question' => 'Jak monitorować proces logowania przez testy syntetyczne (Playwright)?',
   'answer' => '<p>Monitoring logowania przez <strong>synthetic checks</strong> polega na zasymulowaniu prawdziwego użytkownika w przeglądarce (np. Playwright): wejście na stronę logowania, wpisanie danych i walidacja elementu po zalogowaniu.</p>
 
 <h3>Minimalny scenariusz (wystarczający w 80% przypadków)</h3>
@@ -38,6 +38,6 @@ return array (
 </ul>
 
 <p>W praktyce synthetic monitoring logowania jest najlepszym sposobem na wykrywanie regresji UI/JS po deployu.</p>',
-  'meta_title' => 'Jak monitorować flow logowania przez synthetic checks (Playwright)? | TruMonit',
-  'meta_description' => 'Synthetic monitoring logowania (Playwright): scenariusz krok po kroku, stabilne selektory (data-testid), retry/cooldown oraz zasady bezpieczeństwa kont testowych.',
+  'meta_title' => 'Jak monitorować proces logowania przez testy syntetyczne (Playwright)? | TruMonit',
+  'meta_description' => 'Monitoring syntetyczny logowania (Playwright): scenariusz krok po kroku, stabilne selektory (data-testid), ponowienia i wygaszanie alertów oraz zasady bezpieczeństwa kont testowych.',
 );

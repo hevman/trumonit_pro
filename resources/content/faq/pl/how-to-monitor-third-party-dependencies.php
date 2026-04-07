@@ -34,5 +34,5 @@ return array (
 
 <p>Zobacz też: <a href=\"/pl/solutions/monitoring-third-party-dependencies\">pełny scenariusz monitoringu zależności</a>.</p>',
   'meta_title' => 'Jak monitorować zależności zewnętrzne? | TruMonit',
-  'meta_description' => 'Monitoring zależności zewnętrznych: osobne monitory dla CDN/DNS/płatności/auth, routing alertów po severity i komunikacja scope na status page. Jak szybko odróżnić vendor outage od Twojej awarii.',
+  'meta_description' => 'Monitoring zależności zewnętrznych: osobne monitory dla CDN/DNS/płatności/logowania, kierowanie alertów wg krytyczności i komunikacja zakresu na stronie statusu. Jak szybko odróżnić awarię dostawcy od Twojej awarii.',
 );

@@ -2,10 +2,10 @@
 
 return array (
   'order' => 1,
-  'title' => 'Monitoring uptime dla SaaS',
-  'meta_title' => 'Monitoring uptime dla SaaS | TruMonit',
-  'meta_description' => 'Ustaw monitoring uptime, który łapie realne awarie bez szumu: częstotliwość, progi, multi‑region, eskalacja i dowód w historii incydentów.',
-  'summary' => 'Praktyczny monitoring uptime dla zespołów SaaS: szybkie wykrycie, mniej fałszywych alarmów, jasna eskalacja i historia incydentów.',
+  'title' => 'Monitoring dostępności dla SaaS',
+  'meta_title' => 'Monitoring dostępności dla SaaS | TruMonit',
+  'meta_description' => 'Ustaw monitoring dostępności, który łapie realne awarie bez szumu: częstotliwość, progi, wiele regionów, eskalacja i dowód w historii incydentów.',
+  'summary' => 'Praktyczny monitoring dostępności dla zespołów SaaS: szybkie wykrycie, mniej fałszywych alarmów, jasna eskalacja i historia incydentów.',
   'body' => '<p>Jeśli szukasz <strong>monitoringu uptime</strong>, chcesz jednego: wykryć awarię szybko i wysłać alert do właściwej osoby. Najczęstszy problem to nie brak monitoringu, tylko monitoring tak głośny, że nikt mu nie ufa.</p>
 
 <h3>TL;DR</h3>

@@ -2,9 +2,9 @@
 
 return array (
   'order' => 29,
-  'title' => 'Najlepszy setup monitoringu dla małego zespołu SaaS',
-  'meta_title' => 'Najlepszy setup monitoringu dla małego zespołu SaaS | TruMonit',
-  'meta_description' => 'Najlepszy setup monitoringu dla małego SaaS: co monitorować najpierw, ile monitorów naprawdę potrzebujesz i jak nie utonąć w szumie alertów.',
+  'title' => 'Najlepsza konfiguracja monitoringu dla małego zespołu SaaS',
+  'meta_title' => 'Najlepsza konfiguracja monitoringu dla małego zespołu SaaS | TruMonit',
+  'meta_description' => 'Najlepsza konfiguracja monitoringu dla małego SaaS: co monitorować najpierw, ile monitorów naprawdę potrzebujesz i jak nie utonąć w szumie alertów.',
   'summary' => 'Lekki blueprint monitoringu dla małych zespołów SaaS, które potrzebują sensownego pokrycia bez przeinwestowanego stacka ops.',
   'body' => '<p>Mały zespół SaaS nie potrzebuje od razu pięćdziesięciu monitorów. Potrzebuje krótkiej listy spiętej z przychodem, onboardingiem, API i zaufaniem klientów. Dobry setup łapie bolesne incydenty wcześnie i nie buduje kultury wiecznego hałasu on-call.</p>
 

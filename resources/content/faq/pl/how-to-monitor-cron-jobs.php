@@ -40,6 +40,6 @@ return array (
 </ul>
 
 <p>Powiązane: <a href=\"/pl/solutions/api-endpoint-monitoring\">monitoring endpointów API</a>, <a href=\"/pl/solutions/reduce-false-alerts\">redukcja fałszywych alarmów</a> i <a href=\"/pl/solutions/alert-routing-slack-teams-webhooks\">routing alertów</a>.</p>',
-  'meta_title' => 'Jak monitorować cron jobs i zadania cykliczne? | TruMonit',
+  'meta_title' => 'Jak monitorować zadania cron i zadania cykliczne? | TruMonit',
   'meta_description' => 'Jak monitorować cron jobs: heartbeat (ping po sukcesie), grace period, wariant start+finish dla długich zadań oraz typowe błędy. Praktyczne wskazówki pod alerting.',
 );

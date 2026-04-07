@@ -1,10 +1,10 @@
 @php
     $isPl = app()->getLocale() === 'pl';
     $seoTitle = $isPl
-        ? 'Cennik monitoringu dla SaaS, agencji i e-commerce | TruMonit'
-        : 'Monitoring Pricing for SaaS, Agencies, and Ecommerce | TruMonit';
+        ? 'Cennik monitoringu stron i API | TruMonit'
+        : 'Website and API Monitoring Pricing | TruMonit';
     $seoDescription = $isPl
-        ? 'Porównaj plany TruMonit dla SaaS, software house i sklepów online: monitory, login/API/checkout, status page, SEO Risk i alerting.'
+        ? 'Porównaj plany TruMonit dla SaaS, software house i sklepów online: monitory, login/API/checkout, status page, SEO Risk i alerty.'
         : 'Compare TruMonit plans for SaaS teams, agencies, and ecommerce: monitors, login/API/checkout coverage, status pages, SEO risk, and alerting.';
     $homeUrl = route('localized.public.home', ['locale' => app()->getLocale()]);
     $pricingUrl = route('localized.public.pricing', ['locale' => app()->getLocale()]);

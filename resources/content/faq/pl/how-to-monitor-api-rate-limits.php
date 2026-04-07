@@ -13,7 +13,7 @@ return array (
     0 => 'api-endpoint-monitoring',
     1 => 'rate-limit-monitoring',
   ),
-  'question' => 'Jak monitorować rate limit API (429)?',
+  'question' => 'Jak monitorować limity API (429)?',
   'answer' => '<p>Rate limit zwykle objawia się kodem <strong>429</strong>. Sam 429 nie zawsze oznacza „awarię”, ale jest mocnym sygnałem przeciążenia, złego limitu lub „retry storm” po stronie klientów.</p>
 
 <h3>Co monitorować</h3>
@@ -32,6 +32,6 @@ return array (
 </ul>
 
 <p>Uwaga na retry storm: agresywny retry bez backoff/jitter może pogorszyć incydent. Warto wymusić backoff po stronie klientów.</p>',
-  'meta_title' => 'Jak monitorować rate limit API (429)? | TruMonit',
-  'meta_description' => 'Monitoring rate limit API: skoki 429, korelacja z latency/5xx, osobne alerty throttling vs błąd aplikacji oraz ochrona przed retry storm (backoff/jitter).',
+  'meta_title' => 'Jak monitorować limity API (429)? | TruMonit',
+  'meta_description' => 'Monitoring limitów API: skoki 429, korelacja z opóźnieniami i 5xx, osobne alerty dla ograniczania ruchu vs błędu aplikacji oraz ochrona przed burzą ponowień (backoff/jitter).',
 );

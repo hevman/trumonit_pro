@@ -40,6 +40,6 @@ return array (
 </ul>
 
 <p>Jeśli chcesz spiąć to w proces, zobacz też <a href=\"/pl/solutions/incident-response-playbook\">playbook reakcji na incydenty</a> oraz FAQ: <a href=\"/pl/faq/what-is-sla-vs-slo\">SLA vs SLO</a>.</p>',
-  'meta_title' => 'Czym jest error budget w monitoringu SLO? | TruMonit',
+  'meta_title' => 'Czym jest budżet błędów w monitoringu SLO? | TruMonit',
   'meta_description' => 'Error budget (budżet błędów) to margines niedostępności wynikający z SLO. Jak go liczyć, monitorować burn rate i kiedy wstrzymać wdrożenia, żeby nie złamać celów.',
 );

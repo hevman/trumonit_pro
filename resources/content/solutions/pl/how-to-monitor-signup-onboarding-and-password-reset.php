@@ -2,9 +2,9 @@
 
 return array (
   'order' => 28,
-  'title' => 'Jak monitorować signup, onboarding i reset hasła',
-  'meta_title' => 'Jak monitorować signup, onboarding i reset hasła | TruMonit',
-  'meta_description' => 'Monitoring signupu, onboardingu i resetu hasła, żeby wychwycić regresje auth zanim nowi użytkownicy trafią na zepsute flow.',
+  'title' => 'Jak monitorować rejestrację, onboarding i reset hasła',
+  'meta_title' => 'Jak monitorować rejestrację, onboarding i reset hasła | TruMonit',
+  'meta_description' => 'Monitoring rejestracji, onboardingu i resetu hasła, żeby wychwycić regresje logowania zanim nowi użytkownicy trafią na zepsuty proces.',
   'summary' => 'Setup monitoringu dla krytycznych flow auth i onboardingu: signup, reset hasła, kroki potwierdzenia i pierwsza aktywacja.',
   'body' => '<p>Wiele produktów monitoruje login, ale pomija signup i recovery. To ryzykowne, bo zepsuty signup lub reset hasła po cichu blokują nowy przychód i zwiększają support.</p>
 

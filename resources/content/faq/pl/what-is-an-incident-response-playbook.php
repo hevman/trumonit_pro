@@ -13,7 +13,7 @@ return array (
     0 => 'incident-response-playbook',
     1 => 'status-page-for-saas',
   ),
-  'question' => 'Czym jest playbook incydentowy (reakcja na incydent)?',
+  'question' => 'Czym jest plan reagowania na incydent (reakcja na incydent)?',
   'answer' => '<p><strong>Playbook incydentowy</strong> to spis ról i kroków, które wykonujesz po alercie: triage, komunikacja, mitygacja i postmortem. Jego zadanie to skrócić MTTR i ujednolicić reakcję między zmianami/zespołami.</p>
 
 <h3>Co powinien zawierać playbook</h3>
@@ -33,6 +33,6 @@ return array (
 </ul>
 
 <p>Playbook nie musi być długi. Ważne, żeby był używany i aktualizowany po incydentach.</p>',
-  'meta_title' => 'Czym jest playbook incydentowy (reakcja na incydent)? | TruMonit',
-  'meta_description' => 'Playbook incydentowy: role, triage, komunikacja (status page), mitygacja i postmortem. Skraca MTTR i zwiększa powtarzalność reakcji zespołu.',
+  'meta_title' => 'Czym jest plan reakcji na incydent? | TruMonit',
+  'meta_description' => 'Plan reagowania na incydent: role, triage, komunikacja na stronie statusu, mitygacja i postmortem. Skraca MTTR i zwiększa powtarzalność reakcji zespołu.',
 );

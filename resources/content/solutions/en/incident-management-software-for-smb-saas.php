@@ -6,32 +6,32 @@ return array (
   'meta_title' => 'Incident Management Software for SMB SaaS | TruMonit',
   'meta_description' => 'Incident management software for SMB SaaS: structure severity, ownership, escalations, and status communication so small teams can respond like larger ops teams.',
   'summary' => 'For SMB SaaS teams, incident management means faster ownership, cleaner escalation, and a repeatable customer update process.',
-  'body' => '<p>This page targets BOFU queries and compares monitoring options by operational impact, not only feature count. Focus on signal quality, escalation reliability, and customer-safe incident communication.</p><p>Use a practical model: classify critical paths, map severity to channels, and validate workflows through monthly drills. This reduces noise and improves response speed.</p><p><strong>Checklist:</strong> critical ownership, threshold policy, escalation timers, status communication cadence, and post-incident review.</p>',
-  'problem' => 'Teams lose time and trust when monitoring lacks clear incident workflow and actionable alerting.',
+  'body' => '<p>SMB SaaS teams need incident management that is lightweight but enforceable: clear roles, simple escalation, and fast customer communication. Overly heavy frameworks are often ignored in real incidents.</p><p>A practical model is enough: detect, triage, assign owner, communicate, and close with a short post-incident review. This alone can reduce MTTR significantly.</p><p>TruMonit supports this operating model so small teams can run mature incident response without process overhead.</p>',
+  'problem' => 'Without a simple, repeatable incident process, teams respond inconsistently and recovery times increase.',
   'approach' => 
   array (
-    0 => 'Map business-critical monitors first.',
-    1 => 'Set severity-based routing and cooldown.',
-    2 => 'Validate process through recurring incident drills.',
+    0 => 'Define a lightweight incident lifecycle with explicit role ownership.',
+    1 => 'Map severity levels to escalation channels and response targets.',
+    2 => 'Close incidents with short post-incident actions that prevent repeats.',
   ),
   'proof' => 
   array (
-    0 => 'Higher signal-to-noise in alerts.',
-    1 => 'Faster triage and escalation.',
-    2 => 'Better customer communication during incidents.',
+    0 => 'MTTR decreases as teams follow one repeatable response flow.',
+    1 => 'Escalations happen earlier with less coordination overhead.',
+    2 => 'Customer updates become more consistent during active incidents.',
   ),
   'checklist' => 
   array (
-    0 => 'Critical monitors tagged and owned.',
-    1 => 'Alert policy mapped by severity.',
-    2 => 'Status update cadence defined.',
-    3 => 'Postmortem review scheduled.',
+    0 => 'Severity definitions are documented and understood by the team.',
+    1 => 'Each incident has a clear owner and backup owner.',
+    2 => 'Communication cadence is set for customer-facing incidents.',
+    3 => 'Post-incident notes include concrete prevention tasks.',
   ),
   'pitfalls' => 
   array (
-    0 => 'One severity policy for all monitors.',
-    1 => 'Late escalation after repeated failures.',
-    2 => 'No drills before production incidents.',
+    0 => 'Overengineering process for a small team.',
+    1 => 'No ownership handoff when the primary responder is unavailable.',
+    2 => 'Treating postmortems as documentation only, without follow-through.',
   ),
   'related_faq' => 
   array (

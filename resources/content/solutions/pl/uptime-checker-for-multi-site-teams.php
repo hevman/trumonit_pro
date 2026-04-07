@@ -2,12 +2,12 @@
 
 return array (
   'order' => 34,
-  'title' => 'Uptime checker dla zespołów obsługujących wiele serwisów',
-  'meta_title' => 'Uptime checker dla zespołów obsługujących wiele serwisów | TruMonit',
-  'meta_description' => 'Uptime checker dla zespołów obsługujących wiele serwisów — Praktyczny przewodnik: diagnoza, kroki wdrożenia, checklista i powiązane scenariusze monitoringu w.',
+  'title' => 'Kontrola dostępności dla zespołów obsługujących wiele serwisów',
+  'meta_title' => 'Kontrola dostępności dla zespołów obsługujących wiele serwisów | TruMonit',
+  'meta_description' => 'Kontrola dostępności dla zespołów obsługujących wiele serwisów - praktyczny przewodnik: diagnoza, kroki wdrożenia, lista kontrolna i powiązane scenariusze monitoringu w TruMonit.',
   'summary' => 'Scenariusz o intencji zakupowej, skupiony na wynikach operacyjnych: szybsza detekcja, lepsza eskalacja i mniej szumu alertowego.',
-  'body' => '<p>Ta strona odpowiada na zapytania BOFU i porównuje opcje monitoringu przez wpływ operacyjny, a nie samą listę funkcji. Liczy się jakość sygnału, niezawodna eskalacja i bezpieczna komunikacja incydentów.</p><p>Użyj prostego modelu: podziel monitory według krytyczności, ustaw routing per severity i testuj workflow w miesięcznych drillach. To zwykle obniża szum i skraca reakcję.</p><p><strong>Checklist:</strong> owner monitorów krytycznych, polityka progów, timery eskalacji, rytm aktualizacji statusu i przegląd po incydencie.</p>',
-  'problem' => 'Zespoły tracą czas i zaufanie, gdy monitoring nie ma klarownego workflow incydentowego i użytecznego alertingu.',
+  'body' => '<p>Zespoły obsługujące wiele serwisów mają inny problem niż pojedynczy produkt: priorytety incydentów mieszają się między projektami. Sam uptime checker nie wystarczy bez jasnego podziału krytyczności i odpowiedzialności.</p><p>Porównując rozwiązania, oceń czy da się łatwo grupować monitory per klient/projekt oraz ustawić osobne kanały eskalacji. To najczęściej decyduje, czy zespół działa spokojnie, czy stale gasi pożary.</p><p>W TruMonit kluczowe jest to, że jeden proces obejmuje detekcję, eskalację i historię incydentów dla wielu serwisów jednocześnie.</p>',
+  'problem' => 'Monitoring wielu serwisów bez podziału priorytetów prowadzi do chaosu i opóźnionej reakcji na najważniejsze awarie.',
   'approach' => 
   array (
     0 => 'Najpierw oznacz ścieżki krytyczne biznesowo.',

@@ -2,12 +2,12 @@
 
 return array (
   'order' => 33,
-  'title' => 'Website downtime alerts, które naprawdę działają',
-  'meta_title' => 'Website downtime alerts, które naprawdę działają | TruMonit',
-  'meta_description' => 'Jak ustawić alerty o awarii strony: retry, consecutive failures, routing, cooldown i ownership, żeby alerty były szybkie, ale bez szumu.',
+  'title' => 'Alerty awarii strony, które naprawdę działają',
+  'meta_title' => 'Alerty awarii strony, które naprawdę działają | TruMonit',
+  'meta_description' => 'Jak ustawić alerty o awarii strony: ponowienia, kolejne błędy, kierowanie alertów, wygaszanie i odpowiedzialność, żeby alerty były szybkie, ale bez szumu.',
   'summary' => 'Skonfiguruj alerty o awarii strony tak, żeby łapały realne problemy szybko, ale nie spamowały zespołu na każdym chwilowym błędzie.',
-  'body' => '<p>Ta strona odpowiada na zapytania BOFU i porównuje opcje monitoringu przez wpływ operacyjny, a nie samą listę funkcji. Liczy się jakość sygnału, niezawodna eskalacja i bezpieczna komunikacja incydentów.</p><p>Użyj prostego modelu: podziel monitory według krytyczności, ustaw routing per severity i testuj workflow w miesięcznych drillach. To zwykle obniża szum i skraca reakcję.</p><p><strong>Checklist:</strong> owner monitorów krytycznych, polityka progów, timery eskalacji, rytm aktualizacji statusu i przegląd po incydencie.</p>',
-  'problem' => 'Zespoły tracą czas i zaufanie, gdy monitoring nie ma klarownego workflow incydentowego i użytecznego alertingu.',
+  'body' => '<p>Skuteczne alerty awarii strony to kompromis między szybkością a jakością sygnału. Zbyt agresywne reguły powodują szum, a zbyt łagodne opóźniają reakcję na realny problem.</p><p>Najlepszy setup zaczyna się od prostych zasad: retry, liczba kolejnych błędów, cooldown i różne progi dla URL-i krytycznych oraz pomocniczych. Potem dopiero warto rozszerzać konfigurację.</p><p>TruMonit umożliwia takie etapowe podejście, dzięki czemu alerty stają się wiarygodne już na starcie, bez tygodni strojenia.</p>',
+  'problem' => 'Źle ustawione progi alertów powodują albo ciągły szum, albo zbyt późne wykrywanie realnych awarii.',
   'approach' => 
   array (
     0 => 'Najpierw oznacz ścieżki krytyczne biznesowo.',
