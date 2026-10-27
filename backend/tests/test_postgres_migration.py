@@ -26,12 +26,12 @@ def test_new_installation_migrations_and_tenant_boundary(monkeypatch):
 
     with db_engine.connect() as conn:
         installed = conn.execute(text("SELECT version_num FROM alembic_version")).scalar_one()
-        assert installed == "0003_team_tasks"
+        assert installed == "0004_account_security"
         assert conn.execute(text(
             "SELECT COUNT(*) FROM information_schema.tables "
             "WHERE table_schema='public' AND table_name IN "
-            "('users', 'workspaces', 'answer_library', 'requirement_responses', 'team_invitations', 'requirement_tasks')"
-        )).scalar_one() == 6
+            "('users', 'workspaces', 'answer_library', 'requirement_responses', 'team_invitations', 'requirement_tasks', 'account_action_tokens', 'account_mail_throttles')"
+        )).scalar_one() == 8
 
     app.dependency_overrides[get_db] = real_db
     try:

@@ -11,7 +11,7 @@ The previous website's database and customer content are NOT reused or migrated.
 
 ## Customer workflow
 
-1. Register an account and a new organization. Passwords are hashed with
+1. Register and verify a work email before accessing a new organization. Passwords are hashed with
    scrypt; session tokens are random and hashed server-side. Browser cookies
    are HttpOnly, SameSite Strict, and protected by a private API gateway.
 2. Create saved tender projects with a buyer, submission deadline and stage.
@@ -83,8 +83,9 @@ actual successful run before claiming compilation or deployment.
 
 ## Security and commercial launch gates
 
-- Verify ownership of email addresses, implement password resets and verified invitation
-  delivery. Self-registration is currently suitable for local preview only.
+- Work-email verification and single-use password recovery are implemented;
+  production needs a validated SMTP configuration, deliverability review,
+  abuse prevention and invite delivery. Self-registration is still a preview.
 - Add edge IP throttling, malware scanning, hardened DOCX decompression limits,
   encrypted object storage, backups, retention/deletion and GDPR workflows.
 - Add PostgreSQL-backed real two-tenant end-to-end tests and deployment checks.
@@ -117,8 +118,8 @@ separate migration revisions; deployed baseline revisions must not be mutated.
 
 Owners can invite editors and viewers using /team. Tokens are random,
 stored only as SHA-256 digests, valid for three days and single-use.
-The owner sends each link securely; email delivery and verification do
-NOT exist yet. A new member signs up at /join; an existing account signs
+The owner sends each invite link securely; verification and recovery
+emails are sent only when a mail transport is explicitly configured. A new member signs up at /join; an existing account signs
 in there. Members can switch between workspaces via /team.
 
 Editors can prepare bids, upload documents, change reviews, author company
@@ -128,4 +129,47 @@ audit events. Removed members lose sessions for this company immediately.
 Existing projects/data remain tenant-scoped; no prior Laravel data or AI.
 
 Do not invite real customer teams until verified invitations, security
-review, backup/retention, SSO and account recovery are implemented.
+review, backup/retention, enterprise SSO and deliverability are implemented.
+
+
+## Verified email and password recovery (v0004)
+
+New registrations and newly invited accounts do **not** receive a session until
+the user confirms ownership of the email address via a one-use link, which
+expires after 24 hours. The verification endpoint creates a new session.
+Requesting a password reset always returns a generic answer for unknown users.
+Reset tokens expire after 30 minutes; a completed reset invalidates **all**
+active sessions for the account across organizations. Tokens are hashed in
+PostgreSQL and are consumed once. Email sends are limited to three per
+email/purpose per hour. Admin-visible audit entries record verification and
+password resets without storing any token.
+
+Set the following in .env for **local development only**:
+
+    TRUMONIT_ENV=development
+    TRUMONIT_MAIL_MODE=file
+    TRUMONIT_PUBLIC_URL=http://localhost:3100
+
+Start Compose, register, then read the verification message from the
+container's private \`/home/appuser/outbox\` directory. Do not publish this
+directory or its token-bearing messages. Visit the link inside the email.
+
+Production defaults to TRUMONIT_ENV=production and disabled mail. It **refuses**
+new registrations when mail is not configured. For SMTP over SSL set
+TRUMONIT_MAIL_MODE=smtp_ssl, TRUMONIT_PUBLIC_URL=https://trumonit.pro,
+TRUMONIT_SMTP_HOST, TRUMONIT_SMTP_PORT=465, TRUMONIT_SMTP_USER,
+TRUMONIT_SMTP_PASSWORD and TRUMONIT_MAIL_FROM (a verified sender).
+Production refuses HTTP origins and file outboxes. Configure real DNS/TLS,
+SMTP credentials securely and validate delivery before customer onboarding.
+
+Account UI: \`/account\` accepts verification links, sends a resend request and
+handles password recovery. The token is placed in the URL fragment (not HTTP
+request paths or query strings) and cleared from browser history on load.
+Existing development accounts created before this migration are unverified
+and must request email verification; the migration does not assume address
+ownership. Existing account passwords and organization data are untouched.
+
+**Remaining gates:** independently verified SMTP setup, rate limiting at
+edge/IP and anti-enumeration latency, SSO/MFA, managed session policies,
+malware scan, data retention/deletion and restore drills, GDPR review,
+Stripe/webhooks and production security testing. No AI.

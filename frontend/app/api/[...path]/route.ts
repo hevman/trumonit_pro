@@ -2,7 +2,7 @@ import {NextRequest,NextResponse} from "next/server";
 
 type Context={params:Promise<{path:string[]}>};
 const cookieName="trumonit_session";
-const grantRoutes=new Set(["auth/login","auth/register","team/claim"]);
+const grantRoutes=new Set(["auth/login","auth/verify"]);
 
 async function forward(req:NextRequest,ctx:Context){
   const origin=process.env.API_INTERNAL_URL;
@@ -69,7 +69,7 @@ async function forward(req:NextRequest,ctx:Context){
         ...(contentDisposition?{"Content-Disposition":contentDisposition}:{}),
       },
     });
-    if(route==="auth/logout"&&result.ok)response.cookies.delete(cookieName);
+    if((route==="auth/logout"||route==="auth/password/reset")&&result.ok)response.cookies.delete(cookieName);
     if(result.status===401&&route==="auth/me")response.cookies.delete(cookieName);
     return response;
   }catch{

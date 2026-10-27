@@ -1,7 +1,7 @@
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from .security import require_gateway
-from . import auth, projects, responses, library_import, audit, team, tasks
+from . import auth, projects, responses, library_import, audit, team, tasks, account_security
 
 app = FastAPI(
     title="Trumonit Supplier RFP Workbench",
@@ -18,6 +18,7 @@ def health():
 
 
 app.include_router(auth.router, prefix="/api", dependencies=[Depends(require_gateway)])
+app.include_router(account_security.router, prefix="/api", dependencies=[Depends(require_gateway)])
 app.include_router(projects.router, prefix="/api", dependencies=[Depends(require_gateway)])
 app.include_router(responses.router, prefix="/api", dependencies=[Depends(require_gateway)])
 app.include_router(library_import.router, prefix="/api", dependencies=[Depends(require_gateway)])

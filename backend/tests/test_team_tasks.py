@@ -1,7 +1,7 @@
 """Invitation lifecycle, owner/editor/viewer permissions and tenant-bound task tracking."""
 from datetime import date, timedelta
 
-from .conftest import authorized, register
+from .conftest import authorized, register, verify_mail
 from .test_workflow import docx_bytes
 
 
@@ -44,8 +44,12 @@ def test_new_member_invitation_task_and_explicit_role_enforcement(client, gatewa
         "password": "ComplexPasswordFor2026!",
     })
     assert accepted.status_code == 201, accepted.text
-    editor = authorized(gateway, accepted.json()["session_token"])
-    editor_id = accepted.json()["account"]["user_id"]
+    assert accepted.json()["verification_required"] is True
+    verified = client.post("/api/auth/verify", headers=gateway,
+        json={"token": verify_mail(client, gateway, "editor@example.test")})
+    assert verified.status_code == 200, verified.text
+    editor = authorized(gateway, verified.json()["session_token"])
+    editor_id = verified.json()["account"]["user_id"]
     assert accepted.json()["account"]["role"] == "editor"
     assert client.post("/api/team/claim", headers=gateway, json={
         "token": target["token"], "name": "Another user",

@@ -28,6 +28,7 @@ export default function JoinPage(){
  const [existing,setExisting]=useState(false);
  const [busy,setBusy]=useState(false);
  const [error,setError]=useState("");
+ const [notice,setNotice]=useState("");
  useEffect(()=>{
   const params=new URLSearchParams(window.location.hash.replace(/^#/,""));
   const candidate=params.get("token")||"";
@@ -51,6 +52,9 @@ export default function JoinPage(){
     await api("team/accept",{token});
    }else{
     await api("team/claim",{token,name,password});
+    setNotice("Account created. Check your email and open the verification link to activate access.");
+    setToken("");
+    return;
    }
    setToken("");
    router.replace("/app");router.refresh();
@@ -69,6 +73,7 @@ export default function JoinPage(){
    <h2>{preview?preview.workspace_name:"Invitation"}</h2>
    {preview?<p className="muted">Invited email: <strong>{preview.email}</strong><br/>Role: <strong>{preview.role}</strong></p>:<p className="muted">Checking invitation validity…</p>}
    {error&&<div className="alert alert-error" role="alert">{error}</div>}
+   {notice&&<div className="alert alert-good" role="status">{notice} <Link href="/account">Account verification</Link></div>}
    {preview&&<form className="auth-form" onSubmit={submit}>
     <label><input type="checkbox" checked={existing} onChange={e=>setExisting(e.target.checked)}/> I already have a Trumonit account</label>
     {!existing&&<label>Full name<input required autoComplete="name" minLength={2} maxLength={100}
@@ -81,7 +86,7 @@ export default function JoinPage(){
     <button className="btn btn-primary full" disabled={busy||!token} type="submit">
      {busy?"Joining…":"Join workspace"} <ArrowRight size={16}/></button>
    </form>}
-   <p className="tiny muted">Invitation links are valid for three days, are usable once and should be shared privately. This early implementation has no verified-email delivery or SSO.</p>
+   <p className="tiny muted">New accounts must verify their email address before entering. Invitation links are valid for three days, are usable once and should be shared privately. This early implementation has no verified-email delivery or SSO.</p>
    <Link className="auth-home" href="/">← Trumonit home</Link>
   </section>
  </main>;
