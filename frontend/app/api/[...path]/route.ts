@@ -2,7 +2,7 @@ import {NextRequest,NextResponse} from "next/server";
 
 type Context={params:Promise<{path:string[]}>};
 const cookieName="trumonit_session";
-const grantRoutes=new Set(["auth/login","auth/register"]);
+const grantRoutes=new Set(["auth/login","auth/register","team/claim"]);
 
 async function forward(req:NextRequest,ctx:Context){
   const origin=process.env.API_INTERNAL_URL;

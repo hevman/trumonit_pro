@@ -3,6 +3,7 @@ import {useCallback,useEffect,useState} from "react";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
 import AnswerWorkbench from "./answer-workbench";
+import TaskWorkbench from "./task-workbench";
 import {ArrowDownToLine,ArrowRight,CheckCircle2,Clock3,FileText,FolderPlus,LayoutGrid,LogOut,Plus,RefreshCcw,UploadCloud} from "lucide-react";
 
 type Account={user_id:string;email:string;workspace_id:string;workspace_name:string;role:string};
@@ -24,7 +25,7 @@ async function api<T>(route:string,options:RequestInit={}):Promise<T>{
 function StatusPill({status}:{status:string}){
   return <span className={"status status-"+status.replace("_","-")}>{statusLabels[status]||status}</span>;
 }
-function RequirementItem({item,filename,onSaved}:{item:Requirement;filename:string;onSaved:()=>void}){
+function RequirementItem({item,filename,onSaved,readonly}:{item:Requirement;filename:string;onSaved:()=>void;readonly:boolean}){
   const [status,setStatus]=useState(item.status);
   const [note,setNote]=useState(item.note);
   const [busy,setBusy]=useState(false);
@@ -47,11 +48,11 @@ function RequirementItem({item,filename,onSaved}:{item:Requirement;filename:stri
     <div className="requirement-main"><div className="requirement-meta"><span className="category">{item.category}</span><span>{filename} · {item.locator}</span></div>
       <p>{item.evidence}</p><StatusPill status={item.status}/></div>
     <div className="requirement-actions">
-      <label>Status<select value={status} onChange={e=>setStatus(e.target.value)}>
+      <label>Status<select disabled={readonly} value={status} onChange={e=>setStatus(e.target.value)}>
         {Object.entries(statusLabels).map(([key,value])=><option key={key} value={key}>{value}</option>)}
       </select></label>
-      <label>Reviewer note<input placeholder="Add evidence or follow-up" maxLength={1000} value={note} onChange={e=>setNote(e.target.value)}/></label>
-      <button className="btn btn-mini" disabled={busy||status===item.status&&note===item.note} onClick={()=>void save()}>{busy?"Saving…":"Save review"}</button>
+      <label>Reviewer note<input disabled={readonly} placeholder="Add evidence or follow-up" maxLength={1000} value={note} onChange={e=>setNote(e.target.value)}/></label>
+      <button className="btn btn-mini" disabled={readonly||busy||status===item.status&&note===item.note} onClick={()=>void save()}>{busy?"Saving…":"Save review"}</button>
     </div>
     {error&&<p className="alert alert-error" role="alert">{error}</p>}
   </article>;
@@ -142,11 +143,11 @@ export default function Workspace(){
           <FileText size={17}/><span>{project.name}</span></button>)}
         {projects.length===0&&<p className="muted tiny">No tenders yet. Start a new bid project.</p>}
       </div>
-      <button type="button" className="sidebar-add" onClick={()=>setShowNew(true)}><Plus size={16}/> New tender</button>
-      <div className="sidebar-bottom"><span>{account?.email}</span><button type="button" onClick={()=>void logout()}><LogOut size={17}/> Sign out</button></div>
+      <button type="button" className="sidebar-add" disabled={account?.role==="viewer"} onClick={()=>setShowNew(true)}><Plus size={16}/> New tender</button>
+      <div className="sidebar-bottom"><Link href="/team" className="sidebar-team-link">People & access</Link><span>{account?.email}</span><button type="button" onClick={()=>void logout()}><LogOut size={17}/> Sign out</button></div>
     </aside>
     <section className="workspace-main">
-      <div className="workspace-top"><div><span className="eyebrow">TRUMONIT / WORKSPACE</span><h1>Bid command center</h1><p>Review every requirement. Keep the source close.</p></div><button className="btn btn-dark" onClick={()=>setShowNew(true)}><FolderPlus size={17}/> New tender</button></div>
+      <div className="workspace-top"><div><span className="eyebrow">TRUMONIT / WORKSPACE</span><h1>Bid command center</h1><p>Review every requirement. Keep the source close.</p></div><button className="btn btn-dark" disabled={account?.role==="viewer"} onClick={()=>setShowNew(true)}><FolderPlus size={17}/> New tender</button></div>
       {error&&<div className="alert alert-error" role="alert">{error}</div>}
       {notice&&<div className="alert alert-good" role="status">{notice}</div>}
       {showNew&&<form className="panel new-form" onSubmit={create}>
@@ -158,20 +159,21 @@ export default function Workspace(){
       </form>}
       {!selectedId&&!showNew&&<div className="panel empty-state"><LayoutGrid size={43}/><h2>Your first bid, organized.</h2><p>Create a tender project to import its documentation and build a transparent list of requirements.</p><button className="btn btn-primary" onClick={()=>setShowNew(true)}>Create first project <Plus size={17}/></button></div>}
       {detail&&selectedId&&<div data-project-id={selectedId}>
-        <div className="panel project-head"><div><div className="eyebrow">CURRENT TENDER</div><h2>{detail.name}</h2><p>{detail.buyer||"Buyer not specified"}{detail.deadline?" · Due "+detail.deadline:" · No deadline entered"}</p></div><label className="stage-control">Bid stage<select value={detail.stage} disabled={busy} onChange={e=>void changeStage(e.target.value)}>{stages.map(s=><option key={s} value={s}>{s.replace("_"," ")}</option>)}</select></label></div>
+        <div className="panel project-head"><div><div className="eyebrow">CURRENT TENDER</div><h2>{detail.name}</h2><p>{detail.buyer||"Buyer not specified"}{detail.deadline?" · Due "+detail.deadline:" · No deadline entered"}</p></div><label className="stage-control">Bid stage<select value={detail.stage} disabled={busy||account?.role==="viewer"} onChange={e=>void changeStage(e.target.value)}>{stages.map(s=><option key={s} value={s}>{s.replace("_"," ")}</option>)}</select></label></div>
         <div className="metric-grid"><div className="metric"><small>Requirements found</small><strong>{detail.requirements_total}</strong><span>Evidence candidates</span></div><div className="metric"><small>Reviewed as met</small><strong>{detail.requirement_counts.met||0}</strong><span>Confirmed by your team</span></div><div className="metric"><small>Open gaps</small><strong className="accent-red">{detail.requirement_counts.gap||0}</strong><span>Require action</span></div><div className="metric"><small>Unreviewed</small><strong>{detail.requirement_counts.unreviewed||0}</strong><span>Awaiting a decision</span></div></div>
         <div className="panel upload-panel"><div className="panel-heading"><div><h2><UploadCloud size={20}/> Upload tender documents</h2><p>PDF or DOCX with selectable text, maximum 8 MiB per file and 25 files per tender.</p></div></div>
-          <form onSubmit={upload} className="upload-form"><input id="document-file" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required onChange={e=>setFile(e.target.files?.[0]||null)}/><button className="btn btn-dark" disabled={busy||!file} type="submit">{busy?"Processing…":"Analyze document"} <ArrowRight size={16}/></button></form>
+          <form onSubmit={upload} className="upload-form"><input disabled={account?.role==="viewer"} id="document-file" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required onChange={e=>setFile(e.target.files?.[0]||null)}/><button className="btn btn-dark" disabled={busy||!file||account?.role==="viewer"} type="submit">{busy?"Processing…":"Analyze document"} <ArrowRight size={16}/></button></form>
           {detail.documents.length>0&&<div className="document-list">{detail.documents.map(doc=><a key={doc.id} href={"/api/projects/"+selectedId+"/documents/"+doc.id}><FileText size={16}/>{doc.filename}<small>{Math.round(doc.byte_count/1024)} KB</small><ArrowDownToLine size={14}/></a>)}</div>}
         </div>
         <div className="panel requirements-panel">
           <div className="panel-heading"><div><h2><CheckCircle2 size={20}/> Requirements register</h2><p>Every candidate links back to its page or paragraph. Confirm before relying on it.</p></div><a className="btn btn-secondary" href={"/api/projects/"+selectedId+"/export"}>Export CSV <ArrowDownToLine size={15}/></a></div>
           {detail.requirements_truncated&&<div className="alert alert-error">Showing the first 500 entries; CSV export includes the full list.</div>}
           {detail.requirements.length===0?<div className="requirements-empty"><Clock3 size={26}/><p>Upload a document to discover potential requirements. Scanned PDFs require OCR and are not supported yet.</p></div>:detail.requirements.map(item=><RequirementItem key={item.id} item={item}
-            filename={detail.documents.find(doc=>doc.id===item.document_id)?.filename||"Source"}
+            filename={detail.documents.find(doc=>doc.id===item.document_id)?.filename||"Source"} readonly={account?.role==="viewer"}
             onSaved={()=>{void loadDetail(selectedId);void refresh();}}/>)}
         </div>
-        <AnswerWorkbench projectId={selectedId} requirements={detail.requirements}/>
+        <TaskWorkbench projectId={selectedId} requirements={detail.requirements} readonly={account?.role==="viewer"}/>
+        {account?.role==="viewer"?<div className="panel readonly-hint">Read-only team access: ask an editor to prepare and manage bid responses.</div>:<AnswerWorkbench projectId={selectedId} requirements={detail.requirements}/>}
       </div>}
       <p className="workspace-disclaimer">Early product preview. All supplier answers are entered or imported by your organization, then manually approved. Source-linked extraction is deterministic and requires human review. This is not legal advice or a final submission.</p>
     </section>

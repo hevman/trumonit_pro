@@ -222,3 +222,48 @@ h1,h2,h3,p{margin-top:0}
 .audit-list small,.audit-list time{font-size:10px;color:#7f928e}
 @media(max-width:1050px){.knowledge-grid{grid-template-columns:1fr}}
 @media(max-width:590px){.knowledge-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.knowledge-workbench{padding:17px}}
+
+/* B2B collaboration: workspace membership and accountable task tracking */
+.sidebar-team-link{font-weight:800;color:#187563;font-size:13px;display:flex;gap:8px;align-items:center}
+.team-page{padding-top:36px;padding-bottom:75px;min-height:calc(100vh - 180px)}
+.team-back a{display:inline-flex;gap:8px;align-items:center;font-weight:700;color:#376a65}
+.team-heading{display:flex;justify-content:space-between;gap:20px;align-items:center;margin:34px 0}
+.team-heading h1{font-size:43px;margin:12px 0}
+.team-heading p{color:var(--muted);font-size:15px}
+.team-heading-icon{padding:17px;border-radius:16px;background:#e2f6ed;color:#0e9579}
+.team-section{padding:28px;margin-bottom:20px}
+.team-section h2{font-size:23px;display:flex;gap:9px;align-items:center;margin-bottom:13px}
+.team-section h3{font-size:17px;margin-top:35px}
+.team-section p{line-height:1.7}
+.workspace-switches{display:flex;gap:13px;flex-wrap:wrap;margin-top:19px}
+.workspace-switch{border:1px solid #dce7e5;background:#f9fdfb;border-radius:10px;min-width:170px;padding:14px 18px;text-align:left;display:grid;gap:5px}
+.workspace-switch.active{border-color:#14997a;background:#ebf9f3}
+.workspace-switch:disabled{cursor:default}
+.workspace-switch small{font-size:11px;color:#6d8a84}
+.team-member-row{padding:17px 0;border-top:1px solid #e8f0ed;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.team-member-row>div:first-child{min-width:0}
+.team-member-row strong{display:block;font-size:14px}
+.team-member-row small{display:block;color:#819696;margin-top:4px}
+.team-row-controls{display:flex;gap:8px;align-items:center}
+.team-row-controls select,.team-invite-form input,.team-invite-form select,.team-copy input,.task-fields input,.task-fields select{border:1px solid #d3e4de;border-radius:8px;padding:11px;background:white;max-width:100%;color:#1d4244}
+.team-invite-form{display:grid;grid-template-columns:1.3fr 1fr auto;align-items:end;gap:13px;margin:25px 0}
+.team-invite-form label,.team-copy label,.task-fields label{font-weight:700;font-size:12px;color:#486567;display:grid;gap:7px}
+.team-invite-form input,.team-invite-form select{width:100%}
+.team-copy{display:flex;align-items:end;gap:11px;border:1px solid #b6e4d0;background:#f0fbf4;padding:15px;border-radius:10px}
+.team-copy label{flex:1;min-width:0}
+.team-copy input{width:100%;font-size:12px}
+.task-workbench{padding:28px;margin-bottom:20px}
+.task-totals{display:flex;align-items:center;gap:15px;white-space:nowrap;font-size:12px;color:#136e5d;font-weight:800}
+.task-totals span{display:flex;gap:7px;align-items:center}
+.task-row{display:grid;grid-template-columns:minmax(170px,.85fr) minmax(0,1.45fr);gap:24px;padding:21px 0;border-top:1px solid #e7efea}
+.task-row:first-of-type{margin-top:13px}
+.task-source{min-width:0}
+.task-source strong{display:block;line-height:1.7;overflow-wrap:anywhere;margin:12px 0}
+.task-source small{color:#7e9892}
+.task-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:end}
+.task-fields label:nth-child(4){grid-column:1/3}
+.task-fields input,.task-fields select{width:100%;min-width:0;font-size:12px}
+.task-fields>.btn{justify-self:start}
+.readonly-hint{padding:22px;margin-bottom:22px;color:#597775;font-size:13px}
+@media(max-width:1020px){.team-invite-form{grid-template-columns:1fr 1fr}.team-invite-form>.btn{grid-column:1/-1;justify-self:start}.task-row{grid-template-columns:1fr}.task-fields{grid-template-columns:repeat(2,minmax(0,1fr))}.task-totals{flex-wrap:wrap}}
+@media(max-width:620px){.team-invite-form,.task-fields{grid-template-columns:1fr}.task-fields label:nth-child(4){grid-column:auto}.team-row-controls,.team-copy{flex-wrap:wrap}.team-member-row{align-items:flex-start;flex-direction:column}.team-heading h1{font-size:30px}.team-section,.task-workbench{padding:19px}}
