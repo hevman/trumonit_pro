@@ -1,0 +1,37 @@
+name: trumonit-new
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: trumonit
+      POSTGRES_USER: trumonit
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - trumonit_new_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U trumonit -d trumonit"]
+      interval: 5s
+      timeout: 3s
+      retries: 25
+    restart: unless-stopped
+  api:
+    build: ./backend
+    environment:
+      TRUMONIT_DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      TRUMONIT_GATEWAY_TOKEN: ${TRUMONIT_GATEWAY_TOKEN:?Set TRUMONIT_GATEWAY_TOKEN in .env}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+  web:
+    build: ./frontend
+    environment:
+      API_INTERNAL_URL: http://api:8000
+      TRUMONIT_GATEWAY_TOKEN: ${TRUMONIT_GATEWAY_TOKEN:?Set TRUMONIT_GATEWAY_TOKEN in .env}
+    ports:
+      - "127.0.0.1:${TRUMONIT_LOCAL_PORT:-3100}:3000"
+    depends_on:
+      - api
+    restart: unless-stopped
+volumes:
+  trumonit_new_db:
