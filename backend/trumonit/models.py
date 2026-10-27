@@ -182,3 +182,17 @@ class AccountMailThrottle(Base):
     purpose: Mapped[str] = mapped_column(String(16), primary_key=True)
     sent_count: Mapped[int] = mapped_column(Integer, default=0)
     window_started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+class SpreadsheetQuestion(Base):
+    """A mapped question and its exact destination cell in an imported XLSX."""
+    __tablename__ = "spreadsheet_questions"
+    __table_args__ = (UniqueConstraint("document_id", "sheet_name", "row_number", "answer_column"),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    workspace_id: Mapped[str] = mapped_column(ForeignKey("workspaces.id"), index=True)
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)
+    document_id: Mapped[str] = mapped_column(ForeignKey("documents.id"), index=True)
+    requirement_id: Mapped[str] = mapped_column(ForeignKey("requirements.id"), unique=True, index=True)
+    sheet_name: Mapped[str] = mapped_column(String(31))
+    row_number: Mapped[int] = mapped_column(Integer)
+    question_column: Mapped[str] = mapped_column(String(3))
+    answer_column: Mapped[str] = mapped_column(String(3))

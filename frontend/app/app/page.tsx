@@ -4,6 +4,7 @@ import {useRouter} from "next/navigation";
 import Link from "next/link";
 import AnswerWorkbench from "./answer-workbench";
 import TaskWorkbench from "./task-workbench";
+import SpreadsheetWorkbench from "./spreadsheet-workbench";
 import ProjectDeletion from "./project-deletion";
 import {ArrowDownToLine,ArrowRight,CheckCircle2,Clock3,FileText,FolderPlus,LayoutGrid,LogOut,Plus,RefreshCcw,UploadCloud} from "lucide-react";
 
@@ -162,6 +163,8 @@ export default function Workspace(){
       {detail&&selectedId&&<div data-project-id={selectedId}>
         <div className="panel project-head"><div><div className="eyebrow">CURRENT TENDER</div><h2>{detail.name}</h2><p>{detail.buyer||"Buyer not specified"}{detail.deadline?" · Due "+detail.deadline:" · No deadline entered"}</p></div><label className="stage-control">Bid stage<select value={detail.stage} disabled={busy||account?.role==="viewer"} onChange={e=>void changeStage(e.target.value)}>{stages.map(s=><option key={s} value={s}>{s.replace("_"," ")}</option>)}</select></label></div>
         <div className="metric-grid"><div className="metric"><small>Requirements found</small><strong>{detail.requirements_total}</strong><span>Evidence candidates</span></div><div className="metric"><small>Reviewed as met</small><strong>{detail.requirement_counts.met||0}</strong><span>Confirmed by your team</span></div><div className="metric"><small>Open gaps</small><strong className="accent-red">{detail.requirement_counts.gap||0}</strong><span>Require action</span></div><div className="metric"><small>Unreviewed</small><strong>{detail.requirement_counts.unreviewed||0}</strong><span>Awaiting a decision</span></div></div>
+        <SpreadsheetWorkbench key={selectedId} projectId={selectedId} readonly={account?.role==="viewer"}
+          onImported={async()=>{await loadDetail(selectedId);await refresh();}}/>
         <div className="panel upload-panel"><div className="panel-heading"><div><h2><UploadCloud size={20}/> Upload tender documents</h2><p>PDF or DOCX with selectable text, maximum 8 MiB per file and 25 files per tender.</p></div></div>
           <form onSubmit={upload} className="upload-form"><input disabled={account?.role==="viewer"} id="document-file" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required onChange={e=>setFile(e.target.files?.[0]||null)}/><button className="btn btn-dark" disabled={busy||!file||account?.role==="viewer"} type="submit">{busy?"Processing…":"Analyze document"} <ArrowRight size={16}/></button></form>
           {detail.documents.length>0&&<div className="document-list">{detail.documents.map(doc=><a key={doc.id} href={"/api/projects/"+selectedId+"/documents/"+doc.id}><FileText size={16}/>{doc.filename}<small>{Math.round(doc.byte_count/1024)} KB</small><ArrowDownToLine size={14}/></a>)}</div>}

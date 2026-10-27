@@ -299,3 +299,27 @@ h1,h2,h3,p{margin-top:0}
 .security-confirmation label svg{display:inline}
 .security-confirmation input{padding:12px 14px;border:1px solid #cbdcd5;border-radius:9px;background:white;width:100%}
 @media(max-width:650px){.security-session{align-items:flex-start;flex-direction:column}.security-panel{padding:18px}.security-header h1{font-size:30px}}
+
+/* RFP spreadsheet response workflow */
+.xlsx-workbench{margin:20px 0;padding:24px}
+.xlsx-workbench .panel-heading{align-items:flex-start}
+.xlsx-import,.xlsx-workbooks{display:grid;gap:14px}
+.xlsx-step{margin-top:16px;padding:18px;border:1px solid #dce9e5;border-radius:12px;background:#fbfdfc}
+.xlsx-step>b{display:block;font-size:14px;margin-bottom:10px}
+.xlsx-upload{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.xlsx-upload input{min-width:190px;max-width:100%;flex:1}
+.xlsx-map-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin:15px 0}
+.xlsx-map-fields label{display:grid;gap:6px;font-size:12px;font-weight:700;color:#496963}
+.xlsx-map-fields select,.xlsx-map-fields input{border:1px solid #c9dcd5;background:white;padding:10px;border-radius:8px;min-width:0;width:100%}
+.xlsx-preview{display:grid;gap:8px;max-height:260px;overflow:auto;border:1px solid #e2eae7;border-radius:10px;padding:12px;margin:14px 0;background:white}
+.xlsx-preview>small{color:#6b8380}
+.xlsx-preview-row{display:grid;grid-template-columns:60px 1fr;gap:9px;border-top:1px solid #edf2f0;padding-top:6px;font-size:12px;overflow-wrap:anywhere}
+.xlsx-preview-row>span:first-child{color:#69837d;font-weight:800}
+.xlsx-file{display:flex;gap:15px;align-items:center;flex-wrap:wrap;border:1px solid #e0eae6;border-radius:10px;padding:16px;background:white}
+.xlsx-file>svg{color:#118271;flex-shrink:0}
+.xlsx-file-info{display:grid;gap:6px;flex:1;min-width:170px}
+.xlsx-file-info small{color:#5f7f79}
+.xlsx-file-info .status{justify-self:start}
+.xlsx-file-actions{display:flex;gap:8px;flex-wrap:wrap}
+.xlsx-workbench p.tiny{margin:10px 0 0}
+@media(max-width:700px){.xlsx-workbench{padding:16px}.xlsx-file-actions{width:100%}.xlsx-file-actions .btn{flex:1}}
