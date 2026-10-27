@@ -173,3 +173,19 @@ ownership. Existing account passwords and organization data are untouched.
 edge/IP and anti-enumeration latency, SSO/MFA, managed session policies,
 malware scan, data retention/deletion and restore drills, GDPR review,
 Stripe/webhooks and production security testing. No AI.
+
+
+## Customer-controlled project deletion (data lifecycle milestone)
+
+Workspace owners can inspect GET /api/projects/{id}/deletion-preview to see
+document, requirement, answer and task counts, including stored document bytes.
+POST /api/projects/{id}/delete with JSON {"confirm_project_name":"EXACT NAME"}
+permanently deletes that project's documents, requirement evidence, response
+drafts and assignments in one database transaction. The shared organization
+answer library, other projects and all audit events remain untouched. Editors,
+viewers and other organizations cannot invoke these endpoints. Deletion is
+irreversible: operators must have working database backups before enabling
+customer use. PostgreSQL physical storage, replicas and backups are subject to
+separate retention/erasure controls; this endpoint alone does not guarantee
+GDPR-complete erasure. No automatic deletion policy or retention schedule is
+configured, and no AI processes customer data.
