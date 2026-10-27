@@ -2,6 +2,7 @@
 import {useCallback,useEffect,useState} from "react";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
+import AnswerWorkbench from "./answer-workbench";
 import {ArrowDownToLine,ArrowRight,CheckCircle2,Clock3,FileText,FolderPlus,LayoutGrid,LogOut,Plus,RefreshCcw,UploadCloud} from "lucide-react";
 
 type Account={user_id:string;email:string;workspace_id:string;workspace_name:string;role:string};
@@ -170,8 +171,9 @@ export default function Workspace(){
             filename={detail.documents.find(doc=>doc.id===item.document_id)?.filename||"Source"}
             onSaved={()=>{void loadDetail(selectedId);void refresh();}}/>)}
         </div>
+        <AnswerWorkbench projectId={selectedId} requirements={detail.requirements}/>
       </div>}
-      <p className="workspace-disclaimer">Early product preview. Source-linked candidates are extracted using transparent text rules, not a validated AI compliance decision. Do not use as the sole basis for legal or commercial bids.</p>
+      <p className="workspace-disclaimer">Early product preview. All supplier answers are entered or imported by your organization, then manually approved. Source-linked extraction is deterministic and requires human review. This is not legal advice or a final submission.</p>
     </section>
   </main>;
 }

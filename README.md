@@ -24,11 +24,15 @@ The previous website's database and customer content are NOT reused or migrated.
    spreadsheet formula injection protection.
 7. Every project, document, requirement and export is scoped to the signed-in
    company's workspace in database queries.
+8. Import the company's own answer base from UTF-8 CSV; store and manually
+   approve reusable answer entries, each with provenance and an expiry date.
+9. Copy an approved answer into a project draft, review and sign off a final
+   working response, then export human-approved items to a DOCX working pack.
+10. Owner-only organization audit log for traceable review activity.
 
-**Extraction is deterministic and keyword-based, not an AI compliance verdict.**
-It can miss clauses or select irrelevant text. OCR/scanned PDFs, semantic
-matching, drafting assistants, invitations, subscriptions and payments
-are NOT implemented yet.
+**No AI is used.** Extraction is deterministic and keyword-based.
+It can miss clauses or select irrelevant text. OCR/scanned PDFs, invitations, subscriptions and payments
+are NOT implemented yet. All bid answer text is written or imported by the company.
 
 ## Technology
 
@@ -84,8 +88,8 @@ actual successful run before claiming compilation or deployment.
 - Add PostgreSQL-backed real two-tenant end-to-end tests and deployment checks.
 - Improve source references for tables/layout, add OCR and measure precision.
 - Introduce bounded document-processing workers and observed queue reliability.
-- Add source-grounded AI analysis with evidence verification and per-tenant
-  quotas, not made-up compliance conclusions.
+- Validate end-to-end human approval flows, permission boundaries, content
+  retention, export completeness and safe import limits.
 - Introduce real Stripe payment processing and subscription entitlements.
   The €249/€499/custom prices shown are hypotheses, not active offers.
 - Review TLS, production secrets, recovery procedures, logs and monitoring

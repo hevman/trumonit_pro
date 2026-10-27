@@ -183,3 +183,42 @@ h1,h2,h3,p{margin-top:0}
 @media(max-width:1150px){.hero-grid{gap:35px}.workspace-shell{grid-template-columns:230px minmax(0,1fr)}.workspace-main{padding:35px 22px}.form-grid{grid-template-columns:1fr 1fr}.form-grid label:last-child{grid-column:1/-1}}
 @media(max-width:900px){.topbar nav{gap:13px}.topbar nav a:not(.nav-cta){display:none}.hero-grid,.feature-grid,.auth-page{grid-template-columns:1fr}.hero-grid{padding:65px 0}.hero-preview{max-width:600px}.steps,.price-grid{grid-template-columns:1fr}.footer-inner{grid-template-columns:1fr}.auth-page{gap:25px}.workspace-shell{display:block}.sidebar{min-height:unset;border-right:0;border-bottom:1px solid #e1efec}.project-nav{display:flex;overflow-x:auto}.project-link{width:auto;flex:none}.sidebar-bottom{margin-top:10px;padding:10px}.metric-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:590px){.container{width:calc(100% - 28px)}.topbar{height:70px}.topbar nav a:not(.nav-cta){display:none}.topbar nav .nav-cta{padding:10px}.hero h1{font-size:42px}.hero-grid{gap:38px}.section{padding:70px 0}.price-grid,.metric-grid,.form-grid{grid-template-columns:1fr}.workspace-top,.project-head,.panel-heading{align-items:flex-start;flex-direction:column}.requirement-row{grid-template-columns:1fr}.upload-form{flex-direction:column;align-items:stretch}.auth-panel{padding:23px}.hero-preview{transform:none}.preview-top{gap:12px}}
+
+
+/* Company knowledge library and manually approved bid responses */
+.knowledge-workbench{padding:28px;margin:22px 0}
+.knowledge-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0 24px}
+.knowledge-stats>div{background:#f4faf7;padding:17px;border:1px solid #dcece4;border-radius:11px;display:grid;gap:10px}
+.knowledge-stats small{color:#6a8880;font-size:11px}
+.knowledge-stats strong{font-size:25px;font-family:"Plus Jakarta Sans",sans-serif;color:#165f52}
+.knowledge-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.knowledge-column{min-width:0;padding:22px;background:#fff;border:1px solid #e0ece8;border-radius:12px}
+.knowledge-column h3{font-size:17px;margin-bottom:8px}
+.knowledge-form{display:grid;gap:13px;margin:20px 0}
+.knowledge-form label,.knowledge-column>label,.csv-panel label{font-size:12px;font-weight:800;color:#34595c;display:grid;gap:8px}
+.knowledge-form input,.knowledge-form textarea,.knowledge-column select{display:block;width:100%;padding:11px;border:1px solid #d1e2dc;border-radius:8px;background:#fff;color:#1e3036;outline-offset:2px;resize:vertical;font-size:13px}
+.knowledge-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:9px}
+.knowledge-actions .btn{padding:9px 11px;font-size:11px}
+.csv-panel{background:#f4faf8;border:1px solid #d9eae3;padding:15px;border-radius:10px;margin-top:20px}
+.csv-panel form{display:grid;gap:11px;margin-top:13px}
+.csv-panel input{font-size:11px;width:100%;max-width:100%;min-width:0}
+.csv-panel .btn{justify-self:start}
+.library-list{display:grid;gap:12px}
+.library-item{border:1px solid #dce9e4;padding:14px;border-radius:10px;min-width:0}
+.library-head{display:flex;justify-content:space-between;align-items:center;gap:9px}
+.library-head strong{font-size:13px;overflow-wrap:anywhere}
+.library-item p{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.7;color:#536f70;margin:12px 0}
+.library-item small{display:block;color:#758c8a;overflow-wrap:anywhere}
+.requirement-evidence{border-left:3px solid #0e9c80;background:#f2faf7;padding:16px;margin:18px 0}
+.requirement-evidence small{color:#2a8b78;font-size:11px;font-weight:700}
+.requirement-evidence p{font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere;margin:9px 0 0}
+.approval-panel{border:1px solid #d5e6df;padding:17px;border-radius:10px;display:grid;gap:12px}
+.approval-panel>.btn{justify-self:start}
+.approval-panel>.status{justify-self:start;display:inline-flex;gap:7px;align-items:center}
+.audit-panel{border-top:1px solid #e7eeee;margin-top:28px;padding-top:24px}
+.audit-list{margin-top:15px;display:grid;gap:8px;max-height:360px;overflow:auto}
+.audit-list>div{border:1px solid #e4ece9;background:#fafcfb;border-radius:8px;display:grid;gap:5px;padding:12px}
+.audit-list b{font-size:12px;color:#294a48}
+.audit-list small,.audit-list time{font-size:10px;color:#7f928e}
+@media(max-width:1050px){.knowledge-grid{grid-template-columns:1fr}}
+@media(max-width:590px){.knowledge-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.knowledge-workbench{padding:17px}}

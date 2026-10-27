@@ -236,6 +236,18 @@ def review_requirement(
         raise HTTPException(404, "Requirement not found")
     requirement.review_status = payload.status
     requirement.note = payload.note.strip()
+    if payload.status != "met":
+        from .models import RequirementResponse
+        associated = db.scalar(select(RequirementResponse).where(
+            RequirementResponse.requirement_id == requirement.id,
+            RequirementResponse.project_id == project_id,
+            RequirementResponse.workspace_id == user.workspace_id,
+        ))
+        if associated is not None and associated.status == "approved":
+            associated.status = "draft"
+            associated.approved_at = None
+            associated.approved_by = None
+            record(db, user, "response.approval_revoked", associated.id)
     record(db, user, "requirement.reviewed", requirement.id)
     db.commit()
     return {"id": requirement.id, "status": requirement.review_status, "note": requirement.note}
