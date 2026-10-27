@@ -49,7 +49,7 @@ function TaskRow({item,task,members,projectId,readonly,onUpdate}:{
     {members.map(member=><option key={member.user_id} value={member.user_id}>{member.display_name} ({member.email})</option>)}
    </select></label>
    <label>Due date<input disabled={readonly||busy} type="date" value={due} onChange={e=>setDue(e.target.value)}/></label>
-   <label>Progress<select disabled={readonly||busy} value={status} onChange={e=>setStatus(e.target.value)}>
+   <label>Progress<select disabled={readonly||busy} value={status} onChange={e=>setStatus(e.target.value as Task['status'])}>
     <option value="open">Open</option><option value="in_progress">In progress</option><option value="done">Done</option>
    </select></label>
    <label>Action note<input disabled={readonly||busy} maxLength={1000} value={note} onChange={e=>setNote(e.target.value)} placeholder="What is required?"/></label>
