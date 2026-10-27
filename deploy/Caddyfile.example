@@ -1,0 +1,7 @@
+# EXAMPLE ONLY — do not start before DNS and TLS are configured.
+# Add this site to your existing external reverse proxy, independently of
+# TechBool, MZI, Netiker or the previous Trumonit deployment.
+trumonit.pro, www.trumonit.pro {
+    encode zstd gzip
+    reverse_proxy 127.0.0.1:3100
+}
