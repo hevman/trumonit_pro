@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from .db import get_db
 from .extract import MAX_DOCUMENT_BYTES, candidate_segments
 from .models import AuditEvent, Document, Project, Requirement
-from .security import Principal, principal
+from .security import Principal, principal, require_editor
 
 router = APIRouter(prefix="/projects", tags=["RFP projects"])
 
@@ -74,6 +74,7 @@ def create_project(
     user: Principal = Depends(principal),
     db: Session = Depends(get_db),
 ):
+    require_editor(user)
     project = Project(
         workspace_id=user.workspace_id, name=payload.name.strip(),
         buyer=payload.buyer.strip(),
@@ -139,6 +140,7 @@ def update_project(
     db: Session = Depends(get_db),
 ):
     project = owned_project(db, project_id, user)
+    require_editor(user)
     project.stage = payload.stage
     record(db, user, "project.stage_changed", project.id)
     db.commit()
@@ -153,6 +155,7 @@ async def upload_document(
     db: Session = Depends(get_db),
 ):
     project = owned_project(db, project_id, user)
+    require_editor(user)
     filename = (file.filename or "").replace("\\", "/").split("/")[-1]
     if not filename or len(filename) > 180 or "\x00" in filename:
         raise HTTPException(422, "Invalid document filename")
@@ -227,6 +230,7 @@ def review_requirement(
     db: Session = Depends(get_db),
 ):
     owned_project(db, project_id, user)
+    require_editor(user)
     requirement = db.scalar(select(Requirement).where(
         Requirement.id == requirement_id,
         Requirement.project_id == project_id,

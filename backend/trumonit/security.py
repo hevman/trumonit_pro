@@ -101,3 +101,8 @@ def principal(
     if member is None or user is None or workspace is None:
         raise HTTPException(401, "Account access revoked")
     return Principal(user.id, workspace.id, user.email, workspace.name, member.role)
+
+
+def require_editor(user: Principal) -> None:
+    if user.role not in ("owner", "editor"):
+        raise HTTPException(403, "Editing requires an owner or editor role")

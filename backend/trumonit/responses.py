@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 from .db import get_db, now
 from .models import AnswerLibraryEntry, RequirementResponse, Requirement, Project
 from .projects import owned_project, record
-from .security import Principal, principal
+from .security import Principal, principal, require_editor
 
 router = APIRouter(tags=["Manual RFP responses"])
 
@@ -103,6 +103,7 @@ def list_library(user: Principal = Depends(principal), db: Session = Depends(get
 def create_entry(payload: LibraryDraft,
                  user: Principal = Depends(principal),
                  db: Session = Depends(get_db)):
+    require_editor(user)
     entry = AnswerLibraryEntry(
         workspace_id=user.workspace_id, title=payload.title.strip(),
         category=payload.category.strip(), body=payload.body.strip(),
@@ -121,6 +122,7 @@ def create_entry(payload: LibraryDraft,
 def edit_entry(entry_id: str, payload: LibraryDraft,
                user: Principal = Depends(principal),
                db: Session = Depends(get_db)):
+    require_editor(user)
     entry = owned_library_entry(db, user, entry_id)
     entry.title = payload.title.strip()
     entry.category = payload.category.strip()
@@ -169,6 +171,7 @@ def list_responses(project_id: str,
 def set_response(project_id: str, requirement_id: str, payload: ResponseDraft,
                  user: Principal = Depends(principal),
                  db: Session = Depends(get_db)):
+    require_editor(user)
     requirement = owned_requirement(db, user, project_id, requirement_id)
     source_id = None
     if payload.library_entry_id is not None:

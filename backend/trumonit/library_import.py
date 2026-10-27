@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session
 from .db import get_db
 from .models import AnswerLibraryEntry
 from .projects import record
-from .security import Principal, principal
+from .security import Principal, principal, require_editor
 
 router = APIRouter(prefix="/library", tags=["Company answer library"])
 MAX_CSV_BYTES = 256 * 1024
@@ -49,6 +49,7 @@ async def import_library(
     user: Principal = Depends(principal),
     db: Session = Depends(get_db),
 ):
+    require_editor(user)
     if not (file.filename or "").lower().endswith(".csv"):
         raise HTTPException(415, "Upload a UTF-8 CSV file")
     raw = await file.read(MAX_CSV_BYTES + 1)

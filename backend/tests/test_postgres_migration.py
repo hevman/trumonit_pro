@@ -71,6 +71,37 @@ def test_new_installation_migrations_and_tenant_boundary(monkeypatch):
                            for event in http.get("/api/audit", headers=b).json())
             assert any(event["action"] == "library.csv_imported"
                        for event in http.get("/api/audit", headers=a).json())
+
+            invitation = http.post("/api/team/invitations", headers=a, json={
+                "email": "pgsql-editor@example.test", "role": "editor",
+            })
+            assert invitation.status_code == 201, invitation.text
+            claim = http.post("/api/team/claim", headers=gate, json={
+                "token": invitation.json()["token"], "name": "PG Editor",
+                "password": "SafePasswordForDbTest2026!",
+            })
+            assert claim.status_code == 201, claim.text
+            editor = authorized(gate, claim.json()["session_token"])
+            assignment = http.patch(
+                f"/api/projects/{project_id}/tasks/{req['id']}",
+                headers=editor, json={
+                    "assignee_id": claim.json()["account"]["user_id"],
+                    "due_date": "2030-06-01", "status": "in_progress",
+                },
+            )
+            assert assignment.status_code == 200, assignment.text
+            assert len(http.get(f"/api/projects/{project_id}/tasks", headers=a).json()) == 1
+            assert http.get(f"/api/projects/{project_id}/tasks", headers=b).status_code == 404
+            member_id = next(member["id"]
+                for member in http.get("/api/team", headers=a).json()["members"]
+                if member["email"] == "pgsql-editor@example.test")
+            changed = http.patch(f"/api/team/members/{member_id}", headers=a,
+                                 json={"role": "viewer"})
+            assert changed.status_code == 200, changed.text
+            assert http.patch(
+                f"/api/projects/{project_id}/tasks/{req['id']}",
+                headers=editor, json={"status": "done"},
+            ).status_code == 403
     finally:
         app.dependency_overrides.clear()
         db_engine.dispose()
