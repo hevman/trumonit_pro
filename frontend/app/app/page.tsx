@@ -2,6 +2,7 @@
 import {useCallback,useEffect,useState} from "react";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
+import Brand from "../brand";
 import AnswerWorkbench from "./answer-workbench";
 import TaskWorkbench from "./task-workbench";
 import SpreadsheetWorkbench from "./spreadsheet-workbench";
@@ -134,7 +135,7 @@ export default function Workspace(){
   }
   return <main className="workspace-shell">
     <aside className="sidebar">
-      <Link className="brand" href="/"><span className="brand-mark">T<span>.</span></span><span>trumonit<span className="brand-domain">.pro</span></span></Link>
+      <Link className="brand" href="/"><Brand/></Link>
       <div className="sidebar-label">YOUR COMPANY</div>
       <div className="organization"><span className="org-icon">{account?.workspace_name?.slice(0,1).toUpperCase()||"T"}</span><div><b>{account?.workspace_name||"Loading workspace"}</b><small>Private organization</small></div></div>
       <div className="sidebar-label">BID PROJECTS</div>

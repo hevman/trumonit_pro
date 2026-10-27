@@ -44,7 +44,7 @@ export default function Login(){
       <span className="eyebrow">PRIVATE BID WORKSPACE</span>
       <h1>Every response starts with clarity.</h1>
       <p>Create a company workspace, add tender documents and build an auditable requirement register.</p>
-      <div className="auth-benefits"><div><ShieldCheck size={20}/> Company-scoped project access</div><div><LockKeyhole size={20}/> Encrypted passwords and revocable sessions</div></div>
+      <div className="auth-benefits"><div><ShieldCheck size={20}/> Company-scoped project access</div><div><LockKeyhole size={20}/> Hashed passwords and revocable sessions</div></div>
       <p className="auth-disclaimer">Development preview: email verification is required; SMTP must be configured. Subscription billing and enterprise review are not active. Do not upload confidential live tender material yet.</p>
     </section>
     <section className="auth-panel panel">
