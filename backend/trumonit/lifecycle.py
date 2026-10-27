@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 
 from .db import get_db
 from .models import (
-    AuditEvent, Document, Project, Requirement, RequirementResponse, RequirementTask,
+    AuditEvent, Document, Project, Requirement, RequirementResponse, RequirementTask, SpreadsheetQuestion,
 )
 from .projects import owned_project
 from .security import Principal, principal
@@ -66,7 +66,7 @@ def delete_project(project_id: str, payload: DeleteConfirmation,
     filters = lambda model: (model.workspace_id == user.workspace_id,
                              model.project_id == project.id)
     # Remove dependent rows first; SQLAlchemy models intentionally use restrictive FKs.
-    for model in (RequirementResponse, RequirementTask, Requirement, Document):
+    for model in (RequirementResponse, RequirementTask, SpreadsheetQuestion, Requirement, Document):
         db.execute(delete(model).where(*filters(model)))
     db.delete(project)
     db.add(AuditEvent(workspace_id=user.workspace_id, actor_id=user.user_id,

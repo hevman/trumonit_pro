@@ -15,7 +15,7 @@ The previous website's database and customer content are NOT reused or migrated.
    scrypt; session tokens are random and hashed server-side. Browser cookies
    are HttpOnly, SameSite Strict, and protected by a private API gateway.
 2. Create saved tender projects with a buyer, submission deadline and stage.
-3. Upload searchable PDF or DOCX (maximum 8 MiB per file, 25 per project).
+3. Upload searchable PDF or DOCX, or map customer-supplied XLSX RFP questions to blank response cells (maximum 8 MiB per file, 25 per project).
 4. Inspect source-linked **potential requirements** and deadlines, including
    source page, paragraph or table row. Every finding is an unverified clue.
 5. Mark requirements Met / Gap / Needs clarification / N/A, add reviewer notes,
@@ -40,7 +40,7 @@ are NOT implemented yet. All bid answer text is written or imported by the compa
 
 - Frontend: Next.js 16, TypeScript, React 19.
 - Backend: Python 3.13, FastAPI, Pydantic, SQLAlchemy 2.
-- Document parsing: PyMuPDF and python-docx. Python gives us a strong path
+- Document parsing: PyMuPDF, python-docx and openpyxl. Python gives us a strong path
   toward local, deterministic document processing and review.
 - Database: new PostgreSQL 17, Alembic baseline, no legacy import.
 - Local development: isolated Docker Compose stack at 127.0.0.1:3100.
@@ -212,3 +212,42 @@ are not forcibly logged out during migration. Password reset still invalidates
 all active sessions. This functionality is not a substitute for MFA/SSO,
 device attestation, centralized security event monitoring, verified SMTP,
 penetration testing, proper backup/recovery, or incident procedures.
+
+
+## Customer XLSX RFP delivery workflow (development preview)
+
+This is Trumonit's concrete paid-product workflow: import the buyer's **actual
+Excel questionnaire**, inspect the worksheets, explicitly map a question
+column + blank answer column and select up to 250 rows, manually review every
+question, draft answers from company-owned content, request workspace-owner
+approval, and export a filled copy of the original workbook. No AI is used.
+
+- In the project page use "Respond to customer Excel RFPs" and inspect an XLSX.
+- Choose a worksheet and exact question/answer columns plus first/last row.
+- Each mapped question becomes a source-linked project requirement with an
+  address such as "Security Questions!B2". The buyer's original XLSX is retained.
+- Review each question as Met and write or copy a verified approved library
+  answer. Workspace owners approve responses individually.
+- A **working XLSX** includes currently approved responses and leaves
+  unfinished response cells blank.
+- The **approved XLSX** is gated on all mapped questions having approved answers,
+  Met review status and nonexpired approved library provenance.
+- Existing rows, formulas, labels and ordinary formatting are preserved by
+  openpyxl for supported standard XLSX worksheets; answer text is explicitly
+  written as plain text to avoid Excel-formula injection.
+
+Endpoints (gateway + user session required):
+
+    POST /api/projects/{id}/spreadsheets/preview
+    POST /api/projects/{id}/spreadsheets
+    GET  /api/projects/{id}/spreadsheets
+    GET  /api/projects/{id}/spreadsheets/{document_id}/export?mode=working
+    GET  /api/projects/{id}/spreadsheets/{document_id}/export
+
+Excel features such as macros, embedded OLE, pivot tables and external workbook
+links are unsupported; custom drawings and rich formatting may not round-trip
+perfectly. Review the exported file against the customer's original before
+submitting. Neither a completed workbook nor a "Met" status is a legal
+declaration that all tender clauses were discovered or satisfied. This is not
+deployed to production, and real paid/confidential workloads remain gated on
+independent operational and security validation.

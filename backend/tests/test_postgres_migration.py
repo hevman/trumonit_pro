@@ -26,7 +26,7 @@ def test_new_installation_migrations_and_tenant_boundary(monkeypatch):
 
     with db_engine.connect() as conn:
         installed = conn.execute(text("SELECT version_num FROM alembic_version")).scalar_one()
-        assert installed == "0005_session_security"
+        assert installed == "0006_spreadsheet_questions"
         assert conn.execute(text(
             "SELECT COUNT(*) FROM information_schema.tables "
             "WHERE table_schema='public' AND table_name IN "
@@ -36,6 +36,12 @@ def test_new_installation_migrations_and_tenant_boundary(monkeypatch):
             "SELECT COUNT(*) FROM information_schema.columns WHERE "
             "table_name='sessions' AND column_name IN ('id', 'created_at')"
         )).scalar_one() == 2
+
+    with db_engine.connect() as conn:
+        assert conn.execute(text(
+            "SELECT COUNT(*) FROM information_schema.tables WHERE "
+            "table_schema='public' AND table_name='spreadsheet_questions'"
+        )).scalar_one() == 1
 
     app.dependency_overrides[get_db] = real_db
     try:
