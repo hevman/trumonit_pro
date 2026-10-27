@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 
 from trumonit.db import get_db
 from trumonit.main import app
-from .conftest import authorized, register
+from .conftest import authorized, register, verify_mail
 from .test_workflow import docx_bytes
 
 
@@ -81,11 +81,14 @@ def test_new_installation_migrations_and_tenant_boundary(monkeypatch):
                 "password": "SafePasswordForDbTest2026!",
             })
             assert claim.status_code == 201, claim.text
-            editor = authorized(gate, claim.json()["session_token"])
+            confirmed = http.post("/api/auth/verify", headers=gate,
+                json={"token": verify_mail(http, gate, "pgsql-editor@example.test")})
+            assert confirmed.status_code == 200, confirmed.text
+            editor = authorized(gate, confirmed.json()["session_token"])
             assignment = http.patch(
                 f"/api/projects/{project_id}/tasks/{req['id']}",
                 headers=editor, json={
-                    "assignee_id": claim.json()["account"]["user_id"],
+                    "assignee_id": confirmed.json()["account"]["user_id"],
                     "due_date": "2030-06-01", "status": "in_progress",
                 },
             )
