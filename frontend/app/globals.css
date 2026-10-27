@@ -267,3 +267,15 @@ h1,h2,h3,p{margin-top:0}
 .readonly-hint{padding:22px;margin-bottom:22px;color:#597775;font-size:13px}
 @media(max-width:1020px){.team-invite-form{grid-template-columns:1fr 1fr}.team-invite-form>.btn{grid-column:1/-1;justify-self:start}.task-row{grid-template-columns:1fr}.task-fields{grid-template-columns:repeat(2,minmax(0,1fr))}.task-totals{flex-wrap:wrap}}
 @media(max-width:620px){.team-invite-form,.task-fields{grid-template-columns:1fr}.task-fields label:nth-child(4){grid-column:auto}.team-row-controls,.team-copy{flex-wrap:wrap}.team-member-row{align-items:flex-start;flex-direction:column}.team-heading h1{font-size:30px}.team-section,.task-workbench{padding:19px}}
+
+/* Owner-only explicit project lifecycle controls */
+.project-deletion{padding:25px;margin:20px 0}
+.project-deletion-intro,.project-delete-top{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.project-deletion h2,.project-delete-confirm h3{display:flex;align-items:center;gap:10px;margin:0 0 9px}
+.project-deletion p{font-size:13px;color:#56726e;line-height:1.75;margin:8px 0 12px}
+.project-delete-confirm{border:1px solid #efd2b1;background:#fffbf2;border-radius:12px;padding:20px;margin-top:18px;display:grid;gap:13px}
+.project-delete-confirm h3{color:#985422}
+.project-delete-confirm label{display:grid;gap:8px;font-weight:700;font-size:13px;color:#614936}
+.project-delete-confirm input{border:1px solid #dfb589;border-radius:8px;padding:12px;background:white;max-width:450px}
+.project-delete-confirm button[type="submit"]{justify-self:start}
+@media(max-width:680px){.project-deletion-intro,.project-delete-top{align-items:flex-start;flex-direction:column}}

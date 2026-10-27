@@ -4,6 +4,7 @@ import {useRouter} from "next/navigation";
 import Link from "next/link";
 import AnswerWorkbench from "./answer-workbench";
 import TaskWorkbench from "./task-workbench";
+import ProjectDeletion from "./project-deletion";
 import {ArrowDownToLine,ArrowRight,CheckCircle2,Clock3,FileText,FolderPlus,LayoutGrid,LogOut,Plus,RefreshCcw,UploadCloud} from "lucide-react";
 
 type Account={user_id:string;email:string;workspace_id:string;workspace_name:string;role:string};
@@ -174,6 +175,15 @@ export default function Workspace(){
         </div>
         <TaskWorkbench projectId={selectedId} requirements={detail.requirements} readonly={account?.role==="viewer"}/>
         {account?.role==="viewer"?<div className="panel readonly-hint">Read-only team access: ask an editor to prepare and manage bid responses.</div>:<AnswerWorkbench projectId={selectedId} requirements={detail.requirements}/>}
+        {account?.role==="owner"&&<ProjectDeletion key={selectedId} projectId={selectedId} projectName={detail.name}
+          onDeleted={async()=>{
+            setDetail(null);
+            const remaining=await api<Project[]>("projects");
+            setProjects(remaining);
+            setSelectedId(remaining[0]?.id||null);
+            setNotice("Project and its documents, requirements, responses and tasks were permanently deleted.");
+          }}/>}
+
       </div>}
       <p className="workspace-disclaimer">Early product preview. All supplier answers are entered or imported by your organization, then manually approved. Source-linked extraction is deterministic and requires human review. This is not legal advice or a final submission.</p>
     </section>

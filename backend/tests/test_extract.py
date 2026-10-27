@@ -1,4 +1,5 @@
 import io
+import zipfile
 
 import fitz
 import pytest
@@ -35,3 +36,36 @@ def test_docx_and_unsupported_input():
     with pytest.raises(HTTPException) as exc:
         candidate_segments("payload.exe", b"not-a-document")
     assert exc.value.status_code == 415
+
+
+def test_docx_rejects_zip_bomb_before_xml_expansion():
+    archive = io.BytesIO()
+    with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as stream:
+        stream.writestr("[Content_Types].xml", "<Types/>")
+        stream.writestr("word/document.xml", "A" * (17 * 1024 * 1024))
+    assert len(archive.getvalue()) < 8 * 1024 * 1024
+    with pytest.raises(HTTPException) as exc:
+        candidate_segments("compressed.docx", archive.getvalue())
+    assert exc.value.status_code == 422
+
+
+def test_docx_rejects_duplicate_members_and_path_traversal():
+    import warnings
+    archive = io.BytesIO()
+    with zipfile.ZipFile(archive, "w") as stream:
+        stream.writestr("[Content_Types].xml", "<Types/>")
+        stream.writestr("word/document.xml", "<document/>")
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            stream.writestr("word/document.xml", "<document/>")
+    with pytest.raises(HTTPException) as exc:
+        candidate_segments("duplicate.docx", archive.getvalue())
+    assert exc.value.status_code == 422
+    archive = io.BytesIO()
+    with zipfile.ZipFile(archive, "w") as stream:
+        stream.writestr("[Content_Types].xml", "<Types/>")
+        stream.writestr("word/document.xml", "<document/>")
+        stream.writestr("../unexpected.xml", "<danger/>")
+    with pytest.raises(HTTPException) as exc:
+        candidate_segments("traversal.docx", archive.getvalue())
+    assert exc.value.status_code == 422

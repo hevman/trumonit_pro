@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import io
 import re
+import zipfile
 from dataclasses import dataclass
 
 import fitz
@@ -47,6 +48,51 @@ def category(text: str) -> str:
     return "technical"
 
 
+MAX_DOCX_MEMBERS = 500
+MAX_DOCX_UNCOMPRESSED_BYTES = 40 * 1024 * 1024
+MAX_DOCX_MEMBER_BYTES = 16 * 1024 * 1024
+MAX_DOCX_RATIO = 200
+
+
+def validate_docx_container(content: bytes) -> None:
+    """Inspect compressed member metadata before WordDocument expands any XML.
+
+    This is only an archive resource bound, not an antivirus scan. Processing
+    untrusted DOCX still requires isolated workers and malware scanning.
+    """
+    try:
+        with zipfile.ZipFile(io.BytesIO(content)) as archive:
+            members = archive.infolist()
+            if not members or len(members) > MAX_DOCX_MEMBERS:
+                raise HTTPException(422, "DOCX archive member count exceeds limit")
+            names = set()
+            total = 0
+            for member in members:
+                name = member.filename.replace("\\", "/")
+                if (not name or name.startswith("/") or
+                        any(segment in (".", "..") for segment in name.split("/"))):
+                    raise HTTPException(422, "DOCX archive has invalid paths")
+                if name in names:
+                    raise HTTPException(422, "DOCX archive has duplicate entries")
+                names.add(name)
+                if member.flag_bits & 1:
+                    raise HTTPException(422, "Encrypted DOCX archive is unsupported")
+                if member.file_size > MAX_DOCX_MEMBER_BYTES:
+                    raise HTTPException(422, "DOCX archive member exceeds size limit")
+                total += member.file_size
+                if total > MAX_DOCX_UNCOMPRESSED_BYTES:
+                    raise HTTPException(422, "DOCX uncompressed size exceeds limit")
+                if (member.file_size > 1024 * 1024 and
+                        member.file_size > max(1, member.compress_size) * MAX_DOCX_RATIO):
+                    raise HTTPException(422, "DOCX archive compression ratio exceeds limit")
+            if not {"[Content_Types].xml", "word/document.xml"}.issubset(names):
+                raise HTTPException(422, "DOCX is missing required document parts")
+    except HTTPException:
+        raise
+    except (zipfile.BadZipFile, ValueError, OSError) as exc:
+        raise HTTPException(422, "Invalid DOCX archive") from exc
+
+
 def candidate_segments(filename: str, content: bytes) -> list[Candidate]:
     if len(content) > MAX_DOCUMENT_BYTES or not content:
         raise HTTPException(413, "Document must be 1 byte to 8 MiB")
@@ -66,6 +112,7 @@ def candidate_segments(filename: str, content: bytes) -> list[Candidate]:
         except Exception as exc:
             raise HTTPException(422, "Cannot read PDF (scans need OCR)") from exc
     elif suffix == "docx":
+        validate_docx_container(content)
         try:
             doc = WordDocument(io.BytesIO(content))
             if len(doc.paragraphs) > 3000 or len(doc.tables) > 100:
