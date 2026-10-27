@@ -50,7 +50,7 @@ def test_new_member_invitation_task_and_explicit_role_enforcement(client, gatewa
     assert verified.status_code == 200, verified.text
     editor = authorized(gateway, verified.json()["session_token"])
     editor_id = verified.json()["account"]["user_id"]
-    assert accepted.json()["account"]["role"] == "editor"
+    assert verified.json()["account"]["role"] == "editor"
     assert client.post("/api/team/claim", headers=gateway, json={
         "token": target["token"], "name": "Another user",
         "password": "ComplexPasswordFor2026!",
