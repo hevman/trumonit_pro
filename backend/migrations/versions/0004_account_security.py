@@ -13,7 +13,11 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column("users", sa.Column("email_verified_at", sa.DateTime(timezone=True), nullable=True))
+    # Baseline ORM metadata can contain new columns on fresh installations.
+    # A deployed V3 database still needs this additive column.
+    columns = {col["name"] for col in sa.inspect(op.get_bind()).get_columns("users")}
+    if "email_verified_at" not in columns:
+        op.add_column("users", sa.Column("email_verified_at", sa.DateTime(timezone=True), nullable=True))
     op.create_table("account_action_tokens",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("user_id", sa.String(36), sa.ForeignKey("users.id"), nullable=False),
