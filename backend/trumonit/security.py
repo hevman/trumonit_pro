@@ -100,6 +100,8 @@ def principal(
     workspace = db.get(Workspace, entry.workspace_id)
     if member is None or user is None or workspace is None:
         raise HTTPException(401, "Account access revoked")
+    if user.email_verified_at is None:
+        raise HTTPException(403, "Email verification required")
     return Principal(user.id, workspace.id, user.email, workspace.name, member.role)
 
 

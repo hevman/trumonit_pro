@@ -11,6 +11,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from .db import get_db, now
+from .account_security import require_delivery, issue_email_and_deliver
 from .models import LoginAttempt, Membership, SessionToken, User, Workspace, AuditEvent
 from .security import (
     Principal, check_password, create_session, hash_password,
@@ -39,6 +40,7 @@ def public_account(pr: Principal) -> dict:
         "workspace_id": pr.workspace_id,
         "workspace_name": pr.workspace_name,
         "role": pr.role,
+        "email_verified": True,
     }
 
 
@@ -59,18 +61,14 @@ def register(payload: Registration, db: Session = Depends(get_db)):
         workspace_id=workspace.id, actor_id=user.id,
         action="workspace.created", resource_id=workspace.id,
     ))
-    token = create_session(db, user.id, workspace.id)
+    require_delivery()
     try:
         db.commit()
     except IntegrityError as exc:
         db.rollback()
         raise HTTPException(409, "Account already exists") from exc
-    return {
-        "session_token": token,
-        "account": public_account(Principal(
-            user.id, workspace.id, user.email, workspace.name, "owner"
-        )),
-    }
+    issue_email_and_deliver(db, user, "verify")
+    return {"verification_required": True, "email": email}
 
 
 @router.post("/login")
@@ -95,6 +93,8 @@ def login(payload: Login, db: Session = Depends(get_db)):
         tracker.attempt_count += 1
         db.commit()
         raise HTTPException(401, "Invalid credentials")
+    if user.email_verified_at is None:
+        raise HTTPException(403, "Email verification required before sign-in")
     member = db.scalar(select(Membership).where(Membership.user_id == user.id))
     if member is None:
         raise HTTPException(401, "Account has no workspace")

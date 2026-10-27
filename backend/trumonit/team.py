@@ -17,6 +17,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from .db import get_db, now
+from .account_security import require_delivery, issue_email_and_deliver
 from .models import (AuditEvent, Membership, RequirementTask, SessionToken,
                      TeamInvitation, User, Workspace)
 from .security import (Principal, create_session, hash_password,
@@ -204,6 +205,7 @@ def claim_new_account(payload: ClaimInvite, db: Session = Depends(get_db)):
     space = db.get(Workspace, invite.workspace_id)
     if space is None:
         raise HTTPException(404, "Workspace unavailable")
+    require_delivery()
     created = User(
         email=invite.email, display_name=payload.name.strip(),
         password_hash=hash_password(payload.password),
@@ -214,18 +216,14 @@ def claim_new_account(payload: ClaimInvite, db: Session = Depends(get_db)):
         user_id=created.id, workspace_id=space.id, role=invite.role
     ))
     invite.accepted_at = now()
-    token = create_session(db, created.id, space.id)
     audit(db, space.id, created.id, "team.joined", invite.id)
     try:
         db.commit()
     except IntegrityError as exc:
         db.rollback()
         raise HTTPException(409, "Invitation was already accepted") from exc
-    return {"session_token": token, "account": {
-        "user_id": created.id, "email": created.email,
-        "workspace_id": space.id, "workspace_name": space.name,
-        "role": invite.role,
-    }}
+    issue_email_and_deliver(db, created, "verify")
+    return {"verification_required": True, "email": created.email}
 
 
 @router.post("/accept")

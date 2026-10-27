@@ -13,6 +13,7 @@ export default function Login(){
   const [workspaceName,setWorkspaceName]=useState("");
   const [busy,setBusy]=useState(false);
   const [error,setError]=useState("");
+  const [notice,setNotice]=useState("");
   useEffect(()=>{
     if(new URLSearchParams(window.location.search).get("mode")==="register")
       setRegister(true);
@@ -31,7 +32,10 @@ export default function Login(){
         const data=await response.json().catch(()=>null) as {detail?:string}|null;
         throw Error(data?.detail||"Could not access workspace");
       }
-      router.replace("/app");router.refresh();
+      if(register){
+        setNotice("Account created. Check your inbox for the private email verification link before signing in.");
+        setPassword("");
+      }else{router.replace("/app");router.refresh();}
     }catch(e){setError(e instanceof Error?e.message:"Request failed");}
     finally{setBusy(false);}
   }
@@ -41,13 +45,14 @@ export default function Login(){
       <h1>Every response starts with clarity.</h1>
       <p>Create a company workspace, add tender documents and build an auditable requirement register.</p>
       <div className="auth-benefits"><div><ShieldCheck size={20}/> Company-scoped project access</div><div><LockKeyhole size={20}/> Encrypted passwords and revocable sessions</div></div>
-      <p className="auth-disclaimer">Development preview: email verification, subscription billing and enterprise review are not active. Do not upload confidential live tender material yet.</p>
+      <p className="auth-disclaimer">Development preview: email verification is required; SMTP must be configured. Subscription billing and enterprise review are not active. Do not upload confidential live tender material yet.</p>
     </section>
     <section className="auth-panel panel">
       <span className="eyebrow">TRUMONIT WORKSPACE</span>
       <h2>{register?"Create your account":"Welcome back"}</h2>
       <p className="muted">{register?"Start a new, empty organization.":"Sign in to review your bids and requirements."}</p>
       {error&&<div className="alert alert-error" role="alert">{error}</div>}
+      {notice&&<div className="alert alert-good" role="status">{notice}</div>}
       <form onSubmit={submit} className="auth-form">
         {register&&<>
           <label>Full name<input autoComplete="name" value={name} maxLength={100} required minLength={2} onChange={e=>setName(e.target.value)}/></label>
@@ -63,6 +68,7 @@ export default function Login(){
         <button type="button" onClick={()=>{setRegister(!register);setError("");}}>
           {register?"Sign in":"Create a workspace"}</button>
       </p>
+      <p className="muted tiny"><Link href="/account">Verify email, resend link or reset forgotten password</Link></p>
       <Link href="/" className="auth-home">← Back to trumonit.pro</Link>
     </section>
   </main>;
