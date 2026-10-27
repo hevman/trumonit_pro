@@ -24,7 +24,7 @@ KEYWORDS = re.compile(
     re.IGNORECASE,
 )
 DEADLINE = re.compile(r"\b(termin|deadline|do\s+dnia|submit\s+by)\b", re.I)
-LEGAL = re.compile(r"\b(ubezpieczen|certyfikat|oświadczen|licencj|"
+LEGAL = re.compile(r"\b(ubezpieczen|certyfikat|zaświadczen|oświadczen|licencj|"
                    r"certificate|insurance|licen[cs]e|declaration)\w*", re.I)
 COMMERCIAL = re.compile(r"\b(cen[ayę]|wycen|ofert[ayę]|price|pricing|budget|"
                         r"commercial|płatnoś)\w*", re.I)
