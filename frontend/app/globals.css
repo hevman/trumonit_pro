@@ -279,3 +279,23 @@ h1,h2,h3,p{margin-top:0}
 .project-delete-confirm input{border:1px solid #dfb589;border-radius:8px;padding:12px;background:white;max-width:450px}
 .project-delete-confirm button[type="submit"]{justify-self:start}
 @media(max-width:680px){.project-deletion-intro,.project-delete-top{align-items:flex-start;flex-direction:column}}
+
+/* Account-owned session security */
+.security-page{padding-top:36px;padding-bottom:90px;min-height:calc(100vh - 100px)}
+.security-return{display:inline-flex;gap:8px;align-items:center;font-weight:800;color:#187563;font-size:13px}
+.security-header{margin:33px 0}
+.security-header h1{margin:10px 0;font-size:38px}
+.security-header p,.security-panel>p{color:#607e7b;font-size:14px;line-height:1.7}
+.security-panel{padding:28px}
+.security-panel h2{display:flex;align-items:center;gap:9px;font-size:23px}
+.security-session{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0;border-bottom:1px solid #e1eae6}
+.security-device{display:flex;align-items:flex-start;gap:12px}
+.security-device-icon{background:#e5f4ec;border-radius:11px;color:#176d5b;padding:12px}
+.security-device strong,.security-device small{display:block}
+.security-device small{color:#647c7a;font-size:12px;margin-top:4px}
+.security-confirmation{background:#f3f9f6;border-radius:12px;padding:18px;margin-top:24px;display:flex;align-items:end;gap:15px;flex-wrap:wrap}
+.security-confirmation label{display:grid;gap:10px;font-size:13px;font-weight:800;flex:1;min-width:200px}
+.security-confirmation label svg{display:inline}
+.security-confirmation input{padding:12px 14px;border:1px solid #cbdcd5;border-radius:9px;background:white;width:100%}
+@media(max-width:650px){.security-session{align-items:flex-start;flex-direction:column}.security-panel{padding:18px}.security-header h1{font-size:30px}}

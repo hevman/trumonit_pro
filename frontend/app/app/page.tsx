@@ -145,7 +145,7 @@ export default function Workspace(){
         {projects.length===0&&<p className="muted tiny">No tenders yet. Start a new bid project.</p>}
       </div>
       <button type="button" className="sidebar-add" disabled={account?.role==="viewer"} onClick={()=>setShowNew(true)}><Plus size={16}/> New tender</button>
-      <div className="sidebar-bottom"><Link href="/team" className="sidebar-team-link">People & access</Link><span>{account?.email}</span><button type="button" onClick={()=>void logout()}><LogOut size={17}/> Sign out</button></div>
+      <div className="sidebar-bottom"><Link href="/team" className="sidebar-team-link">People & access</Link><Link href="/app/security" className="sidebar-team-link">Session security</Link><span>{account?.email}</span><button type="button" onClick={()=>void logout()}><LogOut size={17}/> Sign out</button></div>
     </aside>
     <section className="workspace-main">
       <div className="workspace-top"><div><span className="eyebrow">TRUMONIT / WORKSPACE</span><h1>Bid command center</h1><p>Review every requirement. Keep the source close.</p></div><button className="btn btn-dark" disabled={account?.role==="viewer"} onClick={()=>setShowNew(true)}><FolderPlus size={17}/> New tender</button></div>

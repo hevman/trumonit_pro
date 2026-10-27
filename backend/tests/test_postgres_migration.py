@@ -26,12 +26,16 @@ def test_new_installation_migrations_and_tenant_boundary(monkeypatch):
 
     with db_engine.connect() as conn:
         installed = conn.execute(text("SELECT version_num FROM alembic_version")).scalar_one()
-        assert installed == "0004_account_security"
+        assert installed == "0005_session_security"
         assert conn.execute(text(
             "SELECT COUNT(*) FROM information_schema.tables "
             "WHERE table_schema='public' AND table_name IN "
             "('users', 'workspaces', 'answer_library', 'requirement_responses', 'team_invitations', 'requirement_tasks', 'account_action_tokens', 'account_mail_throttles')"
         )).scalar_one() == 8
+        assert conn.execute(text(
+            "SELECT COUNT(*) FROM information_schema.columns WHERE "
+            "table_name='sessions' AND column_name IN ('id', 'created_at')"
+        )).scalar_one() == 2
 
     app.dependency_overrides[get_db] = real_db
     try:
@@ -40,6 +44,11 @@ def test_new_installation_migrations_and_tenant_boundary(monkeypatch):
             a = authorized(gate, register(http, gate, "pgsql-a@example.test", "PgA")["session_token"])
             b = authorized(gate, register(http, gate, "pgsql-b@example.test", "PgB")["session_token"])
 
+            session_inventory = http.get("/api/auth/sessions", headers=a)
+            assert session_inventory.status_code == 200, session_inventory.text
+            assert len(session_inventory.json()) == 1
+            assert session_inventory.json()[0]["current"] is True
+            assert len(session_inventory.json()[0]["id"]) == 36
             project = http.post("/api/projects", headers=a, json={"name": "Pg tender"}).json()
             project_id = project["id"]
             imported = http.post(

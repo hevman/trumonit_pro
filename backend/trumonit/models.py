@@ -35,8 +35,10 @@ class Membership(Base):
 class SessionToken(Base):
     __tablename__ = "sessions"
     token_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    id: Mapped[str] = mapped_column(String(36), unique=True, index=True, default=new_id)
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
     workspace_id: Mapped[str] = mapped_column(ForeignKey("workspaces.id"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
 
 
