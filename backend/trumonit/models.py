@@ -92,3 +92,39 @@ class AuditEvent(Base):
     action: Mapped[str] = mapped_column(String(80))
     resource_id: Mapped[str] = mapped_column(String(36))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class AnswerLibraryEntry(Base):
+    """Company-owned, manually approved reusable procurement response."""
+    __tablename__ = "answer_library"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    workspace_id: Mapped[str] = mapped_column(ForeignKey("workspaces.id"), index=True)
+    title: Mapped[str] = mapped_column(String(150))
+    category: Mapped[str] = mapped_column(String(40), default="general")
+    body: Mapped[str] = mapped_column(Text)
+    evidence_reference: Mapped[str] = mapped_column(String(400), default="")
+    valid_until: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    status: Mapped[str] = mapped_column(String(20), default="draft")
+    approved_by: Mapped[str | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class RequirementResponse(Base):
+    """Explicit response draft and recorded human approval per requirement."""
+    __tablename__ = "requirement_responses"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    workspace_id: Mapped[str] = mapped_column(ForeignKey("workspaces.id"), index=True)
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)
+    requirement_id: Mapped[str] = mapped_column(
+        ForeignKey("requirements.id"), unique=True, index=True
+    )
+    library_entry_id: Mapped[str | None] = mapped_column(
+        ForeignKey("answer_library.id"), nullable=True
+    )
+    body: Mapped[str] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(String(20), default="draft")
+    approved_by: Mapped[str | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)

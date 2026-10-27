@@ -35,14 +35,14 @@ export default function Home(){
       </div>
     </section>
     <section id="features" className="feature-band"><div className="container feature-grid">
-      <div><div className="eyebrow">MADE FOR SERIOUS BID TEAMS</div><h2>Document intelligence with an audit trail.</h2><p>Trumonit begins with transparent, deterministic text extraction and human verification. Advanced AI-assisted bid matching will be added only with grounded source evidence and operational safeguards.</p></div>
-      <div className="feature-checks"><div><ShieldCheck size={21}/> Separate workspaces and scoped access</div><div><FileSearch size={21}/> Source-linked requirement candidates</div><div><FolderKanban size={21}/> Saved projects and document history</div><div><Timer size={21}/> Bid dates and stage tracking</div><div><Sparkles size={21}/> Structured data ready for future AI workflows</div></div>
+      <div><div className="eyebrow">MADE FOR SERIOUS BID TEAMS</div><h2>Your company's procurement knowledge, accountable.</h2><p>Bring your existing answers, procedures and evidence into a single controlled workspace. Every edit and approval is traceable. Reuse your company's wording, not machine-generated text.</p></div>
+      <div className="feature-checks"><div><ShieldCheck size={21}/> Separate workspaces and scoped access</div><div><FileSearch size={21}/> Source-linked requirement candidates</div><div><FolderKanban size={21}/> Saved projects and document history</div><div><Timer size={21}/> Bid dates and stage tracking</div><div><Sparkles size={21}/> Own data, manual sign-off and reusable answers</div></div>
     </div></section>
     <section id="pricing" className="section container">
-      <div className="section-heading"><div className="eyebrow">FUTURE SUBSCRIPTIONS</div><h2>Built for high-value B2B teams.</h2><p>Pricing is illustrative while the product is developed. No paid plans or payment collection are active.</p></div>
+      <div className="section-heading"><div className="eyebrow">FUTURE SUBSCRIPTIONS</div><h2>Built for high-value B2B teams.</h2><p>Proposed pricing for coordinated B2B teams, not a live subscription. Security review, enterprise identity, integrations and billing are still in development.</p></div>
       <div className="price-grid">
         <article className="price-card"><span>Professional · proposed</span><h3>€249 <small>/month</small></h3><p>For small proposal teams building a repeatable tender workflow.</p><Link href="/login?mode=register">Explore preview <ArrowUpRight size={15}/></Link></article>
-        <article className="price-card emphasized"><span>Business · proposed</span><h3>€499 <small>/month</small></h3><p>For established businesses coordinating complex multi-document bids.</p><Link href="/login?mode=register">Explore preview <ArrowUpRight size={15}/></Link></article>
+        <article className="price-card emphasized"><span>Business · proposed</span><h3>€499 <small>/month</small></h3><p>For procurement and proposal teams managing reusable answers, document evidence and human approvals.</p><Link href="/login?mode=register">Explore preview <ArrowUpRight size={15}/></Link></article>
         <article className="price-card"><span>Enterprise · proposed</span><h3>Custom</h3><p>For governed workflows, integrations and security reviews.</p><Link href="/login?mode=register">Explore preview <ArrowUpRight size={15}/></Link></article>
       </div>
     </section>

@@ -19,8 +19,8 @@ MZI general data analytics, or Netiker website monitoring.
 2. Verified account emails, account recovery, members/invitations, rate limits.
 3. Document scanning, encrypted storage, signed URLs, data retention/deletion.
 4. Safe OCR and background workers, retry policies and cost controls.
-5. Grounded document intelligence / RAG with evidence and manual approval.
-6. Response drafting, approval workflows and procurement-specific templates.
+5. Version-controlled internal knowledge, review queues, approvals and quality control without AI.
+6. Native DOCX templates, multi-stage approvals, controlled evidence updates and reviewer assignments.
 7. Stripe billing with actual plan limits, cancel/refund/dunning policy.
 8. Secure deployment with SSL, monitoring, backups and restore drills.
 9. Validate €249–€499 willingness to pay with real procurement teams.
