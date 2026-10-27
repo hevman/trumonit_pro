@@ -190,3 +190,25 @@ customer use. PostgreSQL physical storage, replicas and backups are subject to
 separate retention/erasure controls; this endpoint alone does not guarantee
 GDPR-complete erasure. No automatic deletion policy or retention schedule is
 configured, and no AI processes customer data.
+
+
+## Active sessions and session revocation (v0005)
+
+Authenticated users can see active account sessions at /app/security, including
+their current session, creation/expiry times and the active workspace name.
+Session IDs are independent random UUIDs; raw bearer tokens and token digests
+are not exposed in the session inventory. Sessions are scoped to the account
+and can span authorized organizations. Users can revoke a specific *other*
+session or every other session without terminating the current session.
+Revocations require the current password and have a per-user five-attempt
+throttle across 15 minutes. The app writes an owner-visible audit event to
+the active workspace without recording the password or session identifiers.
+Other organizations' users cannot see or revoke these sessions.
+
+Migration 0005_session_security adds UUID identifiers and a creation time for
+sessions. Previously active sessions receive an **approximate** creation time
+derived from their existing expiry and historical seven-day duration. Sessions
+are not forcibly logged out during migration. Password reset still invalidates
+all active sessions. This functionality is not a substitute for MFA/SSO,
+device attestation, centralized security event monitoring, verified SMTP,
+penetration testing, proper backup/recovery, or incident procedures.
