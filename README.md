@@ -86,8 +86,9 @@ actual successful run before claiming compilation or deployment.
 - Work-email verification and single-use password recovery are implemented;
   production needs a validated SMTP configuration, deliverability review,
   abuse prevention and invite delivery. Self-registration is still a preview.
-- Add edge IP throttling, malware scanning, hardened DOCX decompression limits,
-  encrypted object storage, backups, retention/deletion and GDPR workflows.
+- Add edge IP throttling, malware scanning, isolated document-processing workers,
+  encrypted object storage, backups and GDPR workflows. DOCX ZIP member count,
+  decompressed size and compression ratios have bounded pre-parsing checks.
 - Add PostgreSQL-backed real two-tenant end-to-end tests and deployment checks.
 - Improve source references for tables/layout, add OCR and measure precision.
 - Introduce bounded document-processing workers and observed queue reliability.
