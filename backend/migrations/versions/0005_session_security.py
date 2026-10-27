@@ -16,27 +16,49 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column("sessions", sa.Column("id", sa.String(36), nullable=True))
-    op.add_column("sessions", sa.Column("created_at", sa.DateTime(timezone=True), nullable=True))
     conn = op.get_bind()
-    for token_digest, expires in conn.execute(sa.text(
-        "SELECT token_hash, expires_at FROM sessions"
+    inspector = sa.inspect(conn)
+    columns = {col["name"] for col in inspector.get_columns("sessions")}
+    # V1 builds a fresh database using current ORM metadata, while an older
+    # deployed V4 lacks these columns. Support both without dropping sessions.
+    if "id" not in columns:
+        op.add_column("sessions", sa.Column("id", sa.String(36), nullable=True))
+    if "created_at" not in columns:
+        op.add_column("sessions", sa.Column("created_at", sa.DateTime(timezone=True), nullable=True))
+
+    for digest, expires, session_id, created_at in conn.execute(sa.text(
+        "SELECT token_hash, expires_at, id, created_at FROM sessions"
     )).all():
-        # Existing sessions have no reliable login timestamp; reconstruct
-        # an approximate start based on the historical seven-day lifetime.
-        start = expires - timedelta(days=7)
-        if start.tzinfo is None:
-            start = start.replace(tzinfo=timezone.utc)
+        if session_id is not None and created_at is not None:
+            continue
+        # Existing logins have only an expiry. Estimate their creation from
+        # the previous seven-day maximum session duration.
+        estimated = expires - timedelta(days=7)
+        if estimated.tzinfo is None:
+            estimated = estimated.replace(tzinfo=timezone.utc)
         conn.execute(sa.text(
             "UPDATE sessions SET id=:id, created_at=:start WHERE token_hash=:digest"
-        ), {"id": str(uuid4()), "start": start, "digest": token_digest})
-    op.alter_column("sessions", "id", existing_type=sa.String(36), nullable=False)
-    op.alter_column("sessions", "created_at",
-                    existing_type=sa.DateTime(timezone=True), nullable=False)
-    op.create_index("ix_sessions_id", "sessions", ["id"], unique=True)
+        ), {
+            "id": session_id or str(uuid4()),
+            "start": created_at or estimated,
+            "digest": digest,
+        })
+
+    if "id" not in columns:
+        op.alter_column("sessions", "id", existing_type=sa.String(36), nullable=False)
+    if "created_at" not in columns:
+        op.alter_column("sessions", "created_at",
+                        existing_type=sa.DateTime(timezone=True), nullable=False)
+    indexes = {index["name"] for index in sa.inspect(conn).get_indexes("sessions")}
+    if "ix_sessions_id" not in indexes:
+        op.create_index("ix_sessions_id", "sessions", ["id"], unique=True)
 
 
 def downgrade():
-    op.drop_index("ix_sessions_id", table_name="sessions")
+    # Downgrade is not intended as a production rollback: all session
+    # introspection metadata is removed. Prefer forward migrations.
+    indexes = {index["name"] for index in sa.inspect(op.get_bind()).get_indexes("sessions")}
+    if "ix_sessions_id" in indexes:
+        op.drop_index("ix_sessions_id", table_name="sessions")
     op.drop_column("sessions", "created_at")
     op.drop_column("sessions", "id")
